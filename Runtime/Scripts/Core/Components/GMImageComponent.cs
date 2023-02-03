@@ -11,6 +11,12 @@ namespace GentlyUI.UIElements {
         protected override void Awake() {
             base.Awake();
 
+#if UNITY_EDITOR
+            if (!Application.isPlaying) {
+                return;
+            }
+#endif
+
             if (useGlobalUIColor) {
                 color = UIManager.UISettings.GetColor(globalUIColor);
             }
