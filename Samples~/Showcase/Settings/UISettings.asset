@@ -1,0 +1,155 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af7fad6bd5378ac45847a0298e806b77, type: 3}
+  m_Name: UISettings
+  m_EditorClassIdentifier: 
+  updateManagerManually: 0
+  updateTweensByManager: 1
+  uiUpdateRate: 0.016666668
+  canvasData:
+  - identifier: Main
+    pathToCanvas: UI/Canvases/Main
+    spawnOnGameStart: 1
+  - identifier: Tooltip
+    pathToCanvas: UI/Canvases/Tooltip
+    spawnOnGameStart: 1
+  - identifier: Dialog
+    pathToCanvas: UI/Canvases/Dialog
+    spawnOnGameStart: 1
+  containerAnimationPresets:
+  - name: BottomRight
+    anchor: 7
+    showState:
+      name: 
+      animationAttributes:
+      - name: PositionOffset, Alpha
+        propertyToAnimate: 17
+        duration: 0.3
+        delay: 0
+        repeatCount: 0
+        reflectAnimation: 0
+        easing: 1
+        animationCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 0
+            inSlope: 0.08404869
+            outSlope: 0.08404869
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0.11453996
+          - serializedVersion: 3
+            time: 0.85
+            value: 1.25
+            inSlope: -0.09803939
+            outSlope: -0.09803939
+            tangentMode: 34
+            weightedMode: 0
+            inWeight: 0.33333334
+            outWeight: 0.33333334
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: -3.3747017
+            outSlope: -3.3747017
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0.2506332
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 0
+      showContainer: 1
+      positionOffset: {x: 0, y: 0}
+      scale: {x: 0, y: 0}
+      alpha: 1
+    hideState:
+      name: 
+      animationAttributes:
+      - name: PositionOffset, Alpha
+        propertyToAnimate: 17
+        duration: 0.3
+        delay: 0
+        repeatCount: 0
+        reflectAnimation: 0
+        easing: 1
+        animationCurve:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0.0013198853
+            value: 0
+            inSlope: -2.605185
+            outSlope: -2.605185
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0.1723018
+          - serializedVersion: 3
+            time: 0.2
+            value: -0.25
+            inSlope: -0.089825965
+            outSlope: -0.089825965
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0.33333334
+            outWeight: 0.043781903
+          - serializedVersion: 3
+            time: 1
+            value: 1
+            inSlope: 2.9650095
+            outSlope: 2.9650095
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0.0246872
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 0
+      showContainer: 0
+      positionOffset: {x: 50, y: 0}
+      scale: {x: 0, y: 0}
+      alpha: 0
+  colors:
+  - identifier: text-default
+    color: {r: 0.8584906, g: 0.8431452, b: 0.8220452, a: 1}
+  - identifier: text-highlight
+    color: {r: 0.92941177, g: 0.48806828, b: 0.19744569, a: 1}
+  - identifier: text-pressed
+    color: {r: 0.8207547, g: 0.40667146, b: 0.13550194, a: 1}
+  - identifier: text-disabled
+    color: {r: 0.3490566, g: 0.3490566, b: 0.3490566, a: 0.39215687}
+  - identifier: bg-default
+    color: {r: 0.7169812, g: 0.7010375, b: 0.6797793, a: 1}
+  - identifier: bg-highlight
+    color: {r: 0.8584906, g: 0.8431452, b: 0.8220452, a: 1}
+  - identifier: bg-pressed
+    color: {r: 0.7169812, g: 0.7010375, b: 0.6797793, a: 1}
+  - identifier: bg-disabled
+    color: {r: 0.38679248, g: 0.3750636, b: 0.3594251, a: 1}
+  - identifier: icon-default
+    color: {r: 1, g: 1, b: 1, a: 1}
+  - identifier: icon-highlight
+    color: {r: 1, g: 1, b: 1, a: 1}
+  - identifier: icon-pressed
+    color: {r: 0.8490566, g: 0.8490566, b: 0.8490566, a: 1}
+  - identifier: icon-disabled
+    color: {r: 0.7169812, g: 0.7010375, b: 0.6797793, a: 1}
+  paddings:
+  - name: 'default: 15'
+    identifier: default
+    padding: 15
+  gradients: []
+  icons: []

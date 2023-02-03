@@ -1,0 +1,33 @@
+{ 
+	"name": "com.gentlymadstudios.gentlyui", 
+	"version": "0.6.8", 
+	"displayName": "GentlyUI", 
+	"description": "Custom Unity UI solution by Gentlymad Studios.", 
+	"unity": "2022.1",
+	"unityRelease": "16f1",
+	"dependencies": {
+		"com.unity.ugui": "1.0.0",
+		"com.unity.textmeshpro": "3.0.6"
+	},	
+	"custom_gitDependencies": {
+		"com.gentlymadstudios.editorhelper": "https://github.com/Gentlymad-Studios/EditorHelper.git"
+	},
+	"keywords": [
+		"ui",
+		"user interface",
+		"gentlyUI",
+		"gentlymad"
+	],
+	"author": {
+		"name": "Gentlymad Studios",
+		"url": "https://gentlymadstudios.com",
+		"email": "swirth@gentlymadstudios.com"
+	},
+	"samples": [
+        {
+            "displayName": "Demo Elements",
+            "description": "Contains sample ui elements and scenes to showcase the GentlyUI.",
+            "path": "Samples~/Showcase"
+        }
+    ]
+}
