@@ -189,8 +189,24 @@ namespace GentlyUI {
                 pointerEventData = new PointerEventData(EventSystem.current);
 #if ENABLE_INPUT_SYSTEM
                 pointerEventData.position = UnityEngine.InputSystem.Mouse.current.position.ReadValue();
+
+                if (UnityEngine.InputSystem.Mouse.current.leftButton.wasPressedThisFrame) {
+                    pointerEventData.button = PointerEventData.InputButton.Left;
+                    pointerEventData.clickCount = 1;
+                } else if (UnityEngine.InputSystem.Mouse.current.rightButton.wasPressedThisFrame) {
+                    pointerEventData.button = PointerEventData.InputButton.Right;
+                    pointerEventData.clickCount = 1;
+                }
 #elif ENABLE_LEGACY_INPUT_MANAGER
                 pointerEventData.position = Input.mousePosition;
+
+                if (Input.GetMouseButtonDown(0)) {
+                    pointerEventData.button = PointerEventData.InputButton.Left;
+                    pointerEventData.clickCount = 1;
+                } else if (Input.GetMouseButtonDown(1)) {
+                    pointerEventData.button = PointerEventData.InputButton.Right;
+                    pointerEventData.clickCount = 1;
+                }
 #endif
                 wasPointerEventDataUpdatedThisFrame = true;
             }

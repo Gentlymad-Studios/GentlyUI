@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace GentlyUI.UIElements {
-    public class GMDropdown : UIBase {
+    public class GMDropdown : UIBase, IUITickable {
         [SerializeField] private GMToggle toggle;
         [SerializeField] private GMPooledScrollView scrollView;
         [SerializeField] private MonoBehaviour scrollViewItemPrefab;
@@ -76,6 +76,8 @@ namespace GentlyUI.UIElements {
         }
 
         protected override void OnDisable() {
+            toggle.IsOn = false;
+
             base.OnDisable();
 
             toggle.OnValueChanged.RemoveListener(OnToggleValueChanged);
@@ -213,10 +215,6 @@ namespace GentlyUI.UIElements {
             // Add image since it's needed to block, but make it clear.
             GMImageComponent blockerImage = blocker.AddComponent<GMImageComponent>();
             blockerImage.color = Color.clear;
-
-            // Add button since it's needed to block, and to close the dropdown when blocking area is clicked.
-            GMButton blockerButton = blocker.AddComponent<GMButton>();
-            blockerButton.OnClick.AddListener(() => toggle.IsOn = false);
         }
 
         void DestroyBlocker() {
@@ -224,6 +222,25 @@ namespace GentlyUI.UIElements {
                 Destroy(blocker);
             }
             blocker = null;
+        }
+
+        public void Tick(float unscaledDeltaTime) {
+            if (!toggle.IsOn) {
+                return;
+            }
+
+            PointerEventData inputState = UIManager.Instance.GetCurrentPointerEventData();
+
+            if (inputState.clickCount > 0 &&
+                (inputState.button == PointerEventData.InputButton.Left || inputState.button == PointerEventData.InputButton.Right)) {
+                bool isPointerInsideScrollView = RectTransformUtility.RectangleContainsScreenPoint(scrollView.transform as RectTransform, inputState.position, UIManager.UICamera);
+                bool isPointerInsideToggle = RectTransformUtility.RectangleContainsScreenPoint(toggle.transform as RectTransform, inputState.position, UIManager.UICamera);
+
+                if (!isPointerInsideScrollView && !isPointerInsideToggle)
+                {
+                    toggle.IsOn = false;
+                }
+            }
         }
     }
 }
