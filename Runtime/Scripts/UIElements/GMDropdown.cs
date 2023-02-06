@@ -16,6 +16,8 @@ namespace GentlyUI.UIElements {
         [SerializeField] private int value;
         public int Value => value;
 
+        public bool IsFocused => toggle.IsOn;
+
         [Serializable]
         public class DropdownEvent : UnityEvent<int> {}
 

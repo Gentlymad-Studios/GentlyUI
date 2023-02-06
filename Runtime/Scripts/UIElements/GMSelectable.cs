@@ -100,10 +100,7 @@ namespace GentlyUI.UIElements {
         /// Sets this ui element as the currently selected one in the whole UI.
         /// </summary>
         public virtual void Select() {
-            if (EventSystem.current.alreadySelecting)
-                return;
-
-            EventSystem.current.SetSelectedGameObject(gameObject);
+            UIManager.Instance.SelectUI(gameObject);
         }
 
         private readonly List<CanvasGroup> canvasGroupCache = new List<CanvasGroup>();

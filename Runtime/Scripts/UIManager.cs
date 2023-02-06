@@ -214,7 +214,10 @@ namespace GentlyUI {
         }
 
         public void SelectUI(GameObject uiObject) {
-            EventSystem.current.SetSelectedGameObject(uiObject);
+            if (EventSystem.current.alreadySelecting)
+                return;
+
+            EventSystem.current.SetSelectedGameObject(gameObject);
         }
     }
 
