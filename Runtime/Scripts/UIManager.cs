@@ -217,7 +217,7 @@ namespace GentlyUI {
             if (EventSystem.current.alreadySelecting)
                 return;
 
-            EventSystem.current.SetSelectedGameObject(gameObject);
+            EventSystem.current.SetSelectedGameObject(uiObject);
         }
     }
 
