@@ -7,7 +7,7 @@ using static TMPro.TMP_InputField;
 
 namespace GentlyUI.UIElements {
     [AddComponentMenu("GentlyUI/Input Field", 8)]
-    public class GMInputField : GMSelectable, 
+    public class GMInputField : GMSelectable, IPointerClickHandler, 
         IUpdateSelectedHandler, 
         ISubmitHandler,
         ISelectHandler,
@@ -623,6 +623,14 @@ namespace GentlyUI.UIElements {
             base.OnPointerDown(eventData);
         }
 
+        public virtual void OnPointerClick(PointerEventData eventData) {
+            if (eventData.button != PointerEventData.InputButton.Left || !Interactable) return;
+
+            if (eventData.clickCount == 2) {
+                SelectAll();
+            }
+        }
+
         public void OnSubmit(BaseEventData eventData) {
             onSubmit.Invoke(Text);
             UIManager.Instance.SelectUI(null);
@@ -637,7 +645,6 @@ namespace GentlyUI.UIElements {
         }
 
         void OnFocused() {
-            bool wasFocused = isFocused;
             isFocused = true;
         }
 
