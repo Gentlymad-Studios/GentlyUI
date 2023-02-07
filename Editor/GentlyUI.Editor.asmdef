@@ -1,11 +1,13 @@
 {
-    "name": "GentlyUI",
+    "name": "GentlyUIEditor",
     "rootNamespace": "",
     "references": [
-        "GUID:6055be8ebefd69e48b49212b09b47b2f",
-        "GUID:75469ad4d38634e559750d17036d5f7c"
+        "GUID:4506b4beec3fdca46893889f857b0dcf",
+        "GUID:4a56528f6084a0248866aff558c75f51"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

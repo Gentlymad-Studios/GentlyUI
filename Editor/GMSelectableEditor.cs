@@ -1,6 +1,4 @@
-#if UNITY_EDITOR
 using UnityEditor;
-using UnityEngine;
 
 namespace GentlyUI.UIElements {
     [CustomEditor(typeof(GMSelectable))]
@@ -26,4 +24,3 @@ namespace GentlyUI.UIElements {
         }
     }
 }
-#endif

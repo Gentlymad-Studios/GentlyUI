@@ -1,4 +1,3 @@
-#if UNITY_EDITOR
 using GentlyUI;
 using UnityEditor;
 using UnityEngine;
@@ -24,4 +23,3 @@ public class GMSlicedFilledImageEditor : Editor {
 		serializedObject.ApplyModifiedProperties();
 	}
 }
-#endif
