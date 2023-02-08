@@ -236,9 +236,8 @@ namespace GentlyUI.UIElements {
             if (inputState.clickCount > 0 &&
                 (inputState.button == PointerEventData.InputButton.Left || inputState.button == PointerEventData.InputButton.Right)) {
                 bool isPointerInsideScrollView = RectTransformUtility.RectangleContainsScreenPoint(scrollView.transform as RectTransform, inputState.position, UIManager.UICamera);
-                bool isPointerInsideToggle = RectTransformUtility.RectangleContainsScreenPoint(toggle.transform as RectTransform, inputState.position, UIManager.UICamera);
 
-                if (!isPointerInsideScrollView && !isPointerInsideToggle)
+                if (!isPointerInsideScrollView)
                 {
                     toggle.IsOn = false;
                 }

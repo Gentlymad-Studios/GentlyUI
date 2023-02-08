@@ -25,14 +25,18 @@ namespace GentlyUI.ModularUI {
 
             UISpawner<GMButton>.RegisterUIForSpawn(path, currentContainer, (GMButton b) => {
                 //Add new listener
-                b.OnClick.AddListener(onClick);
+                if (onClick != null) {
+                    b.OnClick.AddListener(onClick);
+                }
                 //Set styles
                 if (!string.IsNullOrWhiteSpace(label)) b.SetLabel(label);
                 if (icon != null) b.SetIcon(icon);
                 //Cache object
                 CacheUIObject(b.gameObject, () => {
                     UISpawner<GMButton>.RegisterUIForReturn(b);
-                    b.OnClick.RemoveListener(onClick);
+                    if (onClick != null) {
+                        b.OnClick.RemoveListener(onClick);
+                    }
                 });
                 //Callback
                 if (onSpawn != null) onSpawn(b);

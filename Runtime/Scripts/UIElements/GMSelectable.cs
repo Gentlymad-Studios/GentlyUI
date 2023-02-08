@@ -153,7 +153,7 @@ namespace GentlyUI.UIElements {
 
             if (Interactable) {
                 if (IsPressed()) {
-                    currentVisualState = VisualState.Pressed;
+                    SetPressedState();
                 } else if (IsHovered()) {
                     currentVisualState = VisualState.Hovered;
                 } else {
@@ -164,6 +164,10 @@ namespace GentlyUI.UIElements {
             }
 
             UpdateVisualElementStates(setImmediately);
+        }
+
+        protected virtual void SetPressedState() {
+            currentVisualState = VisualState.Pressed;
         }
 
         protected void SetVisualState(VisualState state, bool setImmediately = false) {

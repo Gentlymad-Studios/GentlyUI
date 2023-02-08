@@ -9,7 +9,7 @@ namespace GentlyUI.UIElements {
     [AddComponentMenu("GentlyUI/Button", 1)]
     public class GMButton : GMSelectableStyled, IPointerClickHandler, ISubmitHandler, IPooledUIResetter {
         [Serializable]
-        public class ButtonClickedEvent : UnityEvent { }
+        public class ButtonClickedEvent : GentlyUIEvent { }
 
         [SerializeField] private ButtonClickedEvent onClick = new ButtonClickedEvent();
 
@@ -25,6 +25,12 @@ namespace GentlyUI.UIElements {
                 return;
 
                 onClick.Invoke();
+        }
+
+        protected override void SetPressedState() {
+            if (onClick.ListenerCount > 0) {
+                base.SetPressedState();
+            }
         }
 
         // Trigger all registered callbacks.
