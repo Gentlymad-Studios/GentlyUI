@@ -295,9 +295,11 @@ namespace GentlyUI.UIElements {
             currentRowIndex = Mathf.Max(currentRowIndex, 0);
             currentDataStartIndex = currentRowIndex * itemContainer.columns;
 
-            if (_lastStartIndex != currentDataStartIndex || forceUpdate) {
+            bool wasScrolled = _lastStartIndex != currentDataStartIndex;
+
+            if (wasScrolled || forceUpdate) {
                 for (int i = 0, count = currentPool.ActiveCount; i < count; ++i) {
-                    OnUpdateItem(currentItems[i], currentDataStartIndex + i);
+                    OnUpdateItem(currentItems[i], currentDataStartIndex + i, wasScrolled);
                 }
             }
         }
@@ -488,7 +490,7 @@ namespace GentlyUI.UIElements {
             currentItems.Remove(item);
         }
 
-       void OnUpdateItem<T>(T item, int dataIndex) where T : Behaviour {
+       void OnUpdateItem<T>(T item, int dataIndex, bool wasScrolled) where T : Behaviour {
             //Should the item be shown?
             bool showItem = dataIndex < totalItemCount;
             //Toggle visibility
@@ -497,10 +499,12 @@ namespace GentlyUI.UIElements {
             if (showItem) {
                 //Callback
                 onUpdateItem(item, dataIndex);
-                //Force update visual state
-                GMSelectable[] selectables = item.GetComponentsInChildren<GMSelectable>();
-                for (int i = 0, count = selectables.Length; i < count; ++i) {
-                    selectables[i].SetInitialVisualState(GMVisualElement.VisualState.Default);
+                //Force update visual state if scrolled
+                if (wasScrolled) {
+                    GMSelectable[] selectables = item.GetComponentsInChildren<GMSelectable>();
+                    for (int i = 0, count = selectables.Length; i < count; ++i) {
+                        selectables[i].SetInitialVisualState(GMVisualElement.VisualState.Default);
+                    }
                 }
             }
         }
