@@ -52,10 +52,11 @@ namespace GentlyUI.UIElements {
             SetVisualState(GMVisualElement.VisualState.Pressed, false);
         }
 
-        public void CreatePooledUICache() {}
+        public virtual void CreatePooledUICache() {}
 
-        public void ResetPooledUI() {
+        public virtual void ResetPooledUI() {
             ToggleWarning(false);
+            Debug.Log("Reset");
         }
     }
 }
