@@ -6,8 +6,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace GentlyUI.Core {
-    public static class GMUIBlockerCreator
-    {
+    public static class GMUIBlockerCreator {
 
         private static GameObject blocker;
 
@@ -33,18 +32,10 @@ namespace GentlyUI.Core {
             // Make blocker be in separate canvas in same layer as dropdown and in layer just below it.
             Canvas blockerCanvas = blocker.AddComponent<Canvas>();
             blockerCanvas.overrideSorting = true;
-            blockerCanvas.sortingOrder = target.GetComponent<Canvas>().sortingOrder;
+            blockerCanvas.sortingOrder = target.gameObject.GetOrAddComponent<Canvas>().sortingOrder;
 
             // Find the Canvas that this dropdown is a part of
-            Canvas parentCanvas = null;
-            Transform parentTransform = target.transform.parent;
-            while (parentTransform != null) {
-                parentCanvas = parentTransform.GetComponentInParent<Canvas>();
-                if (parentCanvas != null)
-                    break;
-
-                parentTransform = parentTransform.parent;
-            }
+            Canvas parentCanvas = target.GetComponentInParent<Canvas>(true);
 
             // If we have a parent canvas, apply the same raycasters as the parent for consistency.
             if (parentCanvas != null) {
