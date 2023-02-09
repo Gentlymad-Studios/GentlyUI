@@ -56,7 +56,6 @@ namespace GentlyUI.UIElements {
 
         public virtual void ResetPooledUI() {
             ToggleWarning(false);
-            Debug.Log("Reset");
         }
     }
 }
