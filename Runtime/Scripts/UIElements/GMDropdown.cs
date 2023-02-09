@@ -28,8 +28,6 @@ namespace GentlyUI.UIElements {
 
         [SerializeField] private List<DropdownOptionData> options = new List<DropdownOptionData>();
 
-        private GameObject blocker;
-
         [Serializable]
         public class DropdownOptionData {
             [SerializeField] private Sprite icon;
@@ -132,7 +130,7 @@ namespace GentlyUI.UIElements {
                 scrollView.gameObject.SetActive(true);
             }
             UpdateOptions();
-            CreateBlocker();
+            GMUIBlockerCreator.CreateBlocker(scrollView.transform as RectTransform, () => { toggle.IsOn = false; });
         }
 
 
@@ -142,7 +140,7 @@ namespace GentlyUI.UIElements {
             } else {
                 scrollView.gameObject.SetActive(false);
             }
-            DestroyBlocker();
+            GMUIBlockerCreator.DestroyBlocker();
         }
 
         void UpdateOptions() {
@@ -162,68 +160,6 @@ namespace GentlyUI.UIElements {
             } else {
                 dItem.SetInitialValue(false);
             }
-        }
-
-        /// <summary>
-        /// Create a blocker that blocks clicks to other controls while the dropdown list is open.
-        /// </summary>
-        /// <remarks>
-        /// Override this method to implement a different way to obtain a blocker GameObject.
-        /// </remarks>
-        protected virtual void CreateBlocker() {
-            DestroyBlocker();
-
-            // Create blocker GameObject.
-            blocker = new GameObject("Blocker");
-
-            // Setup blocker RectTransform to cover entire root canvas area.
-            RectTransform blockerRect = blocker.AddComponent<RectTransform>();
-            blockerRect.SetParent((RectTransform)(transform).root, false);
-            blockerRect.anchorMin = Vector3.zero;
-            blockerRect.anchorMax = Vector3.one;
-            blockerRect.sizeDelta = Vector2.zero;
-
-            // Make blocker be in separate canvas in same layer as dropdown and in layer just below it.
-            Canvas blockerCanvas = blocker.AddComponent<Canvas>();
-            blockerCanvas.overrideSorting = true;
-            blockerCanvas.sortingOrder = scrollView.GetComponent<Canvas>().sortingOrder;
-
-            // Find the Canvas that this dropdown is a part of
-            Canvas parentCanvas = null;
-            Transform parentTransform = transform.parent;
-            while (parentTransform != null) {
-                parentCanvas = parentTransform.GetComponentInParent<Canvas>();
-                if (parentCanvas != null)
-                    break;
-
-                parentTransform = parentTransform.parent;
-            }
-
-            // If we have a parent canvas, apply the same raycasters as the parent for consistency.
-            if (parentCanvas != null) {
-                Component[] components = parentCanvas.GetComponents<BaseRaycaster>();
-                for (int i = 0; i < components.Length; i++) {
-                    Type raycasterType = components[i].GetType();
-                    if (blocker.GetComponent(raycasterType) == null) {
-                        blocker.AddComponent(raycasterType);
-                    }
-                }
-            } else {
-                // Add raycaster since it's needed to block.
-                blocker.GetOrAddComponent<GraphicRaycaster>();
-            }
-
-
-            // Add image since it's needed to block, but make it clear.
-            GMImageComponent blockerImage = blocker.AddComponent<GMImageComponent>();
-            blockerImage.color = Color.clear;
-        }
-
-        void DestroyBlocker() {
-            if (blocker != null) {
-                Destroy(blocker);
-            }
-            blocker = null;
         }
 
         public void Tick(float unscaledDeltaTime) {
