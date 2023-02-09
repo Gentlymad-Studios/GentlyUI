@@ -121,7 +121,7 @@ namespace GentlyUI.UIElements {
 
             if (newPool != currentPool) {
                 if (currentPool != null) {
-                    currentPool.ReturnAll();
+                    ClearPool();
                 }
 
                 currentPool = newPool;
@@ -139,7 +139,7 @@ namespace GentlyUI.UIElements {
                 return layoutElement;
             }
         }
-        
+
 
         private List<Behaviour> currentItems = new List<Behaviour>();
         private Action<Behaviour, int> onUpdateItem;
@@ -166,7 +166,7 @@ namespace GentlyUI.UIElements {
 
         /****** Scroll Logic *******/
         public virtual void OnScroll(PointerEventData data) {
-            if (!IsActive() || !IsScrollingAllowed()) 
+            if (!IsActive() || !IsScrollingAllowed())
                 return;
 
             Vector2 delta = data.scrollDelta;
@@ -186,7 +186,7 @@ namespace GentlyUI.UIElements {
         }
 
         public void OnMove(AxisEventData eventData) {
-            
+
         }
 
         public virtual void Tick(float unscaledDeltaTime) {
@@ -298,7 +298,7 @@ namespace GentlyUI.UIElements {
             bool wasScrolled = _lastStartIndex != currentDataStartIndex;
 
             if (wasScrolled || forceUpdate) {
-                for (int i = 0, count = currentPool.ActiveCount; i < count; ++i) {
+                for (int i = 0, count = currentItems.Count; i < count; ++i) {
                     OnUpdateItem(currentItems[i], currentDataStartIndex + i, wasScrolled);
                 }
             }
@@ -309,7 +309,9 @@ namespace GentlyUI.UIElements {
         /// Make sure to have the onUpdateItem callback correctly updating all info of the item.
         /// </summary>
         public void UpdateAllDisplayedItems() {
-            UpdateViewport(true);
+            if (isInitialized) {
+                UpdateViewport(true);
+            }
         }
 
         bool IsScrollingAllowed() {
@@ -380,7 +382,7 @@ namespace GentlyUI.UIElements {
         }
 
         void Setup(bool goToTop = false) {
-            if (!isInitialized || itemPrefab == null) 
+            if (!isInitialized || itemPrefab == null)
                 return;
 
             if (CanvasUpdateRegistry.IsRebuildingLayout()) {
@@ -459,8 +461,6 @@ namespace GentlyUI.UIElements {
                 return;
             }
 
-            currentItems.Clear();
-
             //Either spawn items until maxItemsToShow is reached or the actual
             //number from the list data if its count is less than maxItemsToShow.
             maxItemsToShow = Mathf.Min(maxItemsToShow, totalItemCount);
@@ -490,7 +490,7 @@ namespace GentlyUI.UIElements {
             currentItems.Remove(item);
         }
 
-       void OnUpdateItem<T>(T item, int dataIndex, bool wasScrolled) where T : Behaviour {
+        void OnUpdateItem<T>(T item, int dataIndex, bool wasScrolled) where T : Behaviour {
             //Should the item be shown?
             bool showItem = dataIndex < totalItemCount;
             //Toggle visibility
@@ -559,8 +559,11 @@ namespace GentlyUI.UIElements {
         }
 
         void ClearPool() {
+            while (currentItems.Count > 0) {
+                currentPool.Return(currentItems[0]);
+            }
+
             currentItems.Clear();
-            currentPool.ReturnAll();
         }
 
         public void Dispose() {

@@ -27,7 +27,7 @@ namespace GentlyUI.Core {
         /// <param name="create"></param>
         /// <param name="onReturn"></param>
         /// <param name="onGet"></param>
-        public UIObjectPool(Func<T> create, Action<T> onGet = null, Action < T> onReturn = null) {
+        public UIObjectPool(Func<T> create, Action<T> onGet = null, Action<T> onReturn = null) {
             this.create = create;
             this.onGet = onGet;
             this.onReturn = onReturn;
@@ -46,6 +46,13 @@ namespace GentlyUI.Core {
             } else {
                 _instance = create();
                 _instance.transform.hierarchyCapacity = UIManager.UISettings.MaxHierarchyCapacity;
+
+                if (!_instance.gameObject.activeInHierarchy) {
+                    UIBase uiBase = _instance.gameObject.GetComponent<UIBase>();
+                    if (uiBase != null) {
+                        uiBase.InitializeUI();
+                    }
+                }
 
                 if (_instance is IPooledUIResetter resetter) {
                     resetter.CreatePooledUICache();

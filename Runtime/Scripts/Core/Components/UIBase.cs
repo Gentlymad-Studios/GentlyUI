@@ -16,8 +16,18 @@ namespace GentlyUI.Core {
         protected override void Awake() {
             base.Awake();
 
-            uiInitialized = true;
+            if (!uiInitialized) {
+                InitializeUI();
+            }
+        }
+
+        /// <summary>
+        /// Should only be called if you need an ui to be initialized before being active in hierarchy.
+        /// Normally that shouldn't be a problem.
+        /// </summary>
+        public void InitializeUI() {
             OnInitialize();
+            uiInitialized = true;
         }
 
         protected override void Start() {
@@ -29,12 +39,12 @@ namespace GentlyUI.Core {
         /// <summary>
         /// Called immediately the first time this UIBase is ever active in a scene.
         /// </summary>
-        protected virtual void OnInitialize() {}
+        protected virtual void OnInitialize() { }
 
         /// <summary>
         /// Called the first time this UIBase is ever active in a scene but after other scripts have executed.
         /// </summary>
-        protected virtual void AfterInitialize() {}
+        protected virtual void AfterInitialize() { }
 
 
         protected override void OnEnable() {
