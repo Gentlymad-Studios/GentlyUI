@@ -302,6 +302,14 @@ namespace GentlyUI.UIElements {
             }
         }
 
+        /// <summary>
+        /// Force updates all visible items of the scroll view.
+        /// Make sure to have the onUpdateItem callback correctly updating all info of the item.
+        /// </summary>
+        public void UpdateAllDisplayedItems() {
+            UpdateViewport(true);
+        }
+
         bool IsScrollingAllowed() {
             return maxScrollPosition > 0f;
         }
