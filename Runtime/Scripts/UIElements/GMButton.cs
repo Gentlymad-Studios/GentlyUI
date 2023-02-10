@@ -13,6 +13,8 @@ namespace GentlyUI.UIElements {
 
         [SerializeField] private ButtonClickedEvent onClick = new ButtonClickedEvent();
 
+        private bool isClickAllowed;
+
         protected GMButton() { }
 
         public ButtonClickedEvent OnClick {
@@ -35,10 +37,15 @@ namespace GentlyUI.UIElements {
 
         // Trigger all registered callbacks.
         public virtual void OnPointerClick(PointerEventData eventData) {
-            if (eventData.button != PointerEventData.InputButton.Left)
+            if (eventData.button != PointerEventData.InputButton.Left || !isClickAllowed)
                 return;
 
             Press();
+        }
+
+        public override void OnPointerDown(PointerEventData eventData) {
+            base.OnPointerDown(eventData);
+            isClickAllowed = EventSystem.current.IsPointerOverGameObject(0);
         }
 
         public virtual void OnSubmit(BaseEventData eventData) {
