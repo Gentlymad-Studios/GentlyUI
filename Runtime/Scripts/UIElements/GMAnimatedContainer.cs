@@ -291,6 +291,7 @@ namespace GentlyUI.UIElements {
         /// The alpha of the container for this state
         /// </summary>
         [Tooltip("The alpha of the container for this state")]
+        [Range(0f, 1f)]
         [SerializeField] private float alpha = 1f;
         public float Alpha => alpha;
     }
