@@ -45,7 +45,7 @@ namespace GentlyUI.UIElements {
 
         public override void OnPointerDown(PointerEventData eventData) {
             base.OnPointerDown(eventData);
-            isClickAllowed = EventSystem.current.IsPointerOverGameObject(0);
+            isClickAllowed = Interactable;
         }
 
         public virtual void OnSubmit(BaseEventData eventData) {
