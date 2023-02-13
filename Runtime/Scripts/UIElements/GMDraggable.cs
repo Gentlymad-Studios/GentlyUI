@@ -25,8 +25,14 @@ namespace GentlyUI.UIElements {
         /// </summary>
         [Tooltip("(Optional) Assign a UI prefab that will be spawned as a placeholder at the original position of the ui element while being dragged.")]
         [SerializeField] private GameObject placeholder;
+        /// <summary>
+        /// (Optional) Assign a UI prefab that will be spawned as drag visuals.
+        /// </summary>
+        [Tooltip("(Optional) Assign a UI prefab that will be spawned as drag visuals.")]
+        [SerializeField] private GameObject dragDummy;
 
         private RectTransform currentPlaceholder;
+        private RectTransform currentDragTarget;
         private GMDropzone targetDropZone;
 
         private CanvasGroup canvasGroup;
@@ -63,11 +69,20 @@ namespace GentlyUI.UIElements {
         private Vector3 returnPosition;
         private float returnSpeed;
 
+        public static GMDraggable currentDraggedElement;
+
+        protected override void OnInitialize() {
+            base.OnInitialize();
+
+            RectTransform.pivot = Vector2.one * 0.5f;
+            SetReturnParent(transform.parent as RectTransform, true);
+        }
+
         public virtual void OnBeginDrag(PointerEventData eventData) {
             //Create placeholder first
             CreatePlaceholder();
             //Unparent to enable dragging
-            UnparentOriginalUI();
+            SetupDragObject();
             //Initial update position to pointer
             UpdateDragPosition();
             //Set state
@@ -117,7 +132,7 @@ namespace GentlyUI.UIElements {
                         returnPosition = returnParent.TransformPoint(returnParent.rect.center);
                     }
                     //Calculate return speed
-                    float returnDistance = Vector3.Distance(RectTransform.position, returnPosition);
+                    float returnDistance = Vector3.Distance(currentDragTarget.position, returnPosition);
                     returnSpeed = returnDistance / returnDuration;
                     break;
                 default:
@@ -130,27 +145,38 @@ namespace GentlyUI.UIElements {
 
             if (dragState == DragState.Returning) {
                 //If we are close enough to our return position we have arrived.
-                if (Vector3.Distance(RectTransform.position, returnPosition) <= 0.1f) {
+                if (Vector3.Distance(currentDragTarget.position, returnPosition) <= 0.1f) {
                     SetDragState(DragState.Idle);
                 } else {
-                    RectTransform.position = Vector3.MoveTowards(RectTransform.position, returnPosition, unscaledDeltaTime * returnSpeed);
+                    currentDragTarget.position = Vector3.MoveTowards(currentDragTarget.position, returnPosition, unscaledDeltaTime * returnSpeed);
                 }
             } else if (dragState == DragState.Dragging) {
                 UpdateDragPosition();
             }
 
-            UpdateScale();
+            if (dragState != DragState.Idle) {
+                UpdateScale();
+            }
         }
 
         void CreatePlaceholder() {
             if (keepOriginal) {
-                currentPlaceholder = Instantiate(gameObject, RectTransform.parent, true).transform as RectTransform;
-                CanvasGroup canvasGroup = currentPlaceholder.gameObject.GetOrAddComponent<CanvasGroup>();
+                CanvasGroup canvasGroup;
+                    currentPlaceholder = RectTransform;
+                if (dragDummy != null) {
+                } else {
+                    //Spawn a copy of the original ui element as placeholder
+                    currentPlaceholder = Instantiate(gameObject, RectTransform.parent, true).transform as RectTransform;
+                }
+                
+                canvasGroup = currentPlaceholder.gameObject.GetOrAddComponent<CanvasGroup>();
                 canvasGroup.alpha = 0.5f;
                 canvasGroup.blocksRaycasts = false;
             } else if (placeholder != null) {
+                //Spawn placeholder
                 currentPlaceholder = (RectTransform)Instantiate(placeholder).transform;
             } else {
+                //Spawn empty placeholder to keep layout at original position (e.g. in a grid layout)
                 currentPlaceholder = new GameObject("drag-placeholder", typeof(RectTransform)).transform as RectTransform;
             }
 
@@ -159,41 +185,73 @@ namespace GentlyUI.UIElements {
             currentPlaceholder.transform.SetSiblingIndex(transform.GetSiblingIndex());
         }
 
-        void UnparentOriginalUI() {
-            RectTransform.SetParent(Canvas.transform, true);
-            //Canvas group
-            CanvasGroup.alpha = 0.5f;
-            CanvasGroup.blocksRaycasts = false;
+        void CreateDragDummy() {
+            currentDragTarget = Instantiate(dragDummy, Canvas.transform, false).transform as RectTransform;
+            CanvasGroup canvasGroup = currentDragTarget.gameObject.GetOrAddComponent<CanvasGroup>();
+            canvasGroup.alpha = 0.5f;
+            canvasGroup.blocksRaycasts = false;
+        }
+
+        void SetupDragObject() {
+            if (dragDummy != null) {
+                CreateDragDummy();
+
+                if (!keepOriginal) {
+                    RectTransform.gameObject.SetActive(false);
+                }
+            } else {
+                RectTransform.SetParent(Canvas.transform, true);
+                //Canvas group
+                CanvasGroup.alpha = 0.5f;
+                CanvasGroup.blocksRaycasts = false;
+                //Set as drag target
+                currentDragTarget = RectTransform;
+            }
+
+            currentDraggedElement = this;
         }
 
         void UpdateDragPosition() {
             Vector2 localPosition = Vector2.zero;
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(RectTransform, UIManager.Instance.GetCurrentPointerEventData().position, UIManager.UICamera, out localPosition);
-            RectTransform.position = RectTransform.TransformPoint(localPosition);
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(currentDragTarget, UIManager.Instance.GetCurrentPointerEventData().position, UIManager.UICamera, out localPosition);
+            currentDragTarget.position = currentDragTarget.TransformPoint(localPosition);
         }
 
         void UpdateScale() {
             Vector3 newScale;
 
             if (dragState == DragState.Dragging) {
-                newScale = Vector3.one * Mathf.MoveTowards(RectTransform.localScale.x, dragScale, Time.unscaledTime * 5f);
+                newScale = Vector3.one * Mathf.MoveTowards(currentDragTarget.localScale.x, dragScale, Time.unscaledTime * 5f);
             } else {
-                newScale = Vector3.one * Mathf.MoveTowards(RectTransform.localScale.x, 1f, Time.unscaledTime * 5f);
+                newScale = Vector3.one * Mathf.MoveTowards(currentDragTarget.localScale.x, 1f, Time.unscaledTime * 5f);
             }
 
-            if (RectTransform.localScale != newScale) {
-                RectTransform.localScale = newScale;
+            if (currentDragTarget.localScale != newScale) {
+                currentDragTarget.localScale = newScale;
             }
         }
 
         void DestroyPlaceholder() {
-            if (currentPlaceholder != null) {
+            if (currentPlaceholder != null && currentPlaceholder != RectTransform) {
                 Destroy(currentPlaceholder.gameObject);
             }
         }
 
+        void DestroyDragDummy() {
+            if (currentDragTarget != null && currentDragTarget != RectTransform) {
+                Destroy(currentDragTarget.gameObject);
+            }
+        }
+
         void ResetDragData() {
-            RectTransform.localPosition = returnParent.rect.center;
+            if (!RectTransform.gameObject.activeSelf) {
+                RectTransform.gameObject.SetActive(true);
+            }
+
+            if (currentDragTarget == RectTransform) {
+                RectTransform.localPosition = returnParent.rect.center;
+            }
+            RectTransform.localScale = Vector3.one;
             //Reset return parent
             returnParent = null;
             //Destroy the current placeholder (will check if there even is one)
@@ -201,6 +259,11 @@ namespace GentlyUI.UIElements {
             //Canvas group
             CanvasGroup.alpha = 1f;
             CanvasGroup.blocksRaycasts = true;
+            //Reset current drag target
+            DestroyDragDummy();
+            currentDragTarget = null;
+            //Reset global cache
+            currentDraggedElement = null;
         }
 
         public void SetReturnParent(RectTransform parent, bool returnImmediately = false) {

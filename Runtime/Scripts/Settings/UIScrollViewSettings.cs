@@ -7,7 +7,7 @@ public class UIScrollViewSettings : ScriptableObject {
 
     /// Defines whether scrolling should stop immediately (direct) or smoothly (eased) when no input is dected.
     /// </summary>
-    [UnityEngine.Tooltip("Defines whether scrolling should stop immediately (direct) or smoothly (eased) when no input is dected.")]
+    [Tooltip("")]
     [SerializeField] private MovementType movementType = MovementType.Direct;
     public MovementType MovementType => movementType;
 
