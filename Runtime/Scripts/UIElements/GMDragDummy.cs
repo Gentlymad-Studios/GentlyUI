@@ -1,6 +1,3 @@
-using GentlyUI.UIElements;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace GentlyUI.UIElements {

@@ -1,5 +1,6 @@
 using GentlyUI.Core;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -16,6 +17,8 @@ namespace GentlyUI.UIElements {
 
         private Type acceptedType;
         private GMDraggable currentDragTarget;
+
+        public static List<GMDropzone> activeDropzones = new List<GMDropzone>();
 
         private int ChildCount {
             get {
@@ -34,6 +37,18 @@ namespace GentlyUI.UIElements {
 
             highlight.HideContainer(true);
             acceptedType = typeof(GMDraggable);
+        }
+
+        protected override void OnEnable() {
+            base.OnEnable();
+
+            activeDropzones.Add(this);
+        }
+
+        protected override void OnDisable() {
+            base.OnDisable();
+
+            activeDropzones.Remove(this);
         }
 
         public virtual void Setup<T>() where T : GMDraggable {
