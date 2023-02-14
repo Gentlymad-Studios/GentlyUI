@@ -3,10 +3,10 @@ using UnityEngine.Events;
 public class GentlyUIEvent : UnityEvent {
     private int listenerCount;
 
-    public int ListenerCount { 
-        get { 
-            return listenerCount; 
-        } 
+    public int ListenerCount {
+        get {
+            return listenerCount;
+        }
     }
 
     public GentlyUIEvent() {

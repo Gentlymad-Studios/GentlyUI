@@ -1,5 +1,6 @@
 using GentlyUI.Core;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
 namespace GentlyUI.UIElements {
@@ -70,6 +71,8 @@ namespace GentlyUI.UIElements {
         private float returnSpeed;
 
         public static GMDraggable currentDraggedElement;
+
+        public UnityEvent<GameObject> onDragDummySpawned;
 
         protected override void OnInitialize() {
             base.OnInitialize();
@@ -162,9 +165,9 @@ namespace GentlyUI.UIElements {
         void CreatePlaceholder() {
             if (keepOriginal) {
                 CanvasGroup canvasGroup;
-                    currentPlaceholder = RectTransform;
-                if (dragDummy != null) {
-                } else {
+                currentPlaceholder = RectTransform;
+                
+                if (dragDummy == null) {
                     //Spawn a copy of the original ui element as placeholder
                     currentPlaceholder = Instantiate(gameObject, RectTransform.parent, true).transform as RectTransform;
                 }
@@ -209,6 +212,7 @@ namespace GentlyUI.UIElements {
             }
 
             currentDraggedElement = this;
+            onDragDummySpawned.Invoke(currentDraggedElement.gameObject);
         }
 
         void UpdateDragPosition() {
