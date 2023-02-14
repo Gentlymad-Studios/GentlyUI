@@ -72,7 +72,7 @@ namespace GentlyUI.UIElements {
 
         public static GMDraggable currentDraggedElement;
 
-        private UnityEvent<GameObject> onDragDummySpawned;
+        private UnityEvent<GameObject> onDragDummySpawned = new UnityEvent<GameObject>();
         public UnityEvent<GameObject> OnDragDummySpawned => onDragDummySpawned;
 
 
