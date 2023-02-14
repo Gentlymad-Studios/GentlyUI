@@ -17,7 +17,7 @@ namespace GentlyUI.UIElements {
         private GMDraggable currentDragTarget;
 
         public static List<GMDropzone> activeDropzones = new List<GMDropzone>();
-        bool isDropAllowed;
+        protected bool isDropAllowed;
 
         private int ChildCount {
             get {
@@ -54,7 +54,9 @@ namespace GentlyUI.UIElements {
             if (currentDragTarget != GMDraggable.currentDraggedElement) {
                 currentDragTarget = GMDraggable.currentDraggedElement;
 
-                if (CheckIfDropIsAllowed()) {
+                isDropAllowed = CheckIfDropIsAllowed();
+
+                if (isDropAllowed) {
                     highlight.ShowContainer();
                 } else {
                     highlight.HideContainer();
@@ -64,12 +66,10 @@ namespace GentlyUI.UIElements {
 
         protected virtual bool CheckIfDropIsAllowed() {
             if (currentDragTarget != null) {
-                isDropAllowed = true;
+                return true;
             } else {
-                isDropAllowed = false;
+                return false;
             }
-
-            return isDropAllowed;
         }
 
         public void OnDrop(PointerEventData eventData) {
