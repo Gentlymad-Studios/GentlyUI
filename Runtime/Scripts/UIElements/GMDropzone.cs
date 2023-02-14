@@ -14,11 +14,10 @@ namespace GentlyUI.UIElements {
         [Tooltip("The maximum number of elements that can be dropped into this zone. Set to 0 if unlimited items are possible.")]
         [SerializeField] private int maxElements = 0;
         public RectTransform DropContainer => dropContainer;
-
-        private Type acceptedType;
         private GMDraggable currentDragTarget;
 
         public static List<GMDropzone> activeDropzones = new List<GMDropzone>();
+        bool isDropAllowed;
 
         private int ChildCount {
             get {
@@ -36,7 +35,6 @@ namespace GentlyUI.UIElements {
             base.OnInitialize();
 
             highlight.HideContainer(true);
-            acceptedType = typeof(GMDraggable);
         }
 
         protected override void OnEnable() {
@@ -51,15 +49,12 @@ namespace GentlyUI.UIElements {
             activeDropzones.Remove(this);
         }
 
-        public virtual void Setup<T>() where T : GMDraggable {
-            acceptedType = typeof(T);
-        }
-
         public void Tick(float unscaledDeltaTime) {
+            //Current drag target changed
             if (currentDragTarget != GMDraggable.currentDraggedElement) {
                 currentDragTarget = GMDraggable.currentDraggedElement;
 
-                if (ShouldHighlight()) {
+                if (CheckIfDropIsAllowed()) {
                     highlight.ShowContainer();
                 } else {
                     highlight.HideContainer();
@@ -67,28 +62,22 @@ namespace GentlyUI.UIElements {
             }
         }
 
-        bool ShouldHighlight() {
-            return currentDragTarget != null && acceptedType != null && currentDragTarget.GetComponent(acceptedType) != null;
+        protected virtual bool CheckIfDropIsAllowed() {
+            if (currentDragTarget != null) {
+                isDropAllowed = true;
+            } else {
+                isDropAllowed = false;
+            }
+
+            return isDropAllowed;
         }
 
         public void OnDrop(PointerEventData eventData) {
-            if (acceptedType == null || (maxElements > 0 && ChildCount == maxElements)) {
+            if (maxElements > 0 && ChildCount == maxElements) {
                 return;
             }
 
-            GMDraggable droppedElement;
-
-            //Check if we have a drag dummy
-            GMDragDummy dragDummy = eventData.pointerDrag.GetComponent<GMDragDummy>();
-            if (dragDummy != null) {
-                droppedElement = dragDummy.Origin;
-            } else {
-                droppedElement = eventData.pointerDrag.GetComponent(acceptedType) as GMDraggable;
-            }
-
-            if (droppedElement != null) {
-                OnDrop(droppedElement);
-            }            
+            OnDrop(currentDragTarget);
         }
 
         public virtual void OnDrop(GMDraggable droppedElement) {
