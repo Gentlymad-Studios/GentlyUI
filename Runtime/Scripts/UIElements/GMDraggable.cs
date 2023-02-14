@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 namespace GentlyUI.UIElements {
     [RequireComponent(typeof(CanvasGroup))]
-    public class GMDraggable : GMSelectableStyled, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler {
+    public class GMDraggable : UIBase, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler, IUITickable {
         /// <summary>
         /// Defines whether we drag a clone of the ui element or if we drag the actual ui element.
         /// </summary>
@@ -143,9 +143,7 @@ namespace GentlyUI.UIElements {
             }
         }
 
-        public override void Tick(float unscaledDeltaTime) {
-            base.Tick(unscaledDeltaTime);
-
+        public virtual void Tick(float unscaledDeltaTime) {
             if (dragState == DragState.Returning) {
                 //If we are close enough to our return position we have arrived.
                 if (Vector3.Distance(currentDragTarget.position, returnPosition) <= 0.1f) {
