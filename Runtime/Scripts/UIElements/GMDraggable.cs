@@ -36,15 +36,6 @@ namespace GentlyUI.UIElements {
             }
         }
 
-        //Canvas
-        private Canvas canvas;
-        private Canvas Canvas {
-            get {
-                if (canvas == null) canvas = RectTransform.GetComponentInParent<Canvas>();
-                return canvas;
-            }
-        }
-
         public enum DragState {
             Idle = 0,
             Dragging = 1,
@@ -157,7 +148,7 @@ namespace GentlyUI.UIElements {
         }
 
         void CreateDragDummy() {
-            currentDragTarget = Instantiate(dragDummy, Canvas.transform, false).transform as RectTransform;
+            currentDragTarget = Instantiate(dragDummy, transform.root, false).transform as RectTransform;
             CanvasGroup canvasGroup = currentDragTarget.gameObject.GetOrAddComponent<CanvasGroup>();
             canvasGroup.alpha = 0.5f;
             canvasGroup.blocksRaycasts = false;
@@ -172,7 +163,7 @@ namespace GentlyUI.UIElements {
             } else {
                 CreatePlaceholder();
 
-                RectTransform.SetParent(Canvas.transform, true);
+                RectTransform.SetParent(transform.root, true);
                 //Canvas group
                 CanvasGroup.alpha = 0.5f;
                 CanvasGroup.blocksRaycasts = false;
