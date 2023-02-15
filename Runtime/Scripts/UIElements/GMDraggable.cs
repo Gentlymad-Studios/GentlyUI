@@ -21,6 +21,11 @@ namespace GentlyUI.UIElements {
         /// </summary>
         [Tooltip("(Optional) Assign a UI prefab that will be spawned as drag visuals.")]
         [SerializeField] private GameObject dragDummy;
+        /// <summary>
+        /// Defines whether this draggable should be reparented if dropped on a valid dropzone.
+        /// Disable this if you want to have custom update logic on the dropzone.
+        /// </summary>
+        public bool reparentOnDrop = true;
 
         private RectTransform currentPlaceholder;
         private RectTransform currentDragTarget;
@@ -213,7 +218,7 @@ namespace GentlyUI.UIElements {
         }
 
         void ResetDragData() {
-            if (RectTransform.parent != returnParent) {
+            if (reparentOnDrop && RectTransform.parent != returnParent) {
                 RectTransform.SetParent(returnParent, false);
                 RectTransform.localPosition = returnParent.rect.center;
                 RectTransform.localScale = Vector3.one;
