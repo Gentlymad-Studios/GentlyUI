@@ -24,7 +24,16 @@ namespace GentlyUI.UIElements {
         /// </summary>
         [Tooltip("Defines if children will try to align horizontal or vertical for uneven counts.")]
         [SerializeField] protected Axis startAxis = Axis.Horizontal;
-        public Axis StartAxis { get { return startAxis; } set { SetProperty(ref startAxis, value); } }
+        public Axis StartAxis {
+            get {
+                if (layoutConstraints == LayoutConstraints.Uniform) {
+                    return startAxis;
+                } else {
+                    return Axis.Horizontal;
+                }
+            }
+            set { SetProperty(ref startAxis, value); }
+        }
         /// <summary>
         /// Defines whether all elements should adjust their width to fit into their parent.
         /// </summary>
@@ -53,6 +62,8 @@ namespace GentlyUI.UIElements {
         public override void CalculateLayoutInputHorizontal() {
             base.CalculateLayoutInputHorizontal();
 
+            int childCount = rectChildren.Count;
+
             if (transform.parent != null) {
                 parentLayout = transform.parent.GetComponent<LayoutGroup>();
             }
@@ -73,13 +84,13 @@ namespace GentlyUI.UIElements {
             }
 
             if (layoutConstraints == LayoutConstraints.Uniform) {
-                float sqrRt = Mathf.Sqrt(rectChildren.Count);
+                float sqrRt = Mathf.Sqrt(childCount);
                 rows = Mathf.RoundToInt(sqrRt);
                 columns = Mathf.CeilToInt(sqrRt);
             } else if (layoutConstraints == LayoutConstraints.FixedColumns) {
-                rows = Mathf.CeilToInt(rectChildren.Count / (float)columns);
+                rows = Mathf.CeilToInt(childCount / (float)columns);
             } else if (layoutConstraints == LayoutConstraints.FixedRows) {
-                columns = Mathf.CeilToInt(rectChildren.Count / (float)rows);
+                columns = Mathf.CeilToInt(childCount / (float)rows);
             }
 
             //Make sure columns and rows is at least 1
@@ -98,24 +109,27 @@ namespace GentlyUI.UIElements {
             int columnCount = 0;
             int rowCount = 0;
 
+            int actualColumns = Mathf.Min(childCount, columns);
+            int actualRows = Mathf.Min(childCount, rows);
+
             int cornerX = ((int)childAlignment + 1) % 3;
             int cornerY = Mathf.FloorToInt((int)childAlignment / 6);
 
-            float requiredSpaceX = columns * cellWidth + (columns - 1) * spacing.x;
-            float requiredSpaceY = rows * cellHeight + (rows - 1) * spacing.y;
+            float requiredSpaceX = actualColumns * cellWidth + (actualColumns - 1) * spacing.x;
+            float requiredSpaceY = actualRows * cellHeight + (actualRows - 1) * spacing.y;
 
             Vector2 startOffset = new Vector2(
                 GetStartOffset(0, requiredSpaceX),
                 GetStartOffset(1, requiredSpaceY)
             );
 
-            for (int i = 0, count = rectChildren.Count; i < count; ++i) {
-                if (startAxis == Axis.Horizontal) {
-                    rowCount = i / columns;
+            for (int i = 0; i < childCount; ++i) {
+                if (StartAxis == Axis.Horizontal) {
+                    rowCount = Mathf.FloorToInt(i / (float)columns);
                     columnCount = i % columns;
                 } else {
                     rowCount = i % columns;
-                    columnCount = i / columns;
+                    columnCount = Mathf.FloorToInt(i / (float)columns);
                 }
 
                 RectTransform item = rectChildren[i];
@@ -155,8 +169,8 @@ namespace GentlyUI.UIElements {
             }
         }
 
-        public override void SetLayoutVertical() {}
-        public override void SetLayoutHorizontal() {}
+        public override void SetLayoutVertical() { }
+        public override void SetLayoutHorizontal() { }
 
         protected override void OnRectTransformDimensionsChange() {
             base.OnRectTransformDimensionsChange();
