@@ -255,5 +255,13 @@ namespace GentlyUI.UIElements {
         public void SetTargetDropzone(GMDropzone dropzone) {
             targetDropZone = dropzone;
         }
+
+        /// <summary>
+        /// Allows to set a prefab that is displayed while dragging.
+        /// </summary>
+        /// <param name="dragDummy">The prefab.</param>
+        public void SetDragDummy(GameObject dragDummy) {
+            this.dragDummy = dragDummy;
+        }
     }
 }
