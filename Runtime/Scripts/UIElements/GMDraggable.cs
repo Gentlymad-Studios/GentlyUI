@@ -78,7 +78,7 @@ namespace GentlyUI.UIElements {
 
         public virtual void OnEndDrag(PointerEventData eventData) {
             //If we are already in idle mode dragging was ended from outside
-            if(dragState == DragState.Idle) {
+            if (dragState == DragState.Idle) {
                 return;
             }
 
@@ -101,7 +101,7 @@ namespace GentlyUI.UIElements {
         void SetDragState(DragState state) {
             dragState = state;
 
-            switch(dragState) {
+            switch (dragState) {
                 case DragState.Idle:
                     ResetDragData();
                     break;
@@ -155,6 +155,8 @@ namespace GentlyUI.UIElements {
 
             //Make original RectTransform the placeholder
             currentPlaceholder = RectTransform;
+            //Callback
+            onDragDummySpawned.Invoke(currentDragTarget.gameObject);
         }
 
         void SetupDragObject() {
@@ -172,7 +174,6 @@ namespace GentlyUI.UIElements {
             }
 
             currentDraggedElement = this;
-            onDragDummySpawned.Invoke(currentDraggedElement.gameObject);
         }
 
         void UpdateDragPosition() {
