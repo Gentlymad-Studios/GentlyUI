@@ -6,40 +6,35 @@ using UnityEngine.Events;
 
 namespace GentlyUI.ModularUI {
     public abstract partial class UIDefinition {
-        protected void AddDropdown(
+        protected GMDropdown AddDropdown(
             int defaultValue, 
             UnityAction<int> onValueChanged, 
-            List<GMDropdown.DropdownOptionData> optionData,
-            System.Action<GMDropdown> onSpawn = null
+            List<GMDropdown.DropdownOptionData> optionData
         ) {
-            AddDropdown(UIManager.UISettings.DefaultDropdown, defaultValue, onValueChanged, optionData, onSpawn);
+            return AddDropdown(UIManager.UISettings.DefaultDropdown, defaultValue, onValueChanged, optionData);
         }
 
-        protected void AddDropdown(
+        protected GMDropdown AddDropdown(
             string dropdownType,
             int defaultValue,
             UnityAction<int> onValueChanged,
-            List<GMDropdown.DropdownOptionData> optionData,
-            System.Action<GMDropdown> onSpawn = null
+            List<GMDropdown.DropdownOptionData> optionData
         ) {
             string path = Path.Join(UIPaths.BasePath, UIPaths.ElementPath, dropdownType);
-            UISpawner<GMDropdown>.RegisterUIForSpawn(path, currentContainer, (GMDropdown d) => {
-                //Set data
-                d.SetOptions(optionData);
-                //Set default value
-                d.SetDefaultValue(defaultValue);
-                //Add new listener
-                d.OnValueChanged.AddListener(onValueChanged);
-                //Cache object
-                CacheUIObject(d.gameObject, () => {
-                    UISpawner<GMDropdown>.RegisterUIForReturn(d);
-                    d.OnValueChanged.RemoveListener(onValueChanged);
-                });
-                //Callback
-                if (onSpawn != null) onSpawn(d);
-            }, currentHierarchyOrder);
+            GMDropdown dropdown = UISpawner<GMDropdown>.SpawnUI(path, currentContainer);
+            //Set data
+            dropdown.SetOptions(optionData);
+            //Set default value
+            dropdown.SetDefaultValue(defaultValue);
+            //Add new listener
+            dropdown.OnValueChanged.AddListener(onValueChanged);
+            //Cache object
+            CacheUIObject(dropdown.gameObject, () => {
+                UISpawner<GMDropdown>.ReturnUI(dropdown);
+                dropdown.OnValueChanged.RemoveListener(onValueChanged);
+            });
 
-            IncrementCurrentHierarchyOrder();
+            return dropdown;
         }
     }
 }

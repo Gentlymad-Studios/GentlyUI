@@ -6,15 +6,14 @@ using UnityEngine.Events;
 
 namespace GentlyUI.ModularUI {
     public abstract partial class UIDefinition {
-        protected void AddText(
+        protected GMTextComponent AddText(
             string text,
-            TextAlignmentOptions alignment,
-            System.Action<GMTextComponent> onSpawn = null
+            TextAlignmentOptions alignment
         ) {
-            AddText(UIManager.UISettings.DefaultText, text, alignment, onSpawn);
+            return AddText(UIManager.UISettings.DefaultText, text, alignment);
         }
 
-        protected void AddText(
+        protected GMTextComponent AddText(
             string textType, 
             string text,
             TextAlignmentOptions alignment,
@@ -22,20 +21,16 @@ namespace GentlyUI.ModularUI {
         ) {
             string path = Path.Join(UIPaths.BasePath, UIPaths.ElementPath, textType);
 
-            UISpawner<GMTextComponent>.RegisterUIForSpawn(path, currentContainer, (GMTextComponent t) => {
-                t.SetText(text);
-                t.alignment = alignment;
+            GMTextComponent textComponent = UISpawner<GMTextComponent>.SpawnUI(path, currentContainer);
+            textComponent.SetText(text);
+            textComponent.alignment = alignment;
 
-                //Cache object
-                CacheUIObject(t.gameObject, () => {
-                    UISpawner<GMTextComponent>.RegisterUIForReturn(t);
-                });
+            //Cache object
+            CacheUIObject(textComponent.gameObject, () => {
+                UISpawner<GMTextComponent>.ReturnUI(textComponent);
+            });
 
-                //Callback
-                if (onSpawn != null) onSpawn(t);
-            }, currentHierarchyOrder);
-
-            IncrementCurrentHierarchyOrder();
+            return textComponent;
         }
     }
 }

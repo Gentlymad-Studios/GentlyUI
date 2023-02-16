@@ -61,7 +61,6 @@ namespace GentlyUI.ModularUI {
         FlexibleGridLayout SpawnGrid(Vector2 spacing, RectOffset padding = null) {
             GameObject gridGO = new GameObject("grid", typeof(RectTransform));
             gridGO.transform.SetParent(currentContainer, false);
-            gridGO.transform.SetSiblingIndex(currentHierarchyOrder);
 
             FlexibleGridLayout flexibleGridLayout = gridGO.AddComponent<FlexibleGridLayout>();
             if (padding != null) {
@@ -75,8 +74,6 @@ namespace GentlyUI.ModularUI {
             flexibleGridRectT.SetOffset(0, 0, 0, 0);
 
             CacheDynamicLayout(gridGO);
-
-            IncrementCurrentHierarchyOrder();
 
             SetCurrentContainer(flexibleGridRectT);
 

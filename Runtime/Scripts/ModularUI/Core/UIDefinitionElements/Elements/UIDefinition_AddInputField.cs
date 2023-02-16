@@ -6,48 +6,44 @@ using UnityEngine.Events;
 
 namespace GentlyUI.ModularUI {
     public abstract partial class UIDefinition {
-        protected void AddInputField(
+        protected GMInputField AddInputField(
             string defaultValue,
             UnityAction<string> onSubmit,
             GMInputField.InputType inputType = GMInputField.InputType.Standard,
             TMP_InputField.CharacterValidation validation = TMP_InputField.CharacterValidation.None,
-            string placeholderText = "",
-            System.Action<GMInputField> onSpawn = null
+            string placeholderText = ""
         ) {
-            AddInputField(UIManager.UISettings.DefaultInputField, defaultValue, onSubmit, inputType, validation, placeholderText, onSpawn);
+            return AddInputField(UIManager.UISettings.DefaultInputField, defaultValue, onSubmit, inputType, validation, placeholderText);
         }
 
-        protected void AddInputField(
+        protected GMInputField AddInputField(
             string inputFieldType, 
             string defaultValue,
             UnityAction<string> onSubmit,
             GMInputField.InputType inputType = GMInputField.InputType.Standard,
             TMP_InputField.CharacterValidation validation = TMP_InputField.CharacterValidation.None,
-            string placeholderText = "",
-            System.Action<GMInputField> onSpawn = null
+            string placeholderText = ""
         ) {
             string path = Path.Join(UIPaths.BasePath, UIPaths.ElementPath, inputFieldType);
 
-            UISpawner<GMInputField>.RegisterUIForSpawn(path, currentContainer, (GMInputField i) => {
-                //Set properties
-                i.SetCharacterValidation(validation);
-                i.SetInputType(inputType);
-                //Set placeholder text
-                if (!string.IsNullOrWhiteSpace(placeholderText)) i.SetPlaceholderText(placeholderText);
-                //Set default text
-                i.Text = defaultValue;
-                //Add listener
-                i.onSubmit.AddListener(onSubmit);
-                //Cache object
-                CacheUIObject(i.gameObject, () => {
-                    UISpawner<GMInputField>.RegisterUIForReturn(i);
-                    i.onSubmit.RemoveListener(onSubmit);
-                });
-                //Callback
-                if (onSpawn != null) onSpawn(i);
-            }, currentHierarchyOrder);
+            GMInputField inputField = UISpawner<GMInputField>.SpawnUI(path, currentContainer);
 
-            IncrementCurrentHierarchyOrder();
+            //Set properties
+            inputField.SetCharacterValidation(validation);
+            inputField.SetInputType(inputType);
+            //Set placeholder text
+            if (!string.IsNullOrWhiteSpace(placeholderText)) inputField.SetPlaceholderText(placeholderText);
+            //Set default text
+            inputField.Text = defaultValue;
+            //Add listener
+            inputField.onSubmit.AddListener(onSubmit);
+            //Cache object
+            CacheUIObject(inputField.gameObject, () => {
+                UISpawner<GMInputField>.ReturnUI(inputField);
+                inputField.onSubmit.RemoveListener(onSubmit);
+            });
+
+            return inputField;
         }
     }
 }

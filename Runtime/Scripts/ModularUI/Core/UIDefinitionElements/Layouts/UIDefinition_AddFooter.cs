@@ -13,10 +13,8 @@ namespace GentlyUI.ModularUI {
             string path = Path.Join(UIPaths.BasePath, UIPaths.LayoutPath, footerType);
 
             //Spawn immediately as layout elements are important for visual consistency.
-            GMFooter footer = UISpawner<GMFooter>.SpawnImmediately(path, currentContainer, currentHierarchyOrder);
-            CacheUIObject(footer.gameObject, () => UISpawner<GMFooter>.ReturnImmediately(footer));
-
-            IncrementCurrentHierarchyOrder();
+            GMFooter footer = UISpawner<GMFooter>.SpawnUI(path, currentContainer);
+            CacheUIObject(footer.gameObject, () => UISpawner<GMFooter>.ReturnUI(footer));
 
             return footer;
         }
