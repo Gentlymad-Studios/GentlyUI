@@ -72,7 +72,7 @@ namespace GentlyUI {
         public void SpawnCanvas(string identifier) {
             if (!canvasLUT.ContainsKey(identifier)) {
                 CanvasData cd = UISettings.GetCanvasData(identifier);
-                Canvas canvas = UISpawner<Canvas>.SpawnImmediately(cd.pathToCanvas, null, 0);
+                Canvas canvas = UISpawner<Canvas>.SpawnUI(cd.pathToCanvas, null);
                 OnCanvasSpawned(canvas, identifier);
             }
         }

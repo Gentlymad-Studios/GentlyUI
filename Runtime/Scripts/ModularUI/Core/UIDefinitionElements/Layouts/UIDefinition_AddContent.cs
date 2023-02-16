@@ -14,10 +14,8 @@ namespace GentlyUI.ModularUI {
             string path = Path.Join(UIPaths.BasePath, UIPaths.LayoutPath, contentType);
 
             //Spawn immediately as content is needed to nest other prefabs in it
-            GMContent content = UISpawner<GMContent>.SpawnImmediately(path, currentContainer, currentHierarchyOrder);
-            CacheUIObject(content.gameObject, () => UISpawner<GMContent>.ReturnImmediately(content));
-
-            IncrementCurrentHierarchyOrder();
+            GMContent content = UISpawner<GMContent>.SpawnUI(path, currentContainer);
+            CacheUIObject(content.gameObject, () => UISpawner<GMContent>.ReturnUI(content));
 
             SetCurrentContainer(content.container);
 

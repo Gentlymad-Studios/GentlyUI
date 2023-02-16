@@ -2,6 +2,7 @@ using GentlyUI.UIElements;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Pool;
 
 namespace GentlyUI.ModularUI {
     public abstract partial class UIDefinition {
@@ -18,19 +19,18 @@ namespace GentlyUI.ModularUI {
         /// </summary>
         protected GMToggleGroup currentToggleGroup;
         /// <summary>
-        /// The current hierarchy order in the current container at which the next ui element will be spawned
-        /// </summary>
-        protected int currentHierarchyOrder = 0;
-        /// <summary>
         /// Cache for objects and their return actions once the definition is disposed.
         /// </summary>
-        private Dictionary<GameObject, Action> uiObjects = new Dictionary<GameObject, Action>();
+        private Dictionary<GameObject, Action> uiObjects;
         /// <summary>
         /// A list of dynamic layouts that will all be destroyed when the definition is dispoed.
         /// </summary>
-        private List<GameObject> dynamicLayouts = new List<GameObject>();
+        private List<GameObject> dynamicLayouts;
 
         public UIDefinition(UIDefinitionContainer container, object data = null) {
+            dynamicLayouts = ListPool<GameObject>.Get();
+            uiObjects = DictionaryPool<GameObject, Action>.Get();
+
             rootContainer = container;
             SetCurrentContainer(rootContainer.RectTransform);
             //Call Pre Create UI
@@ -60,8 +60,6 @@ namespace GentlyUI.ModularUI {
                 ui.Value();
             }
 
-            uiObjects.Clear();
-
             for (int i = 0, count = dynamicLayouts.Count; i < count; ++i) {
                 GameObject layout = dynamicLayouts[i];
                 layout.transform.DetachChildren();
@@ -69,6 +67,10 @@ namespace GentlyUI.ModularUI {
             }
 
             dynamicLayouts.Clear();
+            uiObjects.Clear();
+
+            ListPool<GameObject>.Release(dynamicLayouts);
+            DictionaryPool<GameObject, Action>.Release(uiObjects);
 
             OnDispose();
         }
@@ -78,39 +80,21 @@ namespace GentlyUI.ModularUI {
         /// </summary>
         public virtual void OnDispose() { }
 
-        private Dictionary<RectTransform, int> hierarchyOrderLUT = new Dictionary<RectTransform, int>();
-
         protected void SetCurrentContainer(RectTransform container) {
-            //Cache hierarchy order of current container
-            if (currentContainer != null) {
-                hierarchyOrderLUT[currentContainer] = currentHierarchyOrder;
-            }
 
             currentContainer = container;
 
             //Set current toggle group if the container has one.
             //It is allowed to set currentToggleGroup to null if no toggle group component can be found on the container.
             currentToggleGroup = currentContainer.GetComponent<GMToggleGroup>();
-
-            if (hierarchyOrderLUT.ContainsKey(container)) {
-                currentHierarchyOrder = hierarchyOrderLUT[container];    
-            } else {
-                hierarchyOrderLUT.Add(container, 0);
-                currentHierarchyOrder = 0;
-            }
         }
 
         protected  void LeaveCurrentContainer() {
             currentToggleGroup = null;
 
             if (currentContainer != rootContainer) {
-                hierarchyOrderLUT.Remove(currentContainer);
                 SetCurrentContainer(currentContainer.transform.parent as RectTransform);
             }
-        }
-
-        protected void IncrementCurrentHierarchyOrder() {
-            ++currentHierarchyOrder;
         }
 
         /// <summary>

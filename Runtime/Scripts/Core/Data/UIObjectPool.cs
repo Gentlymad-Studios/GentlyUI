@@ -91,8 +91,7 @@ namespace GentlyUI.Core {
                 activeCount -= 1;
 
                 onReturn?.Invoke(instance);
-                //instance.transform.SetParent(null);
-                instance.gameObject.SetActive(false);
+                instance.transform.SetParent(null, true);
 
                 if (instance is IPooledUIResetter resetter) {
                     resetter.ResetPooledUI();

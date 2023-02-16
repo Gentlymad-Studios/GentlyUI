@@ -15,16 +15,14 @@ namespace GentlyUI.ModularUI {
         ) where T : Behaviour {
             string path = Path.Join(UIPaths.BasePath, UIPaths.ElementPath, UIManager.UISettings.DefaultPooledScrollView);
 
-            GMPooledScrollView pooledScrollView = UISpawner<GMPooledScrollView>.SpawnImmediately(path, currentContainer, currentHierarchyOrder);
+            GMPooledScrollView pooledScrollView = UISpawner<GMPooledScrollView>.SpawnUI(path, currentContainer);
             //Cache object
             CacheUIObject(pooledScrollView.gameObject, () => {
                 pooledScrollView.Dispose();
-                UISpawner<GMPooledScrollView>.ReturnImmediately(pooledScrollView);
+                UISpawner<GMPooledScrollView>.ReturnUI(pooledScrollView);
             });
             //Initialize scrollView
             pooledScrollView.Initialize<T>(scrollViewItemPrefab, dataList.Count, onUpdateItem, onReturnItem);
-
-            IncrementCurrentHierarchyOrder();
 
             return pooledScrollView;
         }

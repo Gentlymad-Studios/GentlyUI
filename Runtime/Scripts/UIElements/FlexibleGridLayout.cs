@@ -64,15 +64,8 @@ namespace GentlyUI.UIElements {
 
             int childCount = rectChildren.Count;
 
-            if (transform.parent != null) {
-                parentLayout = transform.parent.GetComponent<LayoutGroup>();
-            }
-
             if (fillWidth) {
-                RectTransform parent = transform.parent as RectTransform;
-                float _parentWidth = parent.GetSize().x;
-                if (parentLayout != null) _parentWidth -= parentLayout.padding.left + parentLayout.padding.right;
-                SetLayoutInputForAxis(_parentWidth, _parentWidth, -1, 0);
+                SetLayoutInputForAxis(GetTotalMinSize(0), GetTotalPreferredSize(0), -1, 0);
             } else {
                 int minColumns = columns;
                 int preferredColumns = columns;

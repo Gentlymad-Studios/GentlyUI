@@ -25,6 +25,7 @@ namespace GentlyUI.UIElements {
         /// Defines whether this draggable should be reparented if dropped on a valid dropzone.
         /// Disable this if you want to have custom update logic on the dropzone.
         /// </summary>
+        [Tooltip("Defines whether this draggable should be reparented if dropped on a valid dropzone.\r\nDisable this if you want to have custom update logic on the dropzone.")]
         public bool reparentOnDrop = true;
 
         private RectTransform currentPlaceholder;

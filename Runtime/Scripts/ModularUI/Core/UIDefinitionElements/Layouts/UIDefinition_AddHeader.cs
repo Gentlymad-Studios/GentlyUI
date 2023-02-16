@@ -13,11 +13,9 @@ namespace GentlyUI.ModularUI {
             string path = Path.Join(UIPaths.BasePath, UIPaths.LayoutPath, headerType);
 
             //Spawn immediately as layout elements are important for visual consistency.
-            GMHeader header = UISpawner<GMHeader>.SpawnImmediately(path, currentContainer, currentHierarchyOrder);
+            GMHeader header = UISpawner<GMHeader>.SpawnUI(path, currentContainer);
             header.SetTitle(title);
-            CacheUIObject(header.gameObject, () => UISpawner<GMHeader>.ReturnImmediately(header));
-
-            IncrementCurrentHierarchyOrder();
+            CacheUIObject(header.gameObject, () => UISpawner<GMHeader>.ReturnUI(header));
 
             return header;
         }
