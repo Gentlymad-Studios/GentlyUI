@@ -11,6 +11,7 @@ namespace GentlyUI.ModularUI {
             MonoBehaviour scrollViewItemPrefab,
             IList dataList,
             Action<Behaviour, int> onUpdateItem,
+            int columns = 1,
             Action<Behaviour> onReturnItem = null
         ) where T : Behaviour {
             string path = Path.Join(UIPaths.BasePath, UIPaths.ElementPath, UIManager.UISettings.DefaultPooledScrollView);
@@ -21,6 +22,8 @@ namespace GentlyUI.ModularUI {
                 pooledScrollView.Dispose();
                 UISpawner<GMPooledScrollView>.ReturnUI(pooledScrollView);
             });
+            //Set columns before initializing
+            pooledScrollView.ItemContainer.columns = columns;
             //Initialize scrollView
             pooledScrollView.Initialize<T>(scrollViewItemPrefab, dataList.Count, onUpdateItem, onReturnItem);
 
