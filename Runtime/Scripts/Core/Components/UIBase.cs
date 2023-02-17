@@ -67,11 +67,11 @@ namespace GentlyUI.Core {
         /// <summary>
         /// Sets the gameobject of this ui to active = true.
         /// </summary>
-        public void Enable() {
+        public virtual void Enable() {
             gameObject.SetActive(true);
         }
 
-        public void Disable() {
+        public virtual void Disable() {
             gameObject.SetActive(false);
         }
     }
