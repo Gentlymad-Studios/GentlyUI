@@ -3,10 +3,10 @@ using Uween;
 using UnityEngine;
 using static GentlyUI.UIElements.GMAnimatable;
 using System.Collections.Generic;
+using System.Collections;
 
 namespace GentlyUI.UIElements {
-    public class GMAnimatedContainer : UIBase
-    {
+    public class GMAnimatedContainer : UIBase {
         /// <summary>
         /// The animation state for when the container is shown.
         /// </summary>
@@ -69,12 +69,6 @@ namespace GentlyUI.UIElements {
             animatedContainerInitialized = true;
         }
 
-        protected override void OnDisable() {
-            SetState(state, true);
-
-            base.OnDisable();
-        }
-
         public enum ContainerState {
             Show = 0,
             Hide = 1
@@ -88,7 +82,7 @@ namespace GentlyUI.UIElements {
 
         public void HideContainer(bool setImmediately = false) {
             SetState(ContainerState.Hide, setImmediately);
-        }   
+        }
 
         public void SkipTransition() {
             if (TransitionRunning) {
@@ -110,7 +104,7 @@ namespace GentlyUI.UIElements {
 
             SetState(state, true);
         }
-        
+
         void SetState(ContainerState state, bool setImmediately = false) {
 #if UNITY_EDITOR
             if (UIManager.Instance.EDITOR_SkipAllTransitions) {
@@ -138,6 +132,8 @@ namespace GentlyUI.UIElements {
         }
 
         void SetFinalVisualState() {
+            UIManager.Instance.StopCoroutine(DeactivateDelayed());
+
             //Get State
             GMAnimatedContainerState state = GetCurrentState();
 
@@ -208,15 +204,21 @@ namespace GentlyUI.UIElements {
 
             //Longest tween callback
             if (longestTween != null) {
-                if (!state.ShowContainer) {
-                    longestTween.OnComplete += () => gameObject.SetActive(false);
-                }
-
+                //Add the end of state callback first so that it is triggered before the object is deactivated
                 longestTween.OnComplete += TriggerEndOfStateCallback;
+
+                if (!state.ShowContainer) {
+                    longestTween.OnComplete += () => UIManager.Instance.StartCoroutine(DeactivateDelayed());
+                }
             }
 
             transitionRunning = true;
             runningTransitions.Add(this);
+        }
+
+        IEnumerator DeactivateDelayed() {
+            yield return new WaitForEndOfFrame();
+            gameObject.SetActive(false);
         }
 
         void TriggerEndOfStateCallback() {
@@ -273,7 +275,7 @@ namespace GentlyUI.UIElements {
         private Vector3 positionOffsetCache = Vector3.zero;
         public Vector3 PositionOffset {
             get {
-                if (positionOffsetCache.x != positionOffset.x ||positionOffsetCache.y != positionOffset.y) {
+                if (positionOffsetCache.x != positionOffset.x || positionOffsetCache.y != positionOffset.y) {
                     positionOffsetCache = new Vector3(positionOffset.x, positionOffset.y, 0);
                 }
                 return positionOffsetCache;

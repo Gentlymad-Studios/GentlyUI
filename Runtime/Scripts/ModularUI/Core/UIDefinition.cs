@@ -13,7 +13,7 @@ namespace GentlyUI.ModularUI {
         /// <summary>
         /// The current container elements are spawned into. This could change e.g. if a content ui was spawned.
         /// </summary>
-        protected  RectTransform currentContainer;
+        protected RectTransform currentContainer;
         /// <summary>
         /// If the current container is a toggle group it will be cached here.
         /// </summary>
@@ -48,15 +48,21 @@ namespace GentlyUI.ModularUI {
         /// <summary>
         /// Called after the UI was created.
         /// </summary>
-        public virtual void PostCreateUI(object dada = null) { }
+        public virtual void PostCreateUI(object data = null) { }
+
+        /// <summary>
+        /// Send a data object to this ui definition e.g. to update it without respawning.
+        /// </summary>
+        /// <param name="data"></param>
+        public virtual void BroadcastData(object data) { }
 
         /// <summary>
         /// Creates the UI within the passed container.
         /// </summary>
         public abstract void CreateUI(object data = null);
 
-        public void DisposeUI() { 
-            foreach(KeyValuePair<GameObject, Action> ui in uiObjects) {
+        public void DisposeUI() {
+            foreach (KeyValuePair<GameObject, Action> ui in uiObjects) {
                 ui.Value();
             }
 
@@ -65,9 +71,6 @@ namespace GentlyUI.ModularUI {
                 layout.transform.DetachChildren();
                 GameObject.Destroy(layout.gameObject);
             }
-
-            dynamicLayouts.Clear();
-            uiObjects.Clear();
 
             ListPool<GameObject>.Release(dynamicLayouts);
             DictionaryPool<GameObject, Action>.Release(uiObjects);
@@ -89,7 +92,7 @@ namespace GentlyUI.ModularUI {
             currentToggleGroup = currentContainer.GetComponent<GMToggleGroup>();
         }
 
-        protected  void LeaveCurrentContainer() {
+        protected void LeaveCurrentContainer() {
             currentToggleGroup = null;
 
             if (currentContainer != rootContainer) {

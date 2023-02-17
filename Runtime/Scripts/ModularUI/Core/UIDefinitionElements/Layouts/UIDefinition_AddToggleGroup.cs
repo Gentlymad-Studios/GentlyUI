@@ -10,12 +10,20 @@ namespace GentlyUI.ModularUI {
             return AddToggleGroup(DefaultToggleGroup, allowSwitchOff);
         }
 
+        /// <summary>
+        /// Cache of allowSwitchOff for current toggle group that is applied after the toggle group was ended using EndToggleGroup();
+        /// This is because we want to add toggles to the toggle group from definitions without having the toggle group to activate them by its default behaviour.
+        /// </summary>
+        private bool _allowSwitchOff;
+
         protected GMToggleGroup AddToggleGroup(string contentType, bool allowSwitchOff = false) {
             string path = Path.Join(UIPaths.BasePath, UIPaths.LayoutPath, contentType);
 
+            _allowSwitchOff = allowSwitchOff;
+
             //Spawn immediately as content is needed to nest other prefabs in it
             GMToggleGroup toggleGroup = UISpawner<GMToggleGroup>.SpawnUI(path, currentContainer);
-            toggleGroup.allowSwitchOff = allowSwitchOff;
+            toggleGroup.allowSwitchOff = true;
             CacheUIObject(toggleGroup.gameObject, () => UISpawner<GMToggleGroup>.ReturnUI(toggleGroup));
 
             SetCurrentContainer(toggleGroup.container);
@@ -24,6 +32,8 @@ namespace GentlyUI.ModularUI {
         }
 
         protected void EndToggleGroup() {
+            currentToggleGroup.allowSwitchOff = _allowSwitchOff;
+
             LeaveCurrentContainer();
         }
     }

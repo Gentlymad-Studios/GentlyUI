@@ -10,7 +10,7 @@ using static GentlyUI.UIElements.GMAnimatable;
 
 namespace GentlyUI.UIElements {
     [AddComponentMenu("GentlyUI/Selectable", 0)]
-    public class GMSelectable : UIBase , IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler, IUITickable {
+    public class GMSelectable : UIBase, IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler, IUITickable {
         /// <summary>
         /// List of all the selectable objects currently active in the scene.
         /// <para>Example: Use this list for handling navigation events instead of getting all objects with component Selectable in the scene.</para>
@@ -75,6 +75,8 @@ namespace GentlyUI.UIElements {
 
             //Add to global list of selectables
             allSelectables.Add(this);
+
+            UpdateVisualState(true);
         }
 
         protected override void OnDisable() {
@@ -113,7 +115,7 @@ namespace GentlyUI.UIElements {
             //Stop looping through parents if any canvas group tells us to ignore parent groups.
             while (t != null) {
                 t.GetComponents(canvasGroupCache);
-                
+
                 for (int i = 0, count = canvasGroupCache.Count; i < count; ++i) {
                     CanvasGroup currentGroup = canvasGroupCache[i];
                     interactionAllowed = currentGroup.interactable;
@@ -193,7 +195,7 @@ namespace GentlyUI.UIElements {
             else
 #endif
 
-            UpdateVisualState();
+                UpdateVisualState();
         }
 
         public virtual void OnPointerDown(PointerEventData eventData) {
@@ -317,7 +319,7 @@ namespace GentlyUI.UIElements {
                 Initialize(RootSelectable);
             }
 
-            if (state == currentState && !setImmediately) 
+            if (state == currentState && !setImmediately)
                 return;
 
             stateData = GetStateData(state);
@@ -337,7 +339,7 @@ namespace GentlyUI.UIElements {
         }
 
         VisualStateData GetStateData(VisualState state) {
-            switch(state) {
+            switch (state) {
                 case VisualState.Default:
                     return defaultState;
                 case VisualState.Hovered:
