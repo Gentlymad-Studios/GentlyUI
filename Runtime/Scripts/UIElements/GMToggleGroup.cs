@@ -114,6 +114,16 @@ namespace GentlyUI.UIElements {
                 if (activeToggle != null && toggles.Contains(activeToggle)) {
                     activeToggle.IsOn = true;
                 } else {
+                    for (int i = 0, count = toggles.Count; i < count; ++i) {
+                        GMToggle _toggle = toggles[i];
+                        if (_toggle.IsOn) {
+                            //Notify toggle on if a toggle is already active
+                            NotifyToggleOn(_toggle);
+                            return;
+                        }
+                    }
+
+                    //Fallback. Activate first toggle
                     toggles[0].IsOn = true;
                 }
             }
