@@ -113,13 +113,7 @@ namespace GentlyUI.UIElements {
                     ResetDragData();
                     break;
                 case DragState.Returning:
-                    //Set return parent if there is none
-                    if (returnParent == null) {
-                        returnPosition = currentPlaceholder.TransformPoint(currentPlaceholder.rect.center);
-                        SetReturnParent(currentPlaceholder.parent as RectTransform);
-                    } else {
-                        returnPosition = returnParent.TransformPoint(returnParent.rect.center);
-                    }
+                    returnPosition = returnParent.TransformPoint(returnParent.rect.center);
                     //Calculate return speed
                     float returnDistance = Vector3.Distance(currentDragTarget.position, returnPosition);
                     returnSpeed = returnDistance / returnDuration;
@@ -227,8 +221,6 @@ namespace GentlyUI.UIElements {
                 RectTransform.localScale = Vector3.one;
                 RectTransform.SetSiblingIndex(currentPlaceholder.GetSiblingIndex());
             }
-            //Reset return parent
-            returnParent = null;
             //Canvas group
             CanvasGroup.alpha = 1f;
             CanvasGroup.blocksRaycasts = true;
