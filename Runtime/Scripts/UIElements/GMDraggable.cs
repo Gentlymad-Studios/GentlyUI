@@ -137,12 +137,12 @@ namespace GentlyUI.UIElements {
                 } else {
                     currentDragTarget.position = Vector3.MoveTowards(currentDragTarget.position, returnPosition, unscaledDeltaTime * returnSpeed);
                 }
+                UpdateScale();
             } else if (dragState == DragState.Dragging) {
                 UpdateDragPosition();
-            }
-
-            if (dragState != DragState.Idle) {
                 UpdateScale();
+            } else if (dragState == DragState.Idle) {
+                canvasGroup.blocksRaycasts = currentDraggedElement == null;
             }
         }
 
