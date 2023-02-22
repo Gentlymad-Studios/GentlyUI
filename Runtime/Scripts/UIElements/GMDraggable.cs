@@ -131,16 +131,17 @@ namespace GentlyUI.UIElements {
 
         public virtual void Tick(float unscaledDeltaTime) {
             if (dragState == DragState.Returning) {
+                UpdateScale();
+
                 //If we are close enough to our return position we have arrived.
                 if (Vector3.Distance(currentDragTarget.position, returnPosition) <= 0.1f) {
                     SetDragState(DragState.Idle);
                 } else {
                     currentDragTarget.position = Vector3.MoveTowards(currentDragTarget.position, returnPosition, unscaledDeltaTime * returnSpeed);
                 }
-                UpdateScale();
             } else if (dragState == DragState.Dragging) {
-                UpdateDragPosition();
                 UpdateScale();
+                UpdateDragPosition();
             } else if (dragState == DragState.Idle) {
                 canvasGroup.blocksRaycasts = currentDraggedElement == null;
             }
