@@ -73,9 +73,6 @@ namespace GentlyUI.UIElements {
         }
 
         public virtual void OnBeginDrag(PointerEventData eventData) {
-            SetupDragObject();
-            //Initial update position to pointer
-            UpdateDragPosition();
             //Set state
             SetDragState(DragState.Dragging);
         }
@@ -85,17 +82,12 @@ namespace GentlyUI.UIElements {
         }
 
         public virtual void OnEndDrag(PointerEventData eventData) {
-            //If we are already in idle mode dragging was ended from outside
-            if (dragState == DragState.Idle) {
-                return;
-            }
-
             //Set state to returning
             SetDragState(DragState.Returning);
         }
 
         public void OnPointerClick(PointerEventData eventData) {
-            if (targetDropZone == null) {
+            if (targetDropZone == null || currentDraggedElement != null) {
                 return;
             }
 
@@ -118,6 +110,11 @@ namespace GentlyUI.UIElements {
                     //Calculate return speed
                     float returnDistance = Vector3.Distance(currentDragTarget.position, returnPosition);
                     returnSpeed = returnDistance / returnDuration;
+                    break;
+                case DragState.Dragging:
+                    SetupDragObject();
+                    //Initial update position to pointer
+                    UpdateDragPosition();
                     break;
                 default:
                     break;
