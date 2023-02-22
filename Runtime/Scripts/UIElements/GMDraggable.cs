@@ -49,6 +49,7 @@ namespace GentlyUI.UIElements {
         }
 
         private DragState dragState;
+        public DragState CurrentDragState => dragState;
 
         /// <summary>
         /// The parent this element will snap to when drag ends.

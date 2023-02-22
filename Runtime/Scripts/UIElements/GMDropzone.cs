@@ -61,6 +61,12 @@ namespace GentlyUI.UIElements {
                 } else {
                     highlight.HideContainer();
                 }
+            } else if (currentDragTarget != null) {
+                if (currentDragTarget.CurrentDragState != GMDraggable.DragState.Dragging) {
+                    isDropAllowed = false;
+                    highlight.HideContainer();
+                    currentDragTarget = null;
+                }
             }
         }
 
