@@ -107,6 +107,17 @@ namespace GentlyUI.ModularUI {
             uiObjects.Add(go, returnAction);
         }
 
+        /// <summary>
+        /// Removes a ui element that was previously spawned in this definition.
+        /// </summary>
+        /// <param name="go"></param>
+        protected void RemoveUIElement(GameObject go) {
+            if (uiObjects.ContainsKey(go)) {
+                uiObjects[go].Invoke();
+                uiObjects.Remove(go);
+            }
+        }
+
         protected void CacheDynamicLayout(GameObject go) {
             dynamicLayouts.Add(go);
         }
