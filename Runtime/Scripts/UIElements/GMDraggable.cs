@@ -54,6 +54,7 @@ namespace GentlyUI.UIElements {
         /// The parent this element will snap to when drag ends.
         /// </summary>
         private RectTransform returnParent;
+        public RectTransform Origin => returnParent;
         private Vector3 returnPosition;
         private float returnSpeed;
 

@@ -65,7 +65,7 @@ namespace GentlyUI.UIElements {
         }
 
         protected virtual bool CheckIfDropIsAllowed() {
-            if (currentDragTarget != null) {
+            if (currentDragTarget != null && currentDragTarget.Origin != DropContainer) {
                 return true;
             } else {
                 return false;
