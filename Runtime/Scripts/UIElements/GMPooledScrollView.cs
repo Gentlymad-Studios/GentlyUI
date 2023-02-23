@@ -108,6 +108,8 @@ namespace GentlyUI.UIElements {
 
         private Dictionary<GameObject, UIObjectPool<Behaviour>> poolCache = new Dictionary<GameObject, UIObjectPool<Behaviour>>();
 
+        private Coroutine waitForLayoutCompleteRoutine;
+
         void UpdateItemPool() {
             UIObjectPool<Behaviour> newPool;
 
@@ -128,13 +130,14 @@ namespace GentlyUI.UIElements {
             }
         }
 
-        private float defaultPreferredHeight = 100f;
+        private float defaultPreferredHeight = 200;
+
         private LayoutElement layoutElement;
         private LayoutElement LayoutElement {
             get {
                 if (layoutElement == null) {
                     layoutElement = gameObject.GetOrAddComponent<LayoutElement>();
-                    defaultPreferredHeight = layoutElement.preferredHeight;
+                    layoutElement.preferredHeight = Mathf.Max(defaultPreferredHeight, layoutElement.preferredHeight);
                 }
                 return layoutElement;
             }
@@ -152,12 +155,13 @@ namespace GentlyUI.UIElements {
         private float rowHeight;
         private float normalizedTargetPosition;
 
-        private bool wasSetupWhileDisabled = false;
         private bool isInitialized = false;
         private bool isQuitting = false;
 
         protected override void OnInitialize() {
             base.OnInitialize();
+
+            defaultPreferredHeight = LayoutElement.preferredHeight;
 
             if (itemPrefab != null) {
                 SetPrefab(itemPrefab);
@@ -291,7 +295,7 @@ namespace GentlyUI.UIElements {
 
         void UpdateViewport(bool forceUpdate = false) {
             int _lastStartIndex = currentDataStartIndex;
-            int currentRowIndex = Mathf.FloorToInt((internalPosition.y - itemContainer.padding.top) / rowHeight);
+            int currentRowIndex = Mathf.FloorToInt(internalPosition.y / rowHeight);
             currentRowIndex = Mathf.Max(currentRowIndex, 0);
             currentDataStartIndex = currentRowIndex * itemContainer.columns;
 
@@ -324,9 +328,14 @@ namespace GentlyUI.UIElements {
             if (isQuitting)
                 return;
 
-            if (Viewport.GetHeight() != viewportHeight) {
-                Setup();
+            if (waitForLayoutCompleteRoutine == null) {
+                waitForLayoutCompleteRoutine = UIManager.Instance.StartCoroutine(WaitForLayoutComplete());
             }
+        }
+
+        IEnumerator WaitForLayoutComplete() {
+            yield return new WaitForLayoutComplete();
+            Setup();
         }
 
         void SetPrefab(MonoBehaviour prefab) {
@@ -375,58 +384,37 @@ namespace GentlyUI.UIElements {
             this.onReturnItem = onReturnItem;
 
             totalItemCount = defaultCount;
-
             isInitialized = true;
 
-            Setup();
+            Setup(true);
         }
 
         void Setup(bool goToTop = false) {
-            if (!isInitialized || itemPrefab == null)
+            if (!isInitialized || itemPrefab == null || !gameObject.activeInHierarchy)
                 return;
-
-            if (CanvasUpdateRegistry.IsRebuildingLayout()) {
-                //If canvas is current building we can't update the layout of the scroll view.
-                //Unity doesn't allow this. So we wait until it is allowed again and trigger setup again.
-                //This will only happen in rare occassions, mainly connected to spawning UI dynamically for the first time.
-                StartCoroutine(LateRebuild());
-                return;
-            }
-
-            //Calculate current target start index for data and cache it
-            int lastIndex = 0;
-
-            if (!goToTop) {
-                int rowIndex = Mathf.FloorToInt((targetPosition.y - itemContainer.padding.top) / rowHeight);
-                rowIndex = Mathf.Max(rowIndex, 0);
-                int targetIndex = rowIndex * itemContainer.columns;
-                lastIndex = targetIndex;
-            }
 
             //If scrolling in steps we want to have the height to be a multiple of row height
             if (settings.ScrollInSteps) {
                 rowHeight = itemContainer.cellHeight + itemContainer.spacing.y;
-                float newPreferredHeight = rowHeight * Mathf.CeilToInt(defaultPreferredHeight / rowHeight);
+                float newPreferredHeight = rowHeight * Mathf.CeilToInt(defaultPreferredHeight / rowHeight)
+                                        + itemContainer.padding.top
+                                        + itemContainer.padding.bottom
+                                        - itemContainer.spacing.y;
                 LayoutElement.preferredHeight = newPreferredHeight;
             }
 
             UpdateViewportHeightCache();
-            UpdateMaxScrollPosition();
             UpdateScrollbar();
             SpawnItems();
 
-            SnapToElement(lastIndex);
-
-            wasSetupWhileDisabled = !gameObject.activeInHierarchy;
-        }
-
-        IEnumerator LateRebuild() {
-            yield return new WaitForEndOfFrame();
-            Setup();
+            if (goToTop) {
+                SnapToElement(0);
+            }
         }
 
         void UpdateViewportHeightCache() {
             viewportHeight = Viewport.GetHeight();
+            UpdateMaxScrollPosition();
             UpdateMaxItemsToShow();
         }
 
@@ -448,14 +436,13 @@ namespace GentlyUI.UIElements {
                               - itemContainer.spacing.y;
             //Substract the viewport height from the max scroll position
             maxScrollPosition -= viewportHeight;
+            maxScrollPosition = Mathf.Max(0, maxScrollPosition);
         }
 
         /// <summary>
         /// Spawns items pooled and tries to fill viewport.
         /// </summary>
         void SpawnItems() {
-            ClearPool();
-
             if (itemContainer == null) {
                 Debug.LogError("Item Container is null!");
                 return;
@@ -465,7 +452,13 @@ namespace GentlyUI.UIElements {
             //number from the list data if its count is less than maxItemsToShow.
             maxItemsToShow = Mathf.Min(maxItemsToShow, totalItemCount);
 
-            for (int i = 0; i < maxItemsToShow; ++i) {
+            //Remove unneeded items
+            for (int i = currentItems.Count - 1; i > maxItemsToShow; --i) {
+                currentPool.Return(currentItems[i]);
+            }
+
+            //Get new items
+            for (int i = currentItems.Count; i < maxItemsToShow; ++i) {
                 currentPool.Get(itemContainer.transform);
             }
 
@@ -514,7 +507,6 @@ namespace GentlyUI.UIElements {
 
             base.OnEnable();
 
-            if (!wasSetupWhileDisabled) Setup(true);
             SetContentAnchoredPosition(Vector2.zero);
             if (scrollbar != null) scrollbar.OnValueChanged.AddListener((float value) => SetNormalizedScrollPosition(value, false, false));
         }
@@ -523,8 +515,9 @@ namespace GentlyUI.UIElements {
             Application.quitting -= OnIsQuitting;
 
             if (scrollbar != null) scrollbar.OnValueChanged.RemoveListener((float value) => SetNormalizedScrollPosition(value, false, false));
-
-            wasSetupWhileDisabled = false;
+            if (waitForLayoutCompleteRoutine != null) {
+                UIManager.Instance.StopCoroutine(waitForLayoutCompleteRoutine);
+            }
 
             base.OnDisable();
         }
@@ -578,4 +571,8 @@ namespace GentlyUI.UIElements {
         Direct = 0,
         Eased = 1,
     }
+}
+
+public class WaitForLayoutComplete : CustomYieldInstruction {
+    public override bool keepWaiting => CanvasUpdateRegistry.IsRebuildingLayout();
 }
