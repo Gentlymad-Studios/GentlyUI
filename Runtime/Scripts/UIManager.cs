@@ -110,7 +110,7 @@ namespace GentlyUI {
         public void Tick() {
             //Tick tickables (not bound to ui update rate)
             for (int i = 0, count = tickableUIs.Count; i < count; ++i) {
-                tickableUIs[i].Tick(updateTimer);
+                tickableUIs[i].Tick(Time.unscaledDeltaTime);
             }
 
             wasPointerEventDataUpdatedThisFrame = false;
@@ -129,6 +129,7 @@ namespace GentlyUI {
 
             uiBasesToAdd.Clear();
 
+            //Update timer dependencies
             updateTimer += Time.unscaledDeltaTime;
 
             if (updateTimer >= UISettings.UIUpdateRate) {
@@ -143,11 +144,7 @@ namespace GentlyUI {
                     }
                 }
 
-                if (updateTimer < UISettings.UIUpdateRate) {
-                    updateTimer -= UISettings.UIUpdateRate;
-                } else {
-                    updateTimer = 0;
-                }
+                updateTimer -= UISettings.UIUpdateRate;
             }
         }
 

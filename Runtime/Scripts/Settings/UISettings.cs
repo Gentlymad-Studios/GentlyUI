@@ -7,6 +7,7 @@ using static GentlyUI.ModularUI.UIContainerSpawner;
 
 [CreateAssetMenu(fileName = "UISettings", menuName = "GentlyUI/UISettings", order = 1)]
 public class UISettings : ScriptableObject, ISerializationCallbackReceiver {
+    [Header("Main")]
     /// <summary>
     /// If set to true the Tick of the UIManager should be called manually from another script.
     /// If set to false the UIManager will update automatically in Unity's LateUpdate.
@@ -37,6 +38,21 @@ public class UISettings : ScriptableObject, ISerializationCallbackReceiver {
     [SerializeField] private int maxHierarchyCapacity = 20;
     public int MaxHierarchyCapacity => maxHierarchyCapacity;
 
+    [Header("Drag & Drop")]
+    /// <summary>
+    /// How fast the dragged object should snap to the origin (either new dropzone or old dropzone).
+    /// </summary>
+    [Tooltip("How fast the dragged object should snap to the origin (either new dropzone or old dropzone).")]
+    [SerializeField] private float dragReturnSpeed = 500;
+    public float DragReturnSpeed => dragReturnSpeed;
+    /// <summary>
+    /// The scale of the element while being dragged.
+    /// </summary>
+    [Tooltip("The scale of the element while being dragged.")]
+    [SerializeField] private float dragObjectScale = 1.1f;
+    public float DragObjectScale => dragObjectScale;
+
+    [Header("Data")]
     /// <summary>
     /// A list of canvases to spawn from the UI on initialization.
     /// </summary>
