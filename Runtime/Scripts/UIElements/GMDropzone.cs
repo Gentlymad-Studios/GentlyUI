@@ -65,7 +65,12 @@ namespace GentlyUI.UIElements {
         }
 
         protected virtual bool CheckIfDropIsAllowed() {
-            if (GMDraggable.currentDraggedElement == null || GMDraggable.currentDraggedElement.CurrentDragObject.Origin == DropContainer) {
+            if (GMDraggable.currentDraggedElement == null) {
+                return false;
+            }
+
+            if (GMDraggable.currentDraggedElement.CurrentDragObject.Origin == DropContainer ||
+                GMDraggable.currentDraggedElement.transform.IsChildOf(DropContainer)) {
                 return false;
             }
 
