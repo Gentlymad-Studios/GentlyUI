@@ -20,8 +20,6 @@ namespace GentlyUI.UIElements {
         [Tooltip("Defines whether this draggable should be reparented if dropped on a valid dropzone.\r\nDisable this if you want to have custom update logic on the dropzone.")]
         public bool reparentOnDrop = true;
 
-        private readonly Timer mouseSingleClickTimer = new Timer();
-
         /// <summary>
         /// Global access to currently dragged element
         /// </summary>
@@ -39,13 +37,6 @@ namespace GentlyUI.UIElements {
                 }
                 return canvasGroup;
             }
-        }
-
-        protected override void OnInitialize() {
-            base.OnInitialize();
-
-            mouseSingleClickTimer.Interval = 300;
-            mouseSingleClickTimer.Elapsed += SingleClick;
         }
 
         public virtual void OnBeginDrag(PointerEventData eventData) {
@@ -163,31 +154,29 @@ namespace GentlyUI.UIElements {
         public void OnPointerClick(PointerEventData eventData) {
             if (eventData.button == PointerEventData.InputButton.Left) {
                 if (eventData.clickCount > 1) {
-                    if (mouseSingleClickTimer.Enabled) {
-                        //Double click is only allowed during single click timer is running
-                        OnDoubleClick();
-                        mouseSingleClickTimer.Stop();
-                    }
+                    OnDoubleClick();
                 } else {
-                    //Single click
-                    if (!mouseSingleClickTimer.Enabled) {
-                        mouseSingleClickTimer.Start();
-                    }
+                    OnClick();
                 }
             } else if (eventData.button == PointerEventData.InputButton.Right) {
                 OnRightClick();
             }
         }
 
-        void SingleClick(object o, System.EventArgs e) {
-            mouseSingleClickTimer.Stop();
-            OnClick();
-        }
-
+        /// <summary>
+        /// Immediate single click callback. Immediate means there's no delay to detect if the single click was the first click of a double click.
+        /// Don't use both, double and single click, on the same UI element for best UX or add a custom timer for single click detection.
+        /// </summary>
         public virtual void OnClick() {}
 
+        /// <summary>
+        /// Double click callback.
+        /// </summary>
         public virtual void OnDoubleClick() {}
 
+        /// <summary>
+        /// Right click callback.
+        /// </summary>
         public virtual void OnRightClick() {}
     }
 }
