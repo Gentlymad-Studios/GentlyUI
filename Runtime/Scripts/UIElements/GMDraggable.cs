@@ -44,7 +44,7 @@ namespace GentlyUI.UIElements {
         protected override void OnInitialize() {
             base.OnInitialize();
 
-            mouseSingleClickTimer.Interval = 400;
+            mouseSingleClickTimer.Interval = 300;
             mouseSingleClickTimer.Elapsed += SingleClick;
         }
 
@@ -163,10 +163,9 @@ namespace GentlyUI.UIElements {
         public void OnPointerClick(PointerEventData eventData) {
             if (eventData.button == PointerEventData.InputButton.Left) {
                 if (eventData.clickCount > 1) {
-                    //Double click
-                    OnDoubleClick();
-
                     if (mouseSingleClickTimer.Enabled) {
+                        //Double click is only allowed during single click timer is running
+                        OnDoubleClick();
                         mouseSingleClickTimer.Stop();
                     }
                 } else {
