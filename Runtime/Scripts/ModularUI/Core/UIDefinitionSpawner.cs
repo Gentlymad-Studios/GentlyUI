@@ -13,8 +13,8 @@ namespace GentlyUI.ModularUI {
         /// <typeparam name="T">The UI Definition type.</typeparam>
         /// <param name="container">The container to spawn the ui definition into.</param>
         /// <returns>Returns a reference to the ui definition instance.</returns>
-        public static UIDefinition SpawnDefinition<T>(RectTransform container, object data = null) where T : UIDefinition {
-            return SpawnDefinition(container, typeof(T), data);
+        public static T SpawnDefinition<T>(RectTransform container, object data = null) where T : UIDefinition {
+            return SpawnDefinition(container, typeof(T), data) as T;
         }
 
         public static UIDefinition SpawnDefinition(RectTransform container, Type definitionType, object data = null) {
