@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace GentlyUI.UIElements {
-    public class GMDropzone : UIBase, IDropHandler, IUITickable {
+    public class GMDropzone : UIBase, IDropHandler {
         [SerializeField] private RectTransform dropContainer;
         [SerializeField] private GMAnimatedContainer highlight;
         /// <summary>
@@ -49,45 +49,46 @@ namespace GentlyUI.UIElements {
             activeDropzones.Remove(this);
         }
 
-        public void Tick(float unscaledDeltaTime) {
-            //Current drag target changed
-            if (currentDragTarget != GMDraggable.currentDraggedElement) {
-                currentDragTarget = GMDraggable.currentDraggedElement;
+        public void OnDragStarted() {
+            isDropAllowed = CheckIfDropIsAllowed();
 
-                isDropAllowed = CheckIfDropIsAllowed();
-
-                if (isDropAllowed) {
-                    highlight.ShowContainer();
-                } else {
-                    highlight.HideContainer();
-                }
-            } else if (currentDragTarget != null) {
-                if (currentDragTarget.CurrentDragState != GMDraggable.DragState.Dragging) {
-                    isDropAllowed = false;
-                    highlight.HideContainer();
-                    currentDragTarget = null;
-                }
+            if (isDropAllowed) {
+                highlight.ShowContainer();
+            } else {
+                highlight.HideContainer();
             }
+        }
+
+        public void OnDragEnded() {
+            isDropAllowed = false;
+            highlight.HideContainer();
         }
 
         protected virtual bool CheckIfDropIsAllowed() {
-            if (currentDragTarget != null && currentDragTarget.Origin != DropContainer) {
-                return true;
-            } else {
+            if (GMDraggable.currentDraggedElement == null) {
                 return false;
             }
+
+            if (GMDraggable.currentDraggedElement.CurrentDragObject.Origin == DropContainer ||
+                GMDraggable.currentDraggedElement.transform.IsChildOf(DropContainer)) {
+                return false;
+            }
+
+            if (maxElements > 0 && ChildCount >= maxElements) {
+                return false;
+            }
+
+            return true;
         }
 
         public void OnDrop(PointerEventData eventData) {
-            if (maxElements > 0 && ChildCount == maxElements) {
-                return;
+            if (isDropAllowed) {
+                OnDrop(GMDraggable.currentDraggedElement.CurrentDragObject);
             }
-
-            OnDrop(currentDragTarget);
         }
 
-        public virtual void OnDrop(GMDraggable droppedElement) {
-            droppedElement.SetReturnParent(dropContainer);
+        public virtual void OnDrop(GMDraggedObject droppedElement) {
+            droppedElement.SetOrigin(DropContainer);
         }
     }
 }
