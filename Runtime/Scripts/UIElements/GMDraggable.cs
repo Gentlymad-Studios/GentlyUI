@@ -1,4 +1,5 @@
 using GentlyUI.Core;
+using System.Timers;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -19,6 +20,8 @@ namespace GentlyUI.UIElements {
         [Tooltip("Defines whether this draggable should be reparented if dropped on a valid dropzone.\r\nDisable this if you want to have custom update logic on the dropzone.")]
         public bool reparentOnDrop = true;
 
+        private readonly Timer mouseSingleClickTimer = new Timer();
+
         /// <summary>
         /// Global access to currently dragged element
         /// </summary>
@@ -36,6 +39,13 @@ namespace GentlyUI.UIElements {
                 }
                 return canvasGroup;
             }
+        }
+
+        protected override void OnInitialize() {
+            base.OnInitialize();
+
+            mouseSingleClickTimer.Interval = 400;
+            mouseSingleClickTimer.Elapsed += SingleClick;
         }
 
         public virtual void OnBeginDrag(PointerEventData eventData) {
@@ -149,16 +159,30 @@ namespace GentlyUI.UIElements {
             dragDummyPrefab = dragDummy;
         }
 
+        /* --- Click logic ------*/
         public void OnPointerClick(PointerEventData eventData) {
             if (eventData.button == PointerEventData.InputButton.Left) {
                 if (eventData.clickCount > 1) {
+                    //Double click
                     OnDoubleClick();
+
+                    if (mouseSingleClickTimer.Enabled) {
+                        mouseSingleClickTimer.Stop();
+                    }
                 } else {
-                    OnClick();
+                    //Single click
+                    if (!mouseSingleClickTimer.Enabled) {
+                        mouseSingleClickTimer.Start();
+                    }
                 }
             } else if (eventData.button == PointerEventData.InputButton.Right) {
                 OnRightClick();
             }
+        }
+
+        void SingleClick(object o, System.EventArgs e) {
+            mouseSingleClickTimer.Stop();
+            OnClick();
         }
 
         public virtual void OnClick() {}
