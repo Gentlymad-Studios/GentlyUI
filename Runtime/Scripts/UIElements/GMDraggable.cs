@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace GentlyUI.UIElements {
     [RequireComponent(typeof(CanvasGroup))]
-    public class GMDraggable : UIBase, IBeginDragHandler, IDragHandler, IEndDragHandler, IUITickable {
+    public class GMDraggable : UIBase, IBeginDragHandler, IDragHandler, IEndDragHandler, IUITickable, IPointerClickHandler {
         /// <summary>
         /// (Optional) Assign a UI prefab that will be spawned as drag visuals.
         /// </summary>
@@ -148,5 +148,23 @@ namespace GentlyUI.UIElements {
         public void SetDragDummy(GameObject dragDummy) {
             dragDummyPrefab = dragDummy;
         }
+
+        public void OnPointerClick(PointerEventData eventData) {
+            if (eventData.button == PointerEventData.InputButton.Left) {
+                if (eventData.clickCount > 1) {
+                    OnDoubleClick();
+                } else {
+                    OnClick();
+                }
+            } else if (eventData.button == PointerEventData.InputButton.Right) {
+                OnRightClick();
+            }
+        }
+
+        public virtual void OnClick() {}
+
+        public virtual void OnDoubleClick() {}
+
+        public virtual void OnRightClick() {}
     }
 }
