@@ -155,9 +155,9 @@ namespace GentlyUI.UIElements {
             if (eventData.button == PointerEventData.InputButton.Left) {
                 if (eventData.clickCount > 1) {
                     OnDoubleClick();
-                } else {
-                    OnClick();
                 }
+                    
+                OnClick();
             } else if (eventData.button == PointerEventData.InputButton.Right) {
                 OnRightClick();
             }
