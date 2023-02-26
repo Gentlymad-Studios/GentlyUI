@@ -110,6 +110,9 @@ namespace GentlyUI.UIElements {
 
         private Coroutine waitForLayoutCompleteRoutine;
 
+        private bool isScrolling;
+        public bool IsScrolling => isScrolling;
+
         void UpdateItemPool() {
             UIObjectPool<Behaviour> newPool;
 
@@ -145,11 +148,12 @@ namespace GentlyUI.UIElements {
 
 
         private List<Behaviour> currentItems = new List<Behaviour>();
+        private GMSelectable[] selectables;
+
         private Action<Behaviour, int> onUpdateItem;
         private Action<Behaviour> onReturnItem;
 
         private int totalItemCount;
-        private int maxItemsToShow;
 
         private float viewportHeight;
         private float totalHeight;
@@ -199,6 +203,13 @@ namespace GentlyUI.UIElements {
             if (!IsScrollingAllowed())
                 return;
 
+            isScrolling = internalPosition.y != targetPosition.y;
+
+            //Do nothing if position is reached
+            if (!isScrolling) {
+                return;
+            }
+
             float moveDistance = Mathf.Abs(targetPosition.y - internalPosition.y);
             float movementSpeed = moveDistance / EaseDuration;
 
@@ -206,8 +217,18 @@ namespace GentlyUI.UIElements {
                                                             targetPosition,
                                                             unscaledDeltaTime * movementSpeed));
 
-            if (Mathf.Approximately(internalPosition.y, targetPosition.y)) {
-                SetContentAnchoredPosition(targetPosition);
+            ///If we are close as half a pixel to the correct position we can snap to the actual position
+            if (Mathf.Abs(internalPosition.y - targetPosition.y) <= 0.5f) {
+                SetContentAnchoredPosition(targetPosition, true);
+                OnScrollEnded();
+            }
+        }
+
+        void OnScrollEnded() {
+            isScrolling = false;
+
+            for (int i = 0, count = selectables.Length; i < count; ++i) {
+                selectables[i].UpdateVisualState();
             }
         }
 
@@ -261,6 +282,7 @@ namespace GentlyUI.UIElements {
                 internalPosition = position;
                 //Update anchored position of content
                 float yPos = internalPosition.y % rowHeight;
+
                 //Only update viewport if we are between items
                 if (yPos != 0f || forceUpdate) {
                     Content.anchoredPosition = new Vector2(Content.anchoredPosition.x, yPos);
@@ -395,16 +417,6 @@ namespace GentlyUI.UIElements {
             if (!isInitialized || itemPrefab == null)
                 return;
 
-            //If scrolling in steps we want to have the height to be a multiple of row height
-            if (settings.ScrollInSteps) {
-                rowHeight = itemContainer.cellHeight + itemContainer.spacing.y;
-                float newPreferredHeight = rowHeight * Mathf.CeilToInt(defaultPreferredHeight / rowHeight)
-                                        + itemContainer.padding.top
-                                        + itemContainer.padding.bottom
-                                        - itemContainer.spacing.y;
-                LayoutElement.preferredHeight = newPreferredHeight;
-            }
-
             UpdateHeights();
             UpdateScrollbar();
             SpawnItems();
@@ -416,19 +428,29 @@ namespace GentlyUI.UIElements {
 
         void UpdateHeights() {
             rowHeight = itemContainer.cellHeight + itemContainer.spacing.y;
-            viewportHeight = Viewport.GetHeight();
+
+            //If scrolling in steps we want to have the height to be a multiple of row height
+            if (settings.ScrollInSteps) {
+                float newPreferredHeight = rowHeight * Mathf.CeilToInt(defaultPreferredHeight / rowHeight) + itemContainer.padding.top;
+                LayoutElement.preferredHeight = newPreferredHeight;
+            }
+
+            viewportHeight = Mathf.Max(LayoutElement.preferredHeight, viewport.GetHeight());
             totalHeight = Mathf.CeilToInt(totalItemCount / (float)itemContainer.columns) * rowHeight + itemContainer.padding.bottom + itemContainer.padding.top - itemContainer.spacing.y;
 
-            UpdateMaxItemsToShow();
             UpdateMaxScrollPosition();
         }
 
-        void UpdateMaxItemsToShow() {
+        int CalculateMaxItemsToSpawn() {
             int maxRowsToShow = Mathf.CeilToInt(viewportHeight / rowHeight);
             //The maximum number of items to show is the maximum number of rows * items per row which is defined in the layout group
             //We need one more row to allow scrolling!
             int itemsPerRow = itemContainer.columns;
-            maxItemsToShow = maxRowsToShow * itemContainer.columns + itemsPerRow;
+            int maxItemsToShow = maxRowsToShow * itemContainer.columns + itemsPerRow;
+            //Either spawn items until maxItemsToShow is reached or the actual
+            //number from the list data if its count is less than maxItemsToShow.
+            maxItemsToShow = Mathf.Min(maxItemsToShow, totalItemCount);
+            return maxItemsToShow;
         }
 
         void UpdateMaxScrollPosition() {
@@ -444,19 +466,20 @@ namespace GentlyUI.UIElements {
                 return;
             }
 
-            //Either spawn items until maxItemsToShow is reached or the actual
-            //number from the list data if its count is less than maxItemsToShow.
-            maxItemsToShow = Mathf.Min(maxItemsToShow, totalItemCount);
+            int spawnCount = CalculateMaxItemsToSpawn();
 
             //Remove unneeded items
-            for (int i = currentItems.Count - 1; i > maxItemsToShow; --i) {
+            for (int i = currentItems.Count - 1; i > spawnCount; --i) {
                 currentPool.Return(currentItems[i]);
             }
 
             //Get new items
-            for (int i = currentItems.Count; i < maxItemsToShow; ++i) {
+            for (int i = currentItems.Count; i < spawnCount; ++i) {
                 currentPool.Get(itemContainer.transform);
             }
+
+            //Cache selectables
+            selectables = Content.GetComponentsInChildren<GMSelectable>(true);
 
             UpdateViewport(true);
         }
@@ -488,13 +511,6 @@ namespace GentlyUI.UIElements {
             if (showItem) {
                 //Callback
                 onUpdateItem(item, dataIndex);
-                //Force update visual state if scrolled
-                if (wasScrolled) {
-                    GMSelectable[] selectables = item.GetComponentsInChildren<GMSelectable>();
-                    for (int i = 0, count = selectables.Length; i < count; ++i) {
-                        selectables[i].SetInitialVisualState(GMVisualElement.VisualState.Default);
-                    }
-                }
             }
         }
 

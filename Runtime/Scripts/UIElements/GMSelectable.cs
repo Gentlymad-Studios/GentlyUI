@@ -34,9 +34,7 @@ namespace GentlyUI.UIElements {
         public virtual bool Interactable {
             get { return interactable && groupsAllowInteraction; }
             set {
-                bool valueChanged = !interactable.Equals(value);
-                interactable = value;
-                if (valueChanged) OnSetProperty();
+                SetInteractable(value);
             }
         }
 
@@ -59,6 +57,8 @@ namespace GentlyUI.UIElements {
         private bool warningActive = false;
         public bool WarningActive => warningActive;
 
+        private GMPooledScrollView parentScrollView;
+
         protected override void OnInitialize() {
             base.OnInitialize();
 
@@ -75,7 +75,9 @@ namespace GentlyUI.UIElements {
 
             //Add to global list of selectables
             allSelectables.Add(this);
-
+            //Check if this selectbale is part of a pooled scroll view
+            parentScrollView = GetComponentInParent<GMPooledScrollView>();
+            //Update visual state
             UpdateVisualState(true);
         }
 
@@ -86,6 +88,15 @@ namespace GentlyUI.UIElements {
             OnPointerExit(UIManager.Instance.GetCurrentPointerEventData());
 
             base.OnDisable();
+        }
+
+        public void SetInteractable(bool isInteractable, bool forceUpdate = false) {
+            bool valueChanged = !interactable.Equals(isInteractable);
+            interactable = isInteractable;
+
+            if (valueChanged || forceUpdate) {
+                UpdateVisualState(forceUpdate);
+            }
         }
 
         public virtual void Tick(float unscaledDeltaTime) {
@@ -132,24 +143,7 @@ namespace GentlyUI.UIElements {
             }
         }
 
-        public void SetInitialVisualState(VisualState state) {
-            SetVisualState(Interactable ? state : VisualState.Disabled, true);
-        }
-
-        public void ForceUpdateVisualState() {
-            Vector2 screenPos = UIManager.Instance.GetCurrentPointerEventData().position;
-
-            isPointerInside = false;
-            isPointerDown = false;
-
-            if (RectTransformUtility.RectangleContainsScreenPoint(RectTransform, screenPos, UIManager.UICamera)) {
-                isPointerInside = true;
-            }
-
-            UpdateVisualState(true);
-        }
-
-        void UpdateVisualState(bool setImmediately = false) {
+        public void UpdateVisualState(bool setImmediately = false) {
             if (visualElements == null || visualElements.Count == 0)
                 return;
 
@@ -166,6 +160,10 @@ namespace GentlyUI.UIElements {
             }
 
             UpdateVisualElementStates(setImmediately);
+        }
+
+        private bool IsScrolling() {
+            return parentScrollView != null && parentScrollView.IsScrolling;
         }
 
         protected virtual void SetPressedState() {
@@ -231,14 +229,14 @@ namespace GentlyUI.UIElements {
         }
 
         protected bool IsPressed() {
-            if (!IsActive())
+            if (!IsActive() || IsScrolling())
                 return false;
 
             return isPointerInside && isPointerDown;
         }
 
         protected bool IsHovered() {
-            if (!IsActive())
+            if (!IsActive() || IsScrolling())
                 return false;
 
             return isPointerInside;

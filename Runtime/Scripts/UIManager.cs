@@ -4,6 +4,7 @@ using GentlyUI.Core;
 using GentlyUI.ModularUI;
 using UnityEngine.EventSystems;
 using Uween;
+using GentlyUI.UIElements;
 
 namespace GentlyUI {
     public class UIManager : MonoBehaviour {
@@ -104,10 +105,14 @@ namespace GentlyUI {
         }
 
         private void LateUpdate() {
-            if (!UISettings.UpdateManagerManually) Tick();
+            if (!UISettings.UpdateManagerManually) {
+                Tick();
+            }
         }
 
         public void Tick() {
+            ProcessPointerEventData();
+
             //Tick tickables (not bound to ui update rate)
             for (int i = 0, count = tickableUIs.Count; i < count; ++i) {
                 tickableUIs[i].Tick(Time.unscaledDeltaTime);
@@ -181,9 +186,13 @@ namespace GentlyUI {
             }
         }
 
-        public PointerEventData GetCurrentPointerEventData() {
+        private GMSelectable currentHoveredSelectable;
+        private bool leftMouseButtonPressed;
+
+        private void ProcessPointerEventData() {
             if (!wasPointerEventDataUpdatedThisFrame || pointerEventData == null) {
                 pointerEventData = new PointerEventData(EventSystem.current);
+
 #if ENABLE_INPUT_SYSTEM
                 pointerEventData.position = UnityEngine.InputSystem.Mouse.current.position.ReadValue();
 
@@ -194,6 +203,8 @@ namespace GentlyUI {
                     pointerEventData.button = PointerEventData.InputButton.Right;
                     pointerEventData.clickCount = 1;
                 }
+
+                leftMouseButtonPressed = UnityEngine.InputSystem.Mouse.current.leftButton.isPressed;
 #elif ENABLE_LEGACY_INPUT_MANAGER
                 pointerEventData.position = Input.mousePosition;
 
@@ -204,10 +215,36 @@ namespace GentlyUI {
                     pointerEventData.button = PointerEventData.InputButton.Right;
                     pointerEventData.clickCount = 1;
                 }
+
+				leftMouseButtonPressed = Input.GetMouseButton(0);
 #endif
+                //Update hovered selectable
+                List<RaycastResult> hoveredElements = new List<RaycastResult>();
+                EventSystem.current.RaycastAll(pointerEventData, hoveredElements);
+
+                for (int i = 0, count = hoveredElements.Count; i < count; ++i) {
+                    GMSelectable selectable = hoveredElements[i].gameObject.GetComponent<GMSelectable>();
+
+                    if (selectable != null) {
+                        currentHoveredSelectable = selectable;
+
+                        if (leftMouseButtonPressed) {
+                            pointerEventData.pointerPress = selectable.gameObject;
+                        }
+                        break;
+                    }
+                }
+
                 wasPointerEventDataUpdatedThisFrame = true;
             }
+        }
+
+        public PointerEventData GetCurrentPointerEventData() {
             return pointerEventData;
+        }
+
+        public GMSelectable GetCurrentHoveredSelectable() {
+            return currentHoveredSelectable;
         }
 
         public void SelectUI(GameObject uiObject) {
