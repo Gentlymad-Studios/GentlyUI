@@ -435,7 +435,7 @@ namespace GentlyUI.UIElements {
                 LayoutElement.preferredHeight = newPreferredHeight;
             }
 
-            viewportHeight = Mathf.Max(LayoutElement.preferredHeight, viewport.GetHeight());
+            viewportHeight = viewport.GetHeight();
             totalHeight = Mathf.CeilToInt(totalItemCount / (float)itemContainer.columns) * rowHeight + itemContainer.padding.bottom + itemContainer.padding.top - itemContainer.spacing.y;
 
             UpdateMaxScrollPosition();
