@@ -353,13 +353,14 @@ namespace GentlyUI.UIElements {
                 return;
 
             if (waitForLayoutCompleteRoutine == null) {
-                waitForLayoutCompleteRoutine = UIManager.Instance.StartCoroutine(WaitForLayoutComplete());
+                waitForLayoutCompleteRoutine = StartCoroutine(WaitForLayoutComplete());
             }
         }
 
         IEnumerator WaitForLayoutComplete() {
             yield return new WaitForLayoutComplete();
             Setup();
+            waitForLayoutCompleteRoutine = null;
         }
 
         void SetPrefab(MonoBehaviour prefab) {
@@ -528,7 +529,8 @@ namespace GentlyUI.UIElements {
 
             if (scrollbar != null) scrollbar.OnValueChanged.RemoveListener((float value) => SetNormalizedScrollPosition(value, false, false));
             if (waitForLayoutCompleteRoutine != null) {
-                UIManager.Instance.StopCoroutine(waitForLayoutCompleteRoutine);
+                StopCoroutine(waitForLayoutCompleteRoutine);
+                waitForLayoutCompleteRoutine = null;
             }
 
             base.OnDisable();
