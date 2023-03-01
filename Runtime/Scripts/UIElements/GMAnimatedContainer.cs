@@ -161,7 +161,7 @@ namespace GentlyUI.UIElements {
             }
 
             //Active state
-            if (gameObject.activeSelf != state.ShowContainer) gameObject.SetActive(state.ShowContainer);
+            if (gameObject.activeSelf != state.ShowContainer) ToggleUI(state.ShowContainer);
 
             //End of state callback
             TriggerEndOfStateCallback();
@@ -171,7 +171,7 @@ namespace GentlyUI.UIElements {
             //Get State
             GMAnimatedContainerState state = GetCurrentState();
 
-            if (state.ShowContainer) gameObject.SetActive(true);
+            if (state.ShowContainer) Enable();
 
             //Start Tweens
             Tween tween;
@@ -221,7 +221,7 @@ namespace GentlyUI.UIElements {
 
         IEnumerator DeactivateDelayed() {
             yield return new WaitForEndOfFrame();
-            gameObject.SetActive(false);
+            Disable();
         }
 
         void TriggerEndOfStateCallback() {
