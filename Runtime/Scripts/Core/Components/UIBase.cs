@@ -74,5 +74,13 @@ namespace GentlyUI.Core {
         public virtual void Disable() {
             gameObject.SetActive(false);
         }
+
+        public virtual void ToggleUI(bool activate) {
+            if (activate) {
+                Enable();
+            } else {
+                Disable();
+            }
+        }
     }
 }
