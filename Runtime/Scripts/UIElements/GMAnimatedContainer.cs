@@ -210,6 +210,9 @@ namespace GentlyUI.UIElements {
                 if (!state.ShowContainer) {
                     longestTween.OnComplete += () => UIManager.Instance.StartCoroutine(DeactivateDelayed());
                 }
+            } else {
+                //End of state callback
+                TriggerEndOfStateCallback();
             }
 
             transitionRunning = true;
