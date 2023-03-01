@@ -16,8 +16,7 @@ namespace GentlyUI.ModularUI {
         protected GMTextComponent AddText(
             string textType, 
             string text,
-            TextAlignmentOptions alignment,
-            System.Action<GMTextComponent> onSpawn = null
+            TextAlignmentOptions alignment
         ) {
             string path = Path.Join(UIPaths.BasePath, UIPaths.ElementPath, textType);
 
