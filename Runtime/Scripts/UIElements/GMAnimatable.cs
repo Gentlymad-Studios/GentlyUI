@@ -103,10 +103,11 @@ namespace GentlyUI.UIElements {
 
     [Flags]
     public enum AnimationProperty {
-        PositionOffset = 1, // 000001
-        Scale = 2,          // 000010
-        Rotation = 4,       // 000100
-        Color = 8,          // 001000
-        Alpha = 16          // 010000
+        PositionOffset = 1,     // 000001
+        Scale = 2,              // 000010
+        Rotation = 4,           // 000100
+        Color = 8,              // 001000
+        Alpha = 16,             // 010000
+        LayoutMinHeight = 32    // 100000
     }
 }

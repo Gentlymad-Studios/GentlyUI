@@ -4,6 +4,7 @@ using UnityEngine;
 using static GentlyUI.UIElements.GMAnimatable;
 using System.Collections.Generic;
 using System.Collections;
+using UnityEngine.UI;
 
 namespace GentlyUI.UIElements {
     public class GMAnimatedContainer : UIBase {
@@ -42,6 +43,16 @@ namespace GentlyUI.UIElements {
         private bool animatedContainerInitialized = false;
 
         public static List<GMAnimatedContainer> runningTransitions = new List<GMAnimatedContainer>();
+
+        private LayoutElement layoutElement;
+        private LayoutElement LayoutElement {
+            get {
+                if (layoutElement == null) {
+                    layoutElement = gameObject.GetOrAddComponent<LayoutElement>();
+                }
+                return layoutElement;
+            }
+        }
 
         protected override void OnInitialize() {
             base.OnInitialize();
@@ -160,6 +171,12 @@ namespace GentlyUI.UIElements {
                 canvasGroup.alpha = state.Alpha;
             }
 
+            //Layout Min Height
+            VisualElementAnimationAttributes layoutAnimAttributes = state.GetAnimationAttributes(AnimationProperty.LayoutMinHeight);
+            if (layoutAnimAttributes != null) {
+                LayoutElement.minHeight = state.LayoutMinHeight;
+            }
+
             //Active state
             if (gameObject.activeSelf != state.ShowContainer) ToggleUI(state.ShowContainer);
 
@@ -199,6 +216,14 @@ namespace GentlyUI.UIElements {
             if (alphaAnimAttributes != null) {
                 tween = TweenCanvasGroupA.Add(gameObject, alphaAnimAttributes.Duration, state.Alpha);
                 SetupTween(tween, alphaAnimAttributes);
+                CacheLongestTween(tween, ref longestTween);
+            }
+
+            //Layout Min Height
+            VisualElementAnimationAttributes layoutAnimAttributes = state.GetAnimationAttributes(AnimationProperty.LayoutMinHeight);
+            if (layoutAnimAttributes != null) {
+                tween = TweenLayoutElementMinHeight.Add(gameObject, layoutAnimAttributes.Duration, state.LayoutMinHeight);
+                SetupTween(tween, layoutAnimAttributes);
                 CacheLongestTween(tween, ref longestTween);
             }
 
@@ -299,5 +324,12 @@ namespace GentlyUI.UIElements {
         [Range(0f, 1f)]
         [SerializeField] private float alpha = 1f;
         public float Alpha => alpha;
+
+        /// <summary>
+        /// The min height of the layout element of the container for this state.
+        /// </summary>
+        [Tooltip("The min height of the layout element of the container for this state.")]
+        [SerializeField] private float layoutMinHeight = 0f;
+        public float LayoutMinHeight => layoutMinHeight;
     }
 }
