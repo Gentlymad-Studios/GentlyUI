@@ -98,12 +98,16 @@ namespace GentlyUI.UIElements {
             return toggle != null && toggles.Contains(toggle);
         }
 
-        public void SetAllTogglesOff() {
+        public void SetAllTogglesOff(bool notifyChange) {
             bool _allowSwitchOff = allowSwitchOff;
             allowSwitchOff = true;
 
             for (int i = 0, count = toggles.Count; i < count; ++i) {
-                toggles[i].IsOn = false;
+                if (notifyChange) {
+                    toggles[i].IsOn = false;
+                } else {
+                    toggles[i].SetIsOnWithoutNotify(false);
+                }                
             }
 
             allowSwitchOff = _allowSwitchOff;
