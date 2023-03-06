@@ -352,7 +352,7 @@ namespace GentlyUI.UIElements {
             if (isQuitting)
                 return;
 
-            if (waitForLayoutCompleteRoutine == null) {
+            if (gameObject.activeInHierarchy && waitForLayoutCompleteRoutine == null) {
                 waitForLayoutCompleteRoutine = StartCoroutine(WaitForLayoutComplete());
             }
         }
