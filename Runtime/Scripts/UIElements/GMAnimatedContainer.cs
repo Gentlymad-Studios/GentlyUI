@@ -102,6 +102,8 @@ namespace GentlyUI.UIElements {
         }
 
         public void ApplyStatePreset(UIContainerAnimationPreset preset) {
+            ResetContainer();
+
             showState = preset.showState;
             hideState = preset.hideState;
 
@@ -283,6 +285,16 @@ namespace GentlyUI.UIElements {
 
                 if (tweenDuration > currentLongestTweenDuration) longestTweenCache = tween;
             }
+        }
+
+        /// <summary>
+        /// Resets the animated container to reasonable default values.
+        /// This is mostly needed when we new animation types are applied to this container on runtime.
+        /// E.g. things like scaling need to be reset if they are not manipulated by the new show/hide state.
+        /// </summary>
+        void ResetContainer() {
+            RectTransform.localScale = Vector3.one;
+            canvasGroup.alpha = 1;
         }
     }
 
