@@ -21,6 +21,7 @@ namespace GentlyUI.Core {
 
             // Create blocker GameObject.
             blocker = new GameObject("Blocker");
+            blocker.layer = LayerMask.NameToLayer("UI");
 
             // Setup blocker RectTransform to cover entire root canvas area.
             RectTransform blockerRect = blocker.AddComponent<RectTransform>();
