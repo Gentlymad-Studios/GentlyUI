@@ -276,13 +276,15 @@ namespace GentlyUI.UIElements {
             ToggleWarning(false);
 
             //Remove dynamically added components on return
-            for (int i = 0, count = addedComponents.Count; i < count; ++i) {
-                Type c = addedComponents[i];
-                Destroy(GetComponent(c));
-            }
+            if (addedComponents != null) {
+                for (int i = 0, count = addedComponents.Count; i < count; ++i) {
+                    Type c = addedComponents[i];
+                    Destroy(GetComponent(c));
+                }
 
-            addedComponents.Clear();
-            addedComponents = null;
+                addedComponents.Clear();
+                addedComponents = null;
+            }
         }
     }
 
