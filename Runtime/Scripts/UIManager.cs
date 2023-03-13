@@ -149,7 +149,7 @@ namespace GentlyUI {
                     }
                 }
 
-                updateTimer -= UISettings.UIUpdateRate;
+                updateTimer = updateTimer % UISettings.UIUpdateRate;
             }
         }
 
