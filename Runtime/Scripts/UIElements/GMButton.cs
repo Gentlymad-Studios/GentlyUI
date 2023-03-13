@@ -7,7 +7,7 @@ using TMPro;
 
 namespace GentlyUI.UIElements {
     [AddComponentMenu("GentlyUI/Button", 1)]
-    public class GMButton : GMSelectableStyled, IPointerClickHandler, ISubmitHandler, IPooledUIResetter {
+    public class GMButton : GMSelectableStyled, IPointerClickHandler, ISubmitHandler {
         [Serializable]
         public class ButtonClickedEvent : GentlyUIEvent { }
 
@@ -57,12 +57,6 @@ namespace GentlyUI.UIElements {
                 return;
 
             SetVisualState(GMVisualElement.VisualState.Pressed, false);
-        }
-
-        public virtual void CreatePooledUICache() {}
-
-        public virtual void ResetPooledUI() {
-            ToggleWarning(false);
         }
     }
 }

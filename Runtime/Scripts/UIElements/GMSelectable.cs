@@ -10,7 +10,7 @@ using static GentlyUI.UIElements.GMAnimatable;
 
 namespace GentlyUI.UIElements {
     [AddComponentMenu("GentlyUI/Selectable", 0)]
-    public class GMSelectable : UIBase, IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler, IUITickable {
+    public class GMSelectable : UIBase, IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler, IUITickable, IPooledUIResetter {
         /// <summary>
         /// List of all the selectable objects currently active in the scene.
         /// <para>Example: Use this list for handling navigation events instead of getting all objects with component Selectable in the scene.</para>
@@ -248,6 +248,42 @@ namespace GentlyUI.UIElements {
             if (gameObject.activeInHierarchy) {
                 SetVisualState(currentVisualState, true);
             }
+        }
+
+        private List<Type> addedComponents;
+
+
+        /// <summary>
+        /// Adds a component to this selectable that is automatically destroyed if this element is returned by an object pool.
+        /// </summary>
+        /// <typeparam name="T">The component type.</typeparam>
+        /// <returns>The component.</returns>
+        public T AddReturnableComponent<T>() where T : MonoBehaviour {
+            if (addedComponents == null) {
+                addedComponents = new List<Type>();
+            } else if (addedComponents.Contains(typeof(T))) {
+                return gameObject.GetComponent<T>();
+            }
+
+            T c = gameObject.AddComponent<T>();
+            addedComponents.Add(typeof(T));
+            return c;
+        }
+
+        public void CreatePooledUICache() {
+        }
+
+        public void ResetPooledUI() {
+            ToggleWarning(false);
+
+            //Remove dynamically added components on return
+            for (int i = 0, count = addedComponents.Count; i < count; ++i) {
+                Type c = addedComponents[i];
+                Destroy(GetComponent(c));
+            }
+
+            addedComponents.Clear();
+            addedComponents = null;
         }
     }
 
