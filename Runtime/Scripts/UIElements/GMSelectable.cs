@@ -270,10 +270,9 @@ namespace GentlyUI.UIElements {
             return c;
         }
 
-        public void CreatePooledUICache() {
-        }
+        public virtual void CreatePooledUICache() {}
 
-        public void ResetPooledUI() {
+        public virtual void ResetPooledUI() {
             ToggleWarning(false);
 
             //Remove dynamically added components on return
