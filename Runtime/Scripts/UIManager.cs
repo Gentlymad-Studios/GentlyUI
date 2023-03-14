@@ -149,7 +149,9 @@ namespace GentlyUI {
                     }
                 }
 
-                updateTimer -= UISettings.UIUpdateRate;
+
+                //Reduce updateTimer to a steady frame rate
+                updateTimer = updateTimer % UISettings.UIUpdateRate;
             }
         }
 
