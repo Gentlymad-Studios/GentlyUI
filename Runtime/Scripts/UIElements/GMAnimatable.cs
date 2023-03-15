@@ -35,6 +35,7 @@ namespace GentlyUI.UIElements {
         public VisualElementAnimationAttributes GetAnimationAttributes(AnimationProperty animationProperty) {
 #if UNITY_EDITOR
             if (animationAttributesLUT == null) {
+                Debug.LogError("Trying to access an animation attributes LUT that was not setup yet.");
                 return null;
             }
 #endif
