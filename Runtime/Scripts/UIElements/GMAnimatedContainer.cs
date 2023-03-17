@@ -294,6 +294,7 @@ namespace GentlyUI.UIElements {
         /// </summary>
         void ResetContainer() {
             RectTransform.localScale = Vector3.one;
+
             if (canvasGroup != null) {
                 canvasGroup.alpha = 1;
             }

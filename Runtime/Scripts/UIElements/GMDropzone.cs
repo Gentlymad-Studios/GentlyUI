@@ -34,6 +34,7 @@ namespace GentlyUI.UIElements {
         protected override void OnInitialize() {
             base.OnInitialize();
 
+            highlight.Initialize();
             highlight.HideContainer(true);
         }
 

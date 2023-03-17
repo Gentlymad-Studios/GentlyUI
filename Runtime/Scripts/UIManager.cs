@@ -7,6 +7,9 @@ using Uween;
 using GentlyUI.UIElements;
 
 namespace GentlyUI {
+    /// <summary>
+    /// The heart of the GentlyUI
+    /// </summary>
     public class UIManager : MonoBehaviour {
         /// <summary>
         /// The global ui settings file being used to style the whole UI.
@@ -149,6 +152,8 @@ namespace GentlyUI {
                     }
                 }
 
+
+                //Reduce updateTimer to a steady frame rate
                 updateTimer = updateTimer % UISettings.UIUpdateRate;
             }
         }
