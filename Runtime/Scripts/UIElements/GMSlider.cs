@@ -191,6 +191,7 @@ namespace GentlyUI.UIElements {
         public void SetInitialValue(float value, float minValue, float maxValue, bool wholeNumbers = false) {
             this.minValue = minValue;
             this.maxValue = maxValue;
+            this.wholeNumbers = wholeNumbers;
 
             SetInitialValue(value);
 
