@@ -274,6 +274,7 @@ namespace GentlyUI.UIElements {
 
         public virtual void ResetPooledUI() {
             ToggleWarning(false);
+            SetInteractable(true);
 
             //Remove dynamically added components on return
             if (addedComponents != null) {
