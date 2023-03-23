@@ -82,7 +82,16 @@ namespace GentlyUI.UIElements {
         void UpdateDragPosition() {
             Vector2 localPosition;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(RectTransform, UIManager.Instance.GetCurrentPointerEventData().position, UIManager.UICamera, out localPosition);
-            transform.position = transform.TransformPoint(localPosition);
+
+            Vector3 newPosition = transform.TransformPoint(localPosition);
+
+            if (draggable.DragMode == GMDraggable.DrageModeEnum.OnlyHorizontal) {
+                newPosition.y = transform.position.y;
+            } else if (draggable.DragMode == GMDraggable.DrageModeEnum.OnlyVertical) {
+                newPosition.x = transform.position.x;
+            }
+            
+            transform.position = newPosition;
         }
 
         void UpdateScale() {

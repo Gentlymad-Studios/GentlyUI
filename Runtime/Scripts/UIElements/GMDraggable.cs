@@ -19,6 +19,19 @@ namespace GentlyUI.UIElements {
         /// </summary>
         [Tooltip("Defines whether this draggable should be reparented if dropped on a valid dropzone.\r\nDisable this if you want to have custom update logic on the dropzone.")]
         public bool reparentOnDrop = true;
+        /// <summary>
+        /// Defines whether the draggable object should move freely with the pointer or if it should be restricted to one axis.
+        /// </summary>
+        [Tooltip("Defines whether the draggable object should move freely with the pointer or if it should be restricted to one axis.")]
+        [SerializeField] private DrageModeEnum dragMode = DrageModeEnum.Free;
+
+        public DrageModeEnum DragMode => dragMode;
+
+        public enum DrageModeEnum {
+            Free = 0,
+            OnlyVertical = 1,
+            OnlyHorizontal = 2
+        }
 
         /// <summary>
         /// Global access to currently dragged element
