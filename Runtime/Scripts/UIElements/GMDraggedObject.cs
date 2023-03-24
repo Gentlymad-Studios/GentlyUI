@@ -110,7 +110,7 @@ namespace GentlyUI.UIElements {
         void UpdateSiblingIndex() {
             GMDraggable hoveredDraggable = UIManager.Instance.GetCurrentHoveredDraggable();
 
-            if (hoveredDraggable != null && hoveredDraggable != draggable) {
+            if (hoveredDraggable != null && hoveredDraggable != draggable && hoveredDraggable.transform.IsChildOf(Origin)) {
                 draggable.UpdateSiblingIndexOfPlaceholder(hoveredDraggable.transform.GetSiblingIndex());
             }
         }
