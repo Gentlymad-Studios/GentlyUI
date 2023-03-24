@@ -82,28 +82,37 @@ namespace GentlyUI.UIElements {
         void UpdateDragPosition() {
             Vector2 localPosition;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(RectTransform, UIManager.Instance.GetCurrentPointerEventData().position, UIManager.UICamera, out localPosition);
-
-            Vector3 newPosition = transform.TransformPoint(localPosition);
+            Vector3 currentLocalPosition = RectTransform.InverseTransformPoint(transform.position);
 
             if (draggable.DragMode == GMDraggable.DrageModeEnum.OnlyHorizontal) {
-                newPosition.y = transform.position.y;
+                localPosition.y = currentLocalPosition.y;
             } else if (draggable.DragMode == GMDraggable.DrageModeEnum.OnlyVertical) {
-                newPosition.x = transform.position.x;
+                localPosition.x = currentLocalPosition.x;
             }
-            
+
             if (draggable.ReorderableElement) {
-                Vector2 newScreenPosition = RectTransformUtility.WorldToScreenPoint(UIManager.UICamera, newPosition);
-                if (!RectTransformUtility.RectangleContainsScreenPoint(Origin, newScreenPosition)) {
-                    Vector3[] worldCornersOfOrigin = new Vector3[4];
-                    Origin.GetWorldCorners(worldCornersOfOrigin);
+                //Restrict to container
+                Vector3[] localCornersOfOrigin = new Vector3[4];
+                Origin.GetLocalCorners(localCornersOfOrigin);
 
-                    newPosition.x = Mathf.Clamp(newPosition.x, worldCornersOfOrigin[0].x, worldCornersOfOrigin[2].x);
-                    newPosition.y = Mathf.Clamp(newPosition.y, worldCornersOfOrigin[0].y, worldCornersOfOrigin[2].y);
-                }
+                //Transform local position into local space of Origin
+                Vector3 worldPosition = RectTransform.TransformPoint(localPosition);
+                localPosition = Origin.InverseTransformPoint(worldPosition);
 
+                localPosition.x = Mathf.Clamp(localPosition.x, localCornersOfOrigin[0].x, localCornersOfOrigin[2].x);
+                localPosition.y = Mathf.Clamp(localPosition.y, localCornersOfOrigin[0].y, localCornersOfOrigin[2].y);
+
+                //Update position before updating sibling index
+                UpdatePositionByLocalPosition(localPosition, Origin);
+                //Update siblindg index after position
                 UpdateSiblingIndex();
+            } else {
+                UpdatePositionByLocalPosition(localPosition, transform);
             }
+        }
 
+        void UpdatePositionByLocalPosition(Vector3 localPosition, Transform objectSpace) {
+            Vector3 newPosition = objectSpace.TransformPoint(localPosition);
             transform.position = newPosition;
         }
 
