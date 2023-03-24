@@ -63,7 +63,7 @@ namespace GentlyUI.UIElements {
             OnDragStarted();
         }
 
-        public void OnDrag(PointerEventData eventData) {}
+        public void OnDrag(PointerEventData eventData) { }
 
         public virtual void OnEndDrag(PointerEventData eventData) {
             //Set state to returning
@@ -152,7 +152,7 @@ namespace GentlyUI.UIElements {
             currentDragObject = null;
         }
 
-        public void OnDragFinished() {
+        public virtual void OnDragFinished() {
             //Canvas group
             CanvasGroup.alpha = 1f;
             CanvasGroup.blocksRaycasts = true;
@@ -180,7 +180,7 @@ namespace GentlyUI.UIElements {
                 if (eventData.clickCount > 1) {
                     OnDoubleClick();
                 }
-                    
+
                 OnClick();
             } else if (eventData.button == PointerEventData.InputButton.Right) {
                 OnRightClick();
@@ -191,16 +191,16 @@ namespace GentlyUI.UIElements {
         /// Immediate single click callback. Immediate means there's no delay to detect if the single click was the first click of a double click.
         /// Don't use both, double and single click, on the same UI element for best UX or add a custom timer for single click detection.
         /// </summary>
-        public virtual void OnClick() {}
+        public virtual void OnClick() { }
 
         /// <summary>
         /// Double click callback.
         /// </summary>
-        public virtual void OnDoubleClick() {}
+        public virtual void OnDoubleClick() { }
 
         /// <summary>
         /// Right click callback.
         /// </summary>
-        public virtual void OnRightClick() {}
+        public virtual void OnRightClick() { }
     }
 }

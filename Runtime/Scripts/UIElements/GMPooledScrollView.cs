@@ -327,7 +327,10 @@ namespace GentlyUI.UIElements {
 
             if (wasScrolled || forceUpdate) {
                 for (int i = 0, count = currentItems.Count; i < count; ++i) {
-                    OnUpdateItem(currentItems[i], currentDataStartIndex + i, wasScrolled);
+                    Behaviour item = currentItems[i];
+                    //We use the sibling index instead of the index in the loop, because it might happen, that items were reordered.
+                    //So sibling index is more reliable on which data to display in this item.
+                    OnUpdateItem(item, currentDataStartIndex + item.transform.GetSiblingIndex(), wasScrolled);
                 }
             }
         }
