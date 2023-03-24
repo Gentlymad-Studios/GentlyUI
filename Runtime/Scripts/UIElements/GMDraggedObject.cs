@@ -91,7 +91,28 @@ namespace GentlyUI.UIElements {
                 newPosition.x = transform.position.x;
             }
             
+            if (draggable.ReorderableElement) {
+                Vector2 newScreenPosition = RectTransformUtility.WorldToScreenPoint(UIManager.UICamera, newPosition);
+                if (!RectTransformUtility.RectangleContainsScreenPoint(Origin, newScreenPosition)) {
+                    Vector3[] worldCornersOfOrigin = new Vector3[4];
+                    Origin.GetWorldCorners(worldCornersOfOrigin);
+
+                    newPosition.x = Mathf.Clamp(newPosition.x, worldCornersOfOrigin[0].x, worldCornersOfOrigin[2].x);
+                    newPosition.y = Mathf.Clamp(newPosition.y, worldCornersOfOrigin[0].y, worldCornersOfOrigin[2].y);
+                }
+
+                UpdateSiblingIndex();
+            }
+
             transform.position = newPosition;
+        }
+
+        void UpdateSiblingIndex() {
+            GMDraggable hoveredDraggable = UIManager.Instance.GetCurrentHoveredDraggable();
+
+            if (hoveredDraggable != null && hoveredDraggable != draggable) {
+                draggable.UpdateSiblingIndexOfPlaceholder(hoveredDraggable.transform.GetSiblingIndex());
+            }
         }
 
         void UpdateScale() {

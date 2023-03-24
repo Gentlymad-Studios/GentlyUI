@@ -24,8 +24,14 @@ namespace GentlyUI.UIElements {
         /// </summary>
         [Tooltip("Defines whether the draggable object should move freely with the pointer or if it should be restricted to one axis.")]
         [SerializeField] private DrageModeEnum dragMode = DrageModeEnum.Free;
+        /// <summary>
+        /// Defines whether this element can be dragged in order to reorder it in a list or grid.
+        /// </summary>
+        [Tooltip("Defines whether this element can be dragged in order to reorder it in a list or grid.")]
+        [SerializeField] private bool reorderableElement = false;
 
         public DrageModeEnum DragMode => dragMode;
+        public bool ReorderableElement => reorderableElement;
 
         public enum DrageModeEnum {
             Free = 0,
@@ -39,6 +45,7 @@ namespace GentlyUI.UIElements {
         public static GMDraggable currentDraggedElement;
 
         private RectTransform currentPlaceholder;
+
         private GMDraggedObject currentDragObject;
         public GMDraggedObject CurrentDragObject => currentDragObject;
 
@@ -64,7 +71,7 @@ namespace GentlyUI.UIElements {
         }
 
         public virtual void Tick(float unscaledDeltaTime) {
-            CanvasGroup.blocksRaycasts = currentDraggedElement == null;
+            //CanvasGroup.blocksRaycasts = currentDraggedElement == null;
         }
 
         void CreateDragObject() {
@@ -153,6 +160,10 @@ namespace GentlyUI.UIElements {
             ResetDragObject();
             //Reset global cache
             currentDraggedElement = null;
+        }
+
+        public void UpdateSiblingIndexOfPlaceholder(int newIndex) {
+            currentPlaceholder.SetSiblingIndex(newIndex);
         }
 
         /// <summary>

@@ -192,9 +192,13 @@ namespace GentlyUI {
         }
 
         private GMSelectable currentHoveredSelectable;
+        private GMDraggable currentHoveredDraggable;
         private bool leftMouseButtonPressed;
-
+        private List<RaycastResult> hoveredElements;
         private void ProcessPointerEventData() {
+            currentHoveredSelectable = null;
+            currentHoveredDraggable = null;
+
             if (!wasPointerEventDataUpdatedThisFrame || pointerEventData == null) {
                 pointerEventData = new PointerEventData(EventSystem.current);
 
@@ -224,19 +228,23 @@ namespace GentlyUI {
 				leftMouseButtonPressed = Input.GetMouseButton(0);
 #endif
                 //Update hovered selectable
-                List<RaycastResult> hoveredElements = new List<RaycastResult>();
+                hoveredElements = new List<RaycastResult>();
                 EventSystem.current.RaycastAll(pointerEventData, hoveredElements);
 
                 for (int i = 0, count = hoveredElements.Count; i < count; ++i) {
                     GMSelectable selectable = hoveredElements[i].gameObject.GetComponent<GMSelectable>();
+                    GMDraggable draggable = hoveredElements[i].gameObject.GetComponent<GMDraggable>();
 
-                    if (selectable != null) {
+                    if (currentHoveredSelectable == null && selectable != null) {
                         currentHoveredSelectable = selectable;
 
                         if (leftMouseButtonPressed) {
                             pointerEventData.pointerPress = selectable.gameObject;
                         }
-                        break;
+                    }
+
+                    if (currentHoveredDraggable == null && draggable != null) {
+                        currentHoveredDraggable = draggable;
                     }
                 }
 
@@ -250,6 +258,10 @@ namespace GentlyUI {
 
         public GMSelectable GetCurrentHoveredSelectable() {
             return currentHoveredSelectable;
+        }
+
+        public GMDraggable GetCurrentHoveredDraggable() {
+            return currentHoveredDraggable;
         }
 
         public void SelectUI(GameObject uiObject) {
