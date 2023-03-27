@@ -101,7 +101,7 @@ namespace GentlyUI.UIElements {
             }
         }
 
-        public void ApplyStatePreset(UIContainerAnimationPreset preset) {
+        public void ApplyStatePreset(UIContainerAnimationPreset preset, bool setImmediately = true) {
             ResetContainer();
 
             showState = preset.showState;
@@ -115,7 +115,7 @@ namespace GentlyUI.UIElements {
             showState.Initialize();
             hideState.Initialize();
 
-            SetState(state, true);
+            SetState(state, setImmediately);
         }
 
         void SetState(ContainerState state, bool setImmediately = false) {
