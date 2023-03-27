@@ -82,7 +82,46 @@ namespace GentlyUI.UIElements {
         void UpdateDragPosition() {
             Vector2 localPosition;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(RectTransform, UIManager.Instance.GetCurrentPointerEventData().position, UIManager.UICamera, out localPosition);
-            transform.position = transform.TransformPoint(localPosition);
+            Vector3 currentLocalPosition = RectTransform.InverseTransformPoint(transform.position);
+
+            if (draggable.DragMode == GMDraggable.DrageModeEnum.OnlyHorizontal) {
+                localPosition.y = currentLocalPosition.y;
+            } else if (draggable.DragMode == GMDraggable.DrageModeEnum.OnlyVertical) {
+                localPosition.x = currentLocalPosition.x;
+            }
+
+            if (draggable.ReorderableElement) {
+                //Restrict to container
+                Vector3[] localCornersOfOrigin = new Vector3[4];
+                Origin.GetLocalCorners(localCornersOfOrigin);
+
+                //Transform local position into local space of Origin
+                Vector3 worldPosition = RectTransform.TransformPoint(localPosition);
+                localPosition = Origin.InverseTransformPoint(worldPosition);
+
+                localPosition.x = Mathf.Clamp(localPosition.x, localCornersOfOrigin[0].x, localCornersOfOrigin[2].x);
+                localPosition.y = Mathf.Clamp(localPosition.y, localCornersOfOrigin[0].y, localCornersOfOrigin[2].y);
+
+                //Update position before updating sibling index
+                UpdatePositionByLocalPosition(localPosition, Origin);
+                //Update siblindg index after position
+                UpdateSiblingIndex();
+            } else {
+                UpdatePositionByLocalPosition(localPosition, transform);
+            }
+        }
+
+        void UpdatePositionByLocalPosition(Vector3 localPosition, Transform objectSpace) {
+            Vector3 newPosition = objectSpace.TransformPoint(localPosition);
+            transform.position = newPosition;
+        }
+
+        void UpdateSiblingIndex() {
+            GMDraggable hoveredDraggable = UIManager.Instance.GetCurrentHoveredDraggable();
+
+            if (hoveredDraggable != null && hoveredDraggable != draggable && hoveredDraggable.transform.IsChildOf(Origin)) {
+                draggable.UpdateSiblingIndexOfPlaceholder(hoveredDraggable.transform.GetSiblingIndex());
+            }
         }
 
         void UpdateScale() {

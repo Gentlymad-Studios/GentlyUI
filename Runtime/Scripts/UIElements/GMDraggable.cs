@@ -19,6 +19,25 @@ namespace GentlyUI.UIElements {
         /// </summary>
         [Tooltip("Defines whether this draggable should be reparented if dropped on a valid dropzone.\r\nDisable this if you want to have custom update logic on the dropzone.")]
         public bool reparentOnDrop = true;
+        /// <summary>
+        /// Defines whether the draggable object should move freely with the pointer or if it should be restricted to one axis.
+        /// </summary>
+        [Tooltip("Defines whether the draggable object should move freely with the pointer or if it should be restricted to one axis.")]
+        [SerializeField] private DrageModeEnum dragMode = DrageModeEnum.Free;
+        /// <summary>
+        /// Defines whether this element can be dragged in order to reorder it in a list or grid.
+        /// </summary>
+        [Tooltip("Defines whether this element can be dragged in order to reorder it in a list or grid.")]
+        [SerializeField] private bool reorderableElement = false;
+
+        public DrageModeEnum DragMode => dragMode;
+        public bool ReorderableElement => reorderableElement;
+
+        public enum DrageModeEnum {
+            Free = 0,
+            OnlyVertical = 1,
+            OnlyHorizontal = 2
+        }
 
         /// <summary>
         /// Global access to currently dragged element
@@ -26,6 +45,7 @@ namespace GentlyUI.UIElements {
         public static GMDraggable currentDraggedElement;
 
         private RectTransform currentPlaceholder;
+
         private GMDraggedObject currentDragObject;
         public GMDraggedObject CurrentDragObject => currentDragObject;
 
@@ -43,7 +63,7 @@ namespace GentlyUI.UIElements {
             OnDragStarted();
         }
 
-        public void OnDrag(PointerEventData eventData) {}
+        public void OnDrag(PointerEventData eventData) { }
 
         public virtual void OnEndDrag(PointerEventData eventData) {
             //Set state to returning
@@ -51,7 +71,7 @@ namespace GentlyUI.UIElements {
         }
 
         public virtual void Tick(float unscaledDeltaTime) {
-            CanvasGroup.blocksRaycasts = currentDraggedElement == null;
+            //CanvasGroup.blocksRaycasts = currentDraggedElement == null;
         }
 
         void CreateDragObject() {
@@ -132,7 +152,7 @@ namespace GentlyUI.UIElements {
             currentDragObject = null;
         }
 
-        public void OnDragFinished() {
+        public virtual void OnDragFinished() {
             //Canvas group
             CanvasGroup.alpha = 1f;
             CanvasGroup.blocksRaycasts = true;
@@ -140,6 +160,10 @@ namespace GentlyUI.UIElements {
             ResetDragObject();
             //Reset global cache
             currentDraggedElement = null;
+        }
+
+        public void UpdateSiblingIndexOfPlaceholder(int newIndex) {
+            currentPlaceholder.SetSiblingIndex(newIndex);
         }
 
         /// <summary>
@@ -156,7 +180,7 @@ namespace GentlyUI.UIElements {
                 if (eventData.clickCount > 1) {
                     OnDoubleClick();
                 }
-                    
+
                 OnClick();
             } else if (eventData.button == PointerEventData.InputButton.Right) {
                 OnRightClick();
@@ -167,16 +191,16 @@ namespace GentlyUI.UIElements {
         /// Immediate single click callback. Immediate means there's no delay to detect if the single click was the first click of a double click.
         /// Don't use both, double and single click, on the same UI element for best UX or add a custom timer for single click detection.
         /// </summary>
-        public virtual void OnClick() {}
+        public virtual void OnClick() { }
 
         /// <summary>
         /// Double click callback.
         /// </summary>
-        public virtual void OnDoubleClick() {}
+        public virtual void OnDoubleClick() { }
 
         /// <summary>
         /// Right click callback.
         /// </summary>
-        public virtual void OnRightClick() {}
+        public virtual void OnRightClick() { }
     }
 }
