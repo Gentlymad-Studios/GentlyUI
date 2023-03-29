@@ -576,6 +576,10 @@ namespace GentlyUI.UIElements {
             currentItems.Clear();
         }
 
+        public List<Behaviour> GetAllItems() {
+            return currentPool.GetAllUsedInstances();
+        }
+
         public void Dispose() {
             ClearPool();
             onUpdateItem = null;
