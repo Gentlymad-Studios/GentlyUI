@@ -12,6 +12,7 @@ namespace GentlyUI.UIElements {
         public class ButtonClickedEvent : GentlyUIEvent { }
 
         [SerializeField] private ButtonClickedEvent onClick = new ButtonClickedEvent();
+        [SerializeField] private ButtonClickedEvent onRightClick = new ButtonClickedEvent();
 
         private bool isClickAllowed;
 
@@ -22,11 +23,20 @@ namespace GentlyUI.UIElements {
             set { onClick = value; }
         }
 
-        private void Press() {
+        public ButtonClickedEvent OnRightClick {
+            get { return onRightClick; }
+            set { onRightClick = value; }
+        }
+
+        private void Press(bool isRightClick = false) {
             if (!IsActive() || !Interactable)
                 return;
 
+            if (isRightClick) {
+                onRightClick.Invoke();
+            } else {
                 onClick.Invoke();
+            }
         }
 
         protected override void SetPressedState() {
@@ -37,10 +47,10 @@ namespace GentlyUI.UIElements {
 
         // Trigger all registered callbacks.
         public virtual void OnPointerClick(PointerEventData eventData) {
-            if (eventData.button != PointerEventData.InputButton.Left || !isClickAllowed)
+            if (!isClickAllowed)
                 return;
 
-            Press();
+            Press(eventData.button == PointerEventData.InputButton.Right);
         }
 
         public override void OnPointerDown(PointerEventData eventData) {
