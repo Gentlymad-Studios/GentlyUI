@@ -13,6 +13,14 @@ namespace GentlyUI.UIElements {
         [SerializeField] private MonoBehaviour itemPrefab;
         [SerializeField] private FlexibleGridLayout itemContainer;
         [SerializeField] private RectTransform content;
+
+        public class ViewportUpdateEvent : GentlyUIEvent { }
+        private ViewportUpdateEvent onViewportUpdate = new ViewportUpdateEvent();
+        public ViewportUpdateEvent OnViewportUpdate {
+            get { return onViewportUpdate; }
+            set { onViewportUpdate = value; }
+        }
+
         public RectTransform Content => content;
         public FlexibleGridLayout ItemContainer => itemContainer;
 
@@ -332,6 +340,10 @@ namespace GentlyUI.UIElements {
                     //So sibling index is more reliable on which data to display in this item.
                     OnUpdateItem(item, currentDataStartIndex + item.transform.GetSiblingIndex(), wasScrolled);
                 }
+            }
+
+            if (onViewportUpdate != null) {
+                onViewportUpdate.Invoke();
             }
         }
 
