@@ -132,7 +132,6 @@ namespace GentlyUI.UIElements {
             if (reparentOriginalElement) {
                 //Parent
                 RectTransform.SetParent(currentDragObject.Origin, false);
-                RectTransform.transform.localScale = Vector3.one;
                 //Check if we should use the last sibling index: If we have a placeholder in the same parent we have to!
                 if (returnToPlaceholder) {
                     RectTransform.SetSiblingIndex(currentPlaceholder.GetSiblingIndex());
@@ -148,6 +147,9 @@ namespace GentlyUI.UIElements {
                 //Destroy placeholder
                 DestroyPlaceholder();
             }
+
+            //Always make sure that draggable has correct scale at the end.
+            RectTransform.transform.localScale = Vector3.one;
 
             currentDragObject = null;
         }
