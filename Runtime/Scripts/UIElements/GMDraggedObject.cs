@@ -113,8 +113,6 @@ namespace GentlyUI.UIElements {
 
         void UpdatePositionByLocalPosition(Vector3 localPosition, Transform objectSpace) {
             Vector3 newPosition = objectSpace.TransformPoint(localPosition);
-            //Make sure z is 0
-            newPosition.z = 0f;
             transform.position = newPosition;
         }
 
