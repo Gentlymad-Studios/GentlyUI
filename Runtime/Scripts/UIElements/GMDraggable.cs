@@ -148,8 +148,11 @@ namespace GentlyUI.UIElements {
                 DestroyPlaceholder();
             }
 
-            //Always make sure that draggable has correct scale at the end.
+            //Always make sure that draggable has correct scale and z-position at the end.
             RectTransform.transform.localScale = Vector3.one;
+            Vector3 localPosition = RectTransform.localPosition;
+            localPosition.z = 0f;
+            RectTransform.localPosition = localPosition;
 
             currentDragObject = null;
         }
