@@ -429,6 +429,14 @@ namespace GentlyUI.UIElements {
             Setup(true);
         }
 
+        public void UpdateItemCount(int itemCount) {
+            totalItemCount = itemCount;
+
+            UpdateHeights();
+            UpdateScrollbar();
+            UpdateAllDisplayedItems();
+        }
+
         void Setup(bool goToTop = false) {
             if (!isInitialized || itemPrefab == null)
                 return;
@@ -463,9 +471,6 @@ namespace GentlyUI.UIElements {
             //We need one more row to allow scrolling!
             int itemsPerRow = itemContainer.columns;
             int maxItemsToShow = maxRowsToShow * itemContainer.columns + itemsPerRow;
-            //Either spawn items until maxItemsToShow is reached or the actual
-            //number from the list data if its count is less than maxItemsToShow.
-            maxItemsToShow = Mathf.Min(maxItemsToShow, totalItemCount);
             return maxItemsToShow;
         }
 
