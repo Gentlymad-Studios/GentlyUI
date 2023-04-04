@@ -593,8 +593,22 @@ namespace GentlyUI.UIElements {
             currentItems.Clear();
         }
 
-        public List<Behaviour> GetAllItems() {
-            return currentPool.GetAllUsedInstances();
+        public List<Behaviour> GetAllItems(bool excludeInvisible = false) {
+            if (excludeInvisible) {
+                List<Behaviour> allItems = currentPool.GetAllUsedInstances();
+                List<Behaviour> visibleItems = new List<Behaviour>();
+
+                for (int i = 0, count = allItems.Count; i < count; ++i) {
+                    Behaviour item = allItems[i];
+                    if (item.gameObject.activeSelf) {
+                        visibleItems.Add(item);
+                    }
+                }
+
+                return visibleItems;
+            } else {
+                return currentPool.GetAllUsedInstances();
+            }
         }
 
         public void Dispose() {
