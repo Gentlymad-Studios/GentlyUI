@@ -15,10 +15,7 @@ namespace GentlyUI.Core {
 
         protected override void Awake() {
             base.Awake();
-
-            if (!uiInitialized) {
-                InitializeUI();
-            }
+            InitializeUI();
         }
 
         /// <summary>
@@ -26,8 +23,10 @@ namespace GentlyUI.Core {
         /// Normally that shouldn't be a problem.
         /// </summary>
         public void InitializeUI() {
-            OnInitialize();
-            uiInitialized = true;
+            if (!uiInitialized) {
+                OnInitialize();
+                uiInitialized = true;
+            }
         }
 
         protected override void Start() {
