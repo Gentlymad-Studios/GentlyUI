@@ -156,6 +156,7 @@ namespace GentlyUI.UIElements {
             VisualElementAnimationAttributes colAnimAttributes = stateData.GetAnimationAttributes(AnimationProperty.Color);
             if (colAnimAttributes != null) {
                 Color color = RootSelectable.WarningActive ? UIManager.UISettings.GetColor(stateData.WarningGlobalColor) : UIManager.UISettings.GetColor(stateData.GlobalColor);
+                color.a = 1.0f;
                 graphic.color = color;
             }
 
