@@ -11,6 +11,10 @@ namespace GentlyUI.UIElements {
     [RequireComponent(typeof(Graphic))]
     public class GMVisualElement : UIBase {
         private Graphic graphic;
+        /// <summary>
+        /// If not enabled, the visual element's gameObject will be disabled and it will no longer react to player input.
+        /// </summary>
+        private bool isEnabled = true;
 
         public enum VisualState {
             Default = 0,
@@ -61,18 +65,29 @@ namespace GentlyUI.UIElements {
             base.OnInitialize();
         }
 
+        public void EnableVisualElement(bool isActive) {
+            isEnabled = isActive;
+
+            if (!isEnabled) {
+                gameObject.SetActive(false);
+            } else {
+                SetState(currentState);
+            }
+        }
+
         /// <summary>
         /// Updates this visual element to the passed state.
         /// </summary>
         /// <param name="state">The state!</param>
         /// <param name="setImmediately">Set to true if we want to go to the end values immediately. Only works if no repeatable animation is configured for this state.</param>
         public void SetState(VisualState state, bool setImmediately = false) {
+            if (!isEnabled || state == currentState && !setImmediately) {
+                return;
+            }
+
             if (!initialized) {
                 Initialize(RootSelectable);
             }
-
-            if (state == currentState && !setImmediately)
-                return;
 
             stateData = GetStateData(state);
 
