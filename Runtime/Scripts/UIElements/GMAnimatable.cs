@@ -6,12 +6,24 @@ using Uween;
 
 namespace GentlyUI.UIElements {
     public class GMAnimatable : Namable {
-        public override void UpdateName() {}
+        public override void UpdateName() { }
 
         [SerializeField] List<VisualElementAnimationAttributes> animationAttributes;
         public List<VisualElementAnimationAttributes> AnimationAttributes => animationAttributes;
 
         private Dictionary<AnimationProperty, VisualElementAnimationAttributes> animationAttributesLUT;
+
+        private static Array animationProperties;
+        private static Array AnimationProperties {
+            get {
+                if (animationProperties == null) {
+                    animationProperties = Enum.GetValues(typeof(AnimationProperty));
+                }
+
+                return animationProperties;
+            }
+        }
+
 
         public virtual void Initialize() {
             //Check if already initialized first
@@ -20,9 +32,7 @@ namespace GentlyUI.UIElements {
 
             animationAttributesLUT = new Dictionary<AnimationProperty, VisualElementAnimationAttributes>();
 
-            Array properties = Enum.GetValues(typeof(AnimationProperty));
-
-            foreach (AnimationProperty property in properties) {
+            foreach (AnimationProperty property in AnimationProperties) {
                 for (int i = 0, count = animationAttributes.Count; i < count; ++i) {
                     VisualElementAnimationAttributes attribute = animationAttributes[i];
                     if (attribute.PropertyTypeToAnimate.HasFlag(property)) {
@@ -33,13 +43,6 @@ namespace GentlyUI.UIElements {
         }
 
         public VisualElementAnimationAttributes GetAnimationAttributes(AnimationProperty animationProperty) {
-#if UNITY_EDITOR
-            if (animationAttributesLUT == null) {
-                Debug.LogError("Trying to access an animation attributes LUT that was not setup yet.");
-                return null;
-            }
-#endif
-
             if (animationAttributesLUT.ContainsKey(animationProperty)) {
                 return animationAttributesLUT[animationProperty];
             }
@@ -93,7 +96,7 @@ namespace GentlyUI.UIElements {
             public override void UpdateName() {
                 if (propertyToAnimate == 0) {
                     name = "Nothing";
-                }  else if (propertyToAnimate < 0) {
+                } else if (propertyToAnimate < 0) {
                     name = "Everything";
                 } else {
                     name = propertyToAnimate.ToString();

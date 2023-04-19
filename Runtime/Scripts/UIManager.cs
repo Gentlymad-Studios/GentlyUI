@@ -66,13 +66,6 @@ namespace GentlyUI {
             }
         }
 
-        private void OnEnable() {
-#if UNITY_EDITOR
-            //Make sure that on a domain reload the instance is still set.
-            instance = this;
-#endif
-        }
-
         public void SpawnCanvas(string identifier) {
             if (!canvasLUT.ContainsKey(identifier)) {
                 CanvasData cd = UISettings.GetCanvasData(identifier);
@@ -160,7 +153,7 @@ namespace GentlyUI {
 
         public void RegisterUI(UIBase ui) {
             if (!uiBases.Contains(ui)) {
-                if (!uiBasesToAdd.Contains(ui)) uiBasesToAdd.Add(ui);
+                uiBasesToAdd.Add(ui);
             }
 
             if (uiBasesToRemove.Contains(ui)) uiBasesToRemove.Remove(ui);
@@ -168,7 +161,7 @@ namespace GentlyUI {
 
         public void UnregisterUI(UIBase ui) {
             if (uiBases.Contains(ui)) {
-                if (!uiBasesToRemove.Contains(ui)) uiBasesToRemove.Add(ui);
+                uiBasesToRemove.Add(ui);
             }
 
             if (uiBasesToAdd.Contains(ui)) uiBasesToAdd.Remove(ui);
@@ -178,7 +171,7 @@ namespace GentlyUI {
             uiBases.Add(ui);
 
             IUITickable tickable = ui as IUITickable;
-            if (tickable != null && !tickableUIs.Contains(tickable)) {
+            if (tickable != null) {
                 tickableUIs.Add(tickable);
             }
         }
@@ -186,7 +179,7 @@ namespace GentlyUI {
         void RemoveRegisteredUI(UIBase ui) {
             uiBases.Remove(ui);
 
-            if (ui is IUITickable tickable && tickableUIs.Contains(tickable)) {
+            if (ui is IUITickable tickable) {
                 tickableUIs.Remove(tickable);
             }
         }

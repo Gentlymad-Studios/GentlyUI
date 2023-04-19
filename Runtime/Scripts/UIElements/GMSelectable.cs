@@ -270,7 +270,7 @@ namespace GentlyUI.UIElements {
             return c;
         }
 
-        public virtual void CreatePooledUICache() {}
+        public virtual void CreatePooledUICache() { }
 
         public virtual void ResetPooledUI() {
             ToggleWarning(false);

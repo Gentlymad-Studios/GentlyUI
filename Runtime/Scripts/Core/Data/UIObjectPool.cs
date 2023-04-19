@@ -37,7 +37,7 @@ namespace GentlyUI.Core {
         /// Get an instance from the pool. If no free instance is available, a new one will be created.
         /// </summary>
         /// <returns></returns>
-        public T Get(Transform parent) {
+        public T Get(Transform parent, bool setActive = true) {
             T _instance;
 
             if (FreeCount > 0) {
@@ -45,14 +45,6 @@ namespace GentlyUI.Core {
                 freeInstances.RemoveAt(FreeCount - 1);
             } else {
                 _instance = create();
-                _instance.transform.hierarchyCapacity = UIManager.UISettings.MaxHierarchyCapacity;
-
-                if (!_instance.gameObject.activeInHierarchy) {
-                    UIBase uiBase = _instance.gameObject.GetComponent<UIBase>();
-                    if (uiBase != null) {
-                        uiBase.InitializeUI();
-                    }
-                }
 
                 if (_instance is IPooledUIResetter resetter) {
                     resetter.CreatePooledUICache();
@@ -65,7 +57,9 @@ namespace GentlyUI.Core {
             activeCount += 1;
 
             //Reparent if not in correct parent yet
-            if (_instance.transform.parent != parent) _instance.transform.SetParent(parent, false);
+            if (_instance.transform.parent != parent) {
+                _instance.transform.SetParent(parent, false);
+            }
 
             //Update transform
             _instance.transform.localScale = Vector3.one;
@@ -73,7 +67,9 @@ namespace GentlyUI.Core {
             _instance.transform.localPosition = Vector3.zero;
             _instance.transform.localRotation = Quaternion.identity;
             //Activate if not active yet
-            if (!_instance.gameObject.activeSelf) _instance.gameObject.SetActive(true);
+            if (_instance.gameObject.activeSelf != setActive) {
+                _instance.gameObject.SetActive(setActive);
+            }
 
             onGet?.Invoke(_instance);
 

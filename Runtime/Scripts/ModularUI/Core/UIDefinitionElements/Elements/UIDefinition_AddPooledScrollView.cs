@@ -8,7 +8,7 @@ namespace GentlyUI.ModularUI {
     public abstract partial class UIDefinition {
         protected GMPooledScrollView AddPooledScrollView<T>(
             MonoBehaviour scrollViewItemPrefab,
-            IList dataList,
+            int initialCount,
             Action<Behaviour, int> onUpdateItem,
             int columns = 1,
             int cellHeight = 50,
@@ -29,7 +29,7 @@ namespace GentlyUI.ModularUI {
             //Set cell height before initializing
             pooledScrollView.ItemContainer.cellHeight = cellHeight;
             //Initialize scrollView
-            pooledScrollView.Initialize<T>(scrollViewItemPrefab, dataList.Count, onUpdateItem, onReturnItem);
+            pooledScrollView.Initialize<T>(scrollViewItemPrefab, initialCount, onUpdateItem, onReturnItem);
 
             return pooledScrollView;
         }
