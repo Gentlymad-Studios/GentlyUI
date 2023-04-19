@@ -406,7 +406,14 @@ namespace GentlyUI.UIElements {
             } else {
                 Vector3[] corners = new Vector3[4];
                 textOutput.rectTransform.GetLocalCorners(corners);
-                startPos = endPos = new Vector2(corners[0].x, caret.rectTransform.localPosition.y);
+
+                if (textOutput.alignment == TextAlignmentOptions.Center) {
+                    startPos = endPos = new Vector2(Mathf.Lerp(corners[0].x, corners[2].x, 0.5f), caret.rectTransform.localPosition.y);
+                } else if (textOutput.alignment == TextAlignmentOptions.Right) {
+                    startPos = endPos = new Vector2(corners[2].x, caret.rectTransform.localPosition.y);
+                } else {
+                    startPos = endPos = new Vector2(corners[0].x, caret.rectTransform.localPosition.y);
+                }
             }
 
             if (selectionStartPosition == selectionEndPosition) {
