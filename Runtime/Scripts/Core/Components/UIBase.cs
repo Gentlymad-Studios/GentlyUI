@@ -3,8 +3,6 @@ using UnityEngine.EventSystems;
 
 namespace GentlyUI.Core {
     public class UIBase : UIBehaviour {
-        bool uiInitialized = false;
-
         private RectTransform rectTransform;
         protected RectTransform RectTransform {
             get {
@@ -15,23 +13,11 @@ namespace GentlyUI.Core {
 
         protected override void Awake() {
             base.Awake();
-            InitializeUI();
-        }
-
-        /// <summary>
-        /// Should only be called if you need an ui to be initialized before being active in hierarchy.
-        /// Normally that shouldn't be a problem.
-        /// </summary>
-        public void InitializeUI() {
-            if (!uiInitialized) {
-                OnInitialize();
-                uiInitialized = true;
-            }
+            OnInitialize();
         }
 
         protected override void Start() {
             base.Start();
-
             AfterInitialize();
         }
 
@@ -47,15 +33,15 @@ namespace GentlyUI.Core {
 
 
         protected override void OnEnable() {
-            if (uiInitialized) UIManager.Instance.RegisterUI(this);
+            UIManager.Instance.RegisterUI(this);
         }
 
         protected override void OnDisable() {
-            if (uiInitialized) UIManager.Instance.UnregisterUI(this);
+            UIManager.Instance.UnregisterUI(this);
         }
 
         protected override void OnDestroy() {
-            if (uiInitialized) UIManager.Instance.UnregisterUI(this);
+            UIManager.Instance.UnregisterUI(this);
         }
 
         /// <summary>
