@@ -68,5 +68,35 @@ namespace GentlyUI.UIElements {
 
             SetVisualState(GMVisualElement.VisualState.Pressed, false);
         }
+
+        //POOLED CALLBACK
+        UnityAction currentClickCallback;
+
+        /// <summary>
+        /// Sets a callback that is automatically removed when this item is returned by an object pool.
+        /// </summary>
+        /// <param name="callback"></param>
+        public void SetClickCallback(UnityAction callback) {
+            RemoveCurrentClickCallback();
+            currentClickCallback = callback;
+
+            OnClick.AddListener(currentClickCallback);
+        }
+
+        public override void ResetPooledUI() {
+            base.ResetPooledUI();
+
+            RemoveCurrentClickCallback();
+        }
+
+        /// <summary>
+        /// Removes the current set click callback. This also happens automatically if the button is returned by an object pool.
+        /// </summary>
+        public void RemoveCurrentClickCallback() {
+            if (currentClickCallback != null) {
+                OnClick.RemoveListener(currentClickCallback);
+                currentClickCallback = null;
+            }
+        }
     }
 }
