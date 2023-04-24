@@ -224,10 +224,10 @@ namespace GentlyUI.UIElements {
         void SetPivots() {
             if (container != null) {
                 if (scrollAxisInt == 0) {
-                    container.pivot = new Vector2(0, container.pivot.y);
+                    container.pivot = Vector2.zero;
                     handle.pivot = new Vector2(0, 0.5f);
                 } else {
-                    container.pivot = new Vector2(container.pivot.x, 1);
+                    container.pivot = new Vector2(0, 1);
                     handle.pivot = new Vector2(0.5f, 1);
                 }
             }
