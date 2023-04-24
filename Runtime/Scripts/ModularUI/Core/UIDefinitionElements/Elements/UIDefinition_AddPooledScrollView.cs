@@ -33,5 +33,33 @@ namespace GentlyUI.ModularUI {
 
             return pooledScrollView;
         }
+
+        protected GMPooledScrollView AddHorizontalPooledScrollView<T>(
+            MonoBehaviour scrollViewItemPrefab,
+            int initialCount,
+            Action<Behaviour, int> onUpdateItem,
+            int rows = 1,
+            int cellWidth = 50,
+            Action<Behaviour> onReturnItem = null
+        ) where T : Behaviour {
+            string path = Path.Join(UIPaths.BasePath, UIPaths.ElementPath, UIManager.UISettings.DefaultHorizontalPooledScrollView);
+
+            GMPooledScrollView pooledScrollView = UISpawner<GMPooledScrollView>.SpawnUI(path, currentContainer);
+            //Cache object
+            CacheUIObject(pooledScrollView.gameObject, () => {
+                pooledScrollView.Dispose();
+                UISpawner<GMPooledScrollView>.ReturnUI(pooledScrollView);
+            });
+            //Set constraints to rows
+            pooledScrollView.ItemContainer.layoutConstraints = FlexibleGridLayout.LayoutConstraints.FixedRows;
+            //Set columns before initializing
+            pooledScrollView.ItemContainer.rows = rows;
+            //Set cell height before initializing
+            pooledScrollView.ItemContainer.cellWidth = cellWidth;
+            //Initialize scrollView
+            pooledScrollView.Initialize<T>(scrollViewItemPrefab, initialCount, onUpdateItem, onReturnItem);
+
+            return pooledScrollView;
+        }
     }
 }

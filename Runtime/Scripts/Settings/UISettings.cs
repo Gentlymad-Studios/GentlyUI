@@ -208,6 +208,9 @@ public class UISettings : ScriptableObject, ISerializationCallbackReceiver {
     [SerializeField] private string defaultPooledScrollView = "pooledScrollView";
     public string DefaultPooledScrollView => defaultPooledScrollView;
 
+    [SerializeField] private string defaultHorizontalPooledScrollView = "pooledScrollView";
+    public string DefaultHorizontalPooledScrollView => defaultHorizontalPooledScrollView;
+
     [SerializeField] private string defaultSlider = "slider";
     public string DefaultSlider => defaultSlider;
 
