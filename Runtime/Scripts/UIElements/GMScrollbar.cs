@@ -143,14 +143,7 @@ namespace GentlyUI.UIElements {
         }
 
 #if UNITY_EDITOR
-        protected override void OnValidate() {
-            base.OnValidate();
-
-            //TODO: This can also be done if we write a custom inspector for the gm scrollbar
-            UnityEditor.EditorApplication.delayCall += EDITOR_UpdateScrollbar;
-        }
-
-        void EDITOR_UpdateScrollbar() {
+        public void EDITOR_UpdateScrollbar() {
             UpdateCache();
             UpdateVisuals();
         }
@@ -227,7 +220,7 @@ namespace GentlyUI.UIElements {
                     container.pivot = Vector2.zero;
                     handle.pivot = new Vector2(0, 0.5f);
                 } else {
-                    container.pivot = new Vector2(0, 1);
+                    container.pivot = Vector2.one;
                     handle.pivot = new Vector2(0.5f, 1);
                 }
             }
