@@ -13,6 +13,13 @@ namespace GentlyUI.UIElements {
         [SerializeField] private MonoBehaviour itemPrefab;
         [SerializeField] private FlexibleGridLayout itemContainer;
         [SerializeField] private RectTransform content;
+        [Header("Scroll Constraints")]
+        [SerializeField] private ScrollAxis scrollAxis = ScrollAxis.Vertical;
+
+        public enum ScrollAxis {
+            Horizontal = 0,
+            Vertical = 1
+        }
 
         public class ViewportUpdateEvent : GentlyUIEvent { }
         private ViewportUpdateEvent onViewportUpdate = new ViewportUpdateEvent();
@@ -142,13 +149,18 @@ namespace GentlyUI.UIElements {
         }
 
         private float defaultPreferredHeight = 200;
+        private float defaultPreferredWidth = 200;
 
         private LayoutElement layoutElement;
         private LayoutElement LayoutElement {
             get {
                 if (layoutElement == null) {
                     layoutElement = gameObject.GetOrAddComponent<LayoutElement>();
-                    layoutElement.preferredHeight = Mathf.Max(defaultPreferredHeight, layoutElement.preferredHeight);
+                    if (scrollAxisInt == 0) {
+                        layoutElement.preferredWidth = Mathf.Max(defaultPreferredWidth, layoutElement.preferredWidth);
+                    } else {
+                        layoutElement.preferredHeight = Mathf.Max(defaultPreferredHeight, layoutElement.preferredHeight);
+                    }                    
                 }
                 return layoutElement;
             }
@@ -164,18 +176,31 @@ namespace GentlyUI.UIElements {
         private int totalItemCount;
 
         private float viewportHeight;
+        private float viewportWidth;
+
         private float totalHeight;
+        private float totalWidth;
 
         private float rowHeight;
+        private float columnWidth;
         private float normalizedTargetPosition;
 
         private bool isInitialized = false;
         private bool isQuitting = false;
 
+        private int scrollAxisInt;
+        private Vector2 scrollVector;
+
         protected override void OnInitialize() {
             base.OnInitialize();
 
+            targetPosition = Content.anchoredPosition;
+
             defaultPreferredHeight = LayoutElement.preferredHeight;
+            defaultPreferredWidth = LayoutElement.preferredWidth;
+
+            scrollAxisInt = (int)scrollAxis;
+            scrollVector = new Vector2(1 - scrollAxisInt, scrollAxisInt);
 
             if (itemPrefab != null) {
                 SetPrefab(itemPrefab);
@@ -183,23 +208,27 @@ namespace GentlyUI.UIElements {
         }
 
         /****** Scroll Logic *******/
+        float scrollValue, scrollValueAbsolute;
+        Vector2 delta;
+
         public virtual void OnScroll(PointerEventData data) {
             if (!IsActive() || !IsScrollingAllowed())
                 return;
 
-            Vector2 delta = data.scrollDelta;
+            delta = data.scrollDelta;
+            scrollValue = delta.y;
 
             if (ScrollInSteps) {
-                if (delta.y > 0) {
-                    SetNormalizedScrollPosition((targetPosition.y - rowHeight) / maxScrollPosition);
+                if (scrollValue > 0) {
+                    scrollValueAbsolute = scrollAxisInt == 0 ? Mathf.Abs(targetPosition.x) - columnWidth : targetPosition.y - rowHeight;
+                    SetNormalizedScrollPosition(scrollValueAbsolute / maxScrollPosition);
                 } else {
-                    SetNormalizedScrollPosition((targetPosition.y + rowHeight) / maxScrollPosition);
+                    scrollValueAbsolute = scrollAxisInt == 0 ? Mathf.Abs(targetPosition.x) + columnWidth : targetPosition.y + rowHeight;
+                    SetNormalizedScrollPosition(scrollValueAbsolute / maxScrollPosition);
                 }
             } else {
-                SetNormalizedScrollPosition((targetPosition.y
-                                             - delta.y
-                                             * ScrollSensitivity)
-                                                / maxScrollPosition);
+                scrollValueAbsolute = scrollAxisInt == 0 ? targetPosition.x + delta.x : targetPosition.y - delta.y;
+                SetNormalizedScrollPosition(scrollValueAbsolute * ScrollSensitivity / maxScrollPosition);
             }
         }
 
@@ -207,28 +236,45 @@ namespace GentlyUI.UIElements {
 
         }
 
+        /****** Move Logic *******/
+        float moveDistance, movementSpeed;
+
         public virtual void Tick(float unscaledDeltaTime) {
             if (!IsScrollingAllowed())
                 return;
 
-            isScrolling = internalPosition.y != targetPosition.y;
+            if (scrollAxisInt == 0) {
+                isScrolling = internalPosition.x != targetPosition.x;
+
+                moveDistance = Mathf.Abs(targetPosition.x - internalPosition.x);
+                movementSpeed = moveDistance / EaseDuration;
+            } else {
+                isScrolling = internalPosition.y != targetPosition.y;
+
+                moveDistance = Mathf.Abs(targetPosition.y - internalPosition.y);
+                movementSpeed = moveDistance / EaseDuration;
+            }
 
             //Do nothing if position is reached
             if (!isScrolling) {
                 return;
             }
 
-            float moveDistance = Mathf.Abs(targetPosition.y - internalPosition.y);
-            float movementSpeed = moveDistance / EaseDuration;
-
             SetContentAnchoredPosition(Vector2.MoveTowards(internalPosition,
                                                             targetPosition,
                                                             unscaledDeltaTime * movementSpeed));
 
             ///If we are close as half a pixel to the correct position we can snap to the actual position
-            if (Mathf.Abs(internalPosition.y - targetPosition.y) <= 0.5f) {
-                SetContentAnchoredPosition(targetPosition, true);
-                OnScrollEnded();
+            if (scrollAxisInt == 0) {
+                if (Mathf.Abs(internalPosition.x - targetPosition.x) <= 0.5f) {
+                    SetContentAnchoredPosition(targetPosition, true);
+                    OnScrollEnded();
+                }
+            } else {
+                if (Mathf.Abs(internalPosition.y - targetPosition.y) <= 0.5f) {
+                    SetContentAnchoredPosition(targetPosition, true);
+                    OnScrollEnded();
+                }
             }
         }
 
@@ -252,7 +298,7 @@ namespace GentlyUI.UIElements {
 
             normalizedTargetPosition = normalizedPosition;
 
-            Vector3 localPosition = Vector3.up * normalizedPosition * maxScrollPosition;
+            Vector3 localPosition = scrollVector * normalizedPosition * maxScrollPosition;
 
             SetTargetPosition(localPosition, setImmediately);
         }
@@ -267,9 +313,14 @@ namespace GentlyUI.UIElements {
             float scrollPosition = defaultNormalizedPosition * maxScrollPosition;
             int numberOfSteps = 0;
 
-            numberOfSteps = Mathf.RoundToInt(scrollPosition / rowHeight);
+            if (scrollAxisInt == 0) {
+                numberOfSteps = Mathf.RoundToInt(scrollPosition / columnWidth);
+                scrollPosition = Mathf.Clamp(numberOfSteps * columnWidth, 0, maxScrollPosition);
+            } else {
+                numberOfSteps = Mathf.RoundToInt(scrollPosition / rowHeight);
+                scrollPosition = Mathf.Clamp(numberOfSteps * rowHeight, 0, maxScrollPosition);
+            }
 
-            scrollPosition = Mathf.Clamp(numberOfSteps * rowHeight, 0, maxScrollPosition);
             return Mathf.InverseLerp(0, maxScrollPosition, scrollPosition);
         }
 
@@ -277,8 +328,15 @@ namespace GentlyUI.UIElements {
             if (!setImmediately) setImmediately = MovementType == MovementType.Direct;
 
             //Clamp scroll position
-            float scrollPosition = Mathf.Clamp(position.y, 0, maxScrollPosition);
-            targetPosition = new Vector2(Content.anchoredPosition.x, scrollPosition);
+            float scrollPosition;
+
+            if (scrollAxisInt == 0) {
+                scrollPosition = Mathf.Clamp(position.x, 0, maxScrollPosition);
+                targetPosition.x = -scrollPosition;
+            } else {
+                scrollPosition = Mathf.Clamp(position.y, 0, maxScrollPosition);
+                targetPosition.y = scrollPosition;
+            }
 
             if (setImmediately) {
                 SetContentAnchoredPosition(targetPosition, true);
@@ -289,11 +347,23 @@ namespace GentlyUI.UIElements {
             if (position != internalPosition) {
                 internalPosition = position;
                 //Update anchored position of content
-                float yPos = internalPosition.y % rowHeight;
+                float pos;
+
+                if (scrollAxisInt == 0) {
+                    //horizontal scroll is in negative space, so columnWidth needs to be negative too
+                    pos = internalPosition.x % -columnWidth;
+                } else {
+                    pos = internalPosition.y % rowHeight;
+                }
 
                 //Only update viewport if we are between items
-                if (yPos != 0f || forceUpdate) {
-                    Content.anchoredPosition = new Vector2(Content.anchoredPosition.x, yPos);
+                if (pos != 0f || forceUpdate) {
+                    if (scrollAxisInt == 0) {
+                        Content.anchoredPosition = new Vector2(pos, Content.anchoredPosition.y);
+                    } else {
+                        Content.anchoredPosition = new Vector2(Content.anchoredPosition.x, pos);
+                    }
+
                     UpdateViewport();
                 }
 
@@ -307,7 +377,14 @@ namespace GentlyUI.UIElements {
         /// <param name="index">The index of the element in the data list.</param>
         /// <param name="immediately">Should we jump immediately or animate there?</param>
         public void SnapToElement(int index, bool immediately = true) {
-            float normalizedPosition = (rowHeight * Mathf.FloorToInt(index / (float)itemContainer.columns)) / maxScrollPosition;
+            float normalizedPosition;
+
+            if (scrollAxisInt == 0) {
+                normalizedPosition = columnWidth * Mathf.FloorToInt(index / (float)itemContainer.rows) / maxScrollPosition;
+            } else {
+                normalizedPosition = rowHeight * Mathf.FloorToInt(index / (float)itemContainer.columns) / maxScrollPosition;
+            }
+
             SetNormalizedScrollPosition(normalizedPosition, true);
             UpdateViewport();
         }
@@ -327,9 +404,16 @@ namespace GentlyUI.UIElements {
 
         void UpdateViewport(bool forceUpdate = false) {
             int _lastStartIndex = currentDataStartIndex;
-            int currentRowIndex = Mathf.FloorToInt(internalPosition.y / rowHeight);
-            currentRowIndex = Mathf.Max(currentRowIndex, 0);
-            currentDataStartIndex = currentRowIndex * itemContainer.columns;
+
+            if (scrollAxisInt == 0) {
+                int currentColumnIndex = Mathf.FloorToInt(Mathf.Abs(internalPosition.x) / columnWidth);
+                currentColumnIndex = Mathf.Max(currentColumnIndex, 0);
+                currentDataStartIndex = currentColumnIndex * itemContainer.rows;
+            } else {
+                int currentRowIndex = Mathf.FloorToInt(internalPosition.y / rowHeight);
+                currentRowIndex = Mathf.Max(currentRowIndex, 0);
+                currentDataStartIndex = currentRowIndex * itemContainer.columns;
+            }
 
             bool wasScrolled = _lastStartIndex != currentDataStartIndex;
 
@@ -432,7 +516,7 @@ namespace GentlyUI.UIElements {
         public void UpdateItemCount(int itemCount) {
             totalItemCount = itemCount;
 
-            UpdateHeights();
+            UpdateSizes();
             UpdateScrollbar();
             UpdateAllDisplayedItems();
         }
@@ -441,7 +525,7 @@ namespace GentlyUI.UIElements {
             if (!isInitialized || itemPrefab == null)
                 return;
 
-            UpdateHeights();
+            UpdateSizes();
             UpdateScrollbar();
             SpawnItems();
 
@@ -450,32 +534,48 @@ namespace GentlyUI.UIElements {
             }
         }
 
-        void UpdateHeights() {
+        void UpdateSizes() {
             rowHeight = itemContainer.cellHeight + itemContainer.spacing.y;
+            columnWidth = itemContainer.cellWidth + itemContainer.spacing.x;
 
             //If scrolling in steps we want to have the height to be a multiple of row height
             if (settings.ScrollInSteps) {
-                float newPreferredHeight = rowHeight * Mathf.CeilToInt(defaultPreferredHeight / rowHeight) + itemContainer.padding.top;
-                LayoutElement.preferredHeight = newPreferredHeight;
+                if (scrollAxisInt == 0) {
+                    float newPreferredWidth = columnWidth * Mathf.CeilToInt(defaultPreferredWidth / columnWidth) + itemContainer.padding.left;
+                    LayoutElement.preferredWidth = newPreferredWidth;
+                } else {
+                    float newPreferredHeight = rowHeight * Mathf.CeilToInt(defaultPreferredHeight / rowHeight) + itemContainer.padding.top;
+                    LayoutElement.preferredHeight = newPreferredHeight;
+                }
             }
 
             viewportHeight = viewport.GetHeight();
+            viewportWidth = viewport.GetWidth();
+
             totalHeight = Mathf.CeilToInt(totalItemCount / (float)itemContainer.columns) * rowHeight + itemContainer.padding.bottom + itemContainer.padding.top - itemContainer.spacing.y;
+            totalWidth = Mathf.CeilToInt(totalItemCount / (float)itemContainer.rows) * columnWidth + itemContainer.padding.left + itemContainer.padding.right - itemContainer.spacing.x;
 
             UpdateMaxScrollPosition();
         }
 
         int CalculateMaxItemsToSpawn() {
-            int maxRowsToShow = Mathf.CeilToInt(viewportHeight / rowHeight);
             //The maximum number of items to show is the maximum number of rows * items per row which is defined in the layout group
             //We need one more row to allow scrolling!
-            int itemsPerRow = itemContainer.columns;
-            int maxItemsToShow = maxRowsToShow * itemContainer.columns + itemsPerRow;
-            return maxItemsToShow;
+            if (scrollAxisInt == 0) {
+                int maxColumnsToShow = Mathf.CeilToInt(viewportWidth / columnWidth);
+                return maxColumnsToShow * itemContainer.rows + itemContainer.rows;
+            } else {
+                int maxRowsToShow = Mathf.CeilToInt(viewportHeight / rowHeight);
+                return maxRowsToShow * itemContainer.columns + itemContainer.columns;
+            }
         }
 
         void UpdateMaxScrollPosition() {
-            maxScrollPosition = Mathf.Max(0, totalHeight - viewportHeight);
+            if (scrollAxisInt == 0) {
+                maxScrollPosition = Mathf.Max(0, totalWidth - viewportWidth);
+            } else {
+                maxScrollPosition = Mathf.Max(0, totalHeight - viewportHeight);
+            }
         }
 
         /// <summary>

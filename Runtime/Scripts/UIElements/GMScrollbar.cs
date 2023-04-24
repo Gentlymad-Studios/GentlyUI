@@ -20,25 +20,30 @@ namespace GentlyUI.UIElements {
         /// <summary>
         /// The current value of the scroll bar in 0 to 1 range.
         /// </summary>
-        [UnityEngine.Tooltip("The current value of the scroll bar in 0 to 1 range.")]
+        [Tooltip("The current value of the scroll bar in 0 to 1 range.")]
         public float Value => value;
 
         private float size = 0.2f;
         /// <summary>
         /// The current size of the scrollbar's handle in 0 to 1 range.
         /// </summary>
-        [UnityEngine.Tooltip("The current size of the scrollbar's handle in 0 to 1 range.")]
+        [Tooltip("The current size of the scrollbar's handle in 0 to 1 range.")]
         public float Size => size;
 
         /// <summary>
         /// The minimum size of the handle. The handle should not get shorter than this.
         /// </summary>
-        [UnityEngine.Tooltip("The minimum size of the handle. The handle should not get shorter than this.")]
+        [Tooltip("The minimum size of the handle. The handle should not get shorter than this.")]
         [SerializeField] private float minSize = 0.1f;
         public float MinSize => minSize;
 
-        [SerializeField]
-        private ScrollEvent onValueChanged = new ScrollEvent();
+        /// <summary>
+        /// The direction in which the scrollbar is scrolled.
+        /// </summary>
+        [Tooltip("The direction in which the scrollbar is scrolled.")]
+        [SerializeField] private GMPooledScrollView.ScrollAxis scrollAxis = GMPooledScrollView.ScrollAxis.Vertical;
+
+        [SerializeField]private ScrollEvent onValueChanged = new ScrollEvent();
         public ScrollEvent OnValueChanged => onValueChanged;
 
         private RectTransform container;
@@ -48,6 +53,8 @@ namespace GentlyUI.UIElements {
         /// Whether or not the player is currently interacting with the scrollbar.
         /// </summary>
         private bool isInteractionActive = false;
+
+        private int scrollAxisInt;
 
         protected GMScrollbar() { }
         public void GraphicUpdateComplete() {}
@@ -90,17 +97,33 @@ namespace GentlyUI.UIElements {
                 RectTransformUtility.ScreenPointToLocalPointInRectangle(container, eventData.position, UIManager.UICamera, out localMousePosition);
 
                 if (movedByHandle) {
-                    //Move distance
-                    float yDeltaMovement = startPosition.y - localMousePosition.y;
-                    //Get new value from position offset
-                    float maxScrollDistance = container.GetHeight() - handle.GetHeight();
-                    if (maxScrollDistance > 0) {
-                        float newValue = startValue + yDeltaMovement / maxScrollDistance;
-                        SetValue(newValue);
+                    if (scrollAxisInt == 0) {
+                        //Move distance
+                        float xDeltaMovement = localMousePosition.x - startPosition.x;
+                        //Get new value from position offset
+                        float maxScrollDistance = container.GetWidth() - handle.GetWidth();
+                        if (maxScrollDistance > 0) {
+                            float newValue = startValue + xDeltaMovement / maxScrollDistance;
+                            SetValue(newValue);
+                        }
+                    } else {
+                        //Move distance
+                        float yDeltaMovement = startPosition.y - localMousePosition.y;
+                        //Get new value from position offset
+                        float maxScrollDistance = container.GetHeight() - handle.GetHeight();
+                        if (maxScrollDistance > 0) {
+                            float newValue = startValue + yDeltaMovement / maxScrollDistance;
+                            SetValue(newValue);
+                        }
                     }
                 } else {
-                    float newValue = Mathf.InverseLerp(0, container.GetHeight() - handle.GetHeight(), Mathf.Abs(startPosition.y) - handle.GetHeight() * 0.5f);
-                    SetValue(newValue);
+                    if (scrollAxisInt == 0) {
+                        float newValue = Mathf.InverseLerp(0, container.GetWidth() - handle.GetWidth(), Mathf.Abs(startPosition.x) - handle.GetWidth() * 0.5f);
+                        SetValue(newValue);
+                    } else {
+                        float newValue = Mathf.InverseLerp(0, container.GetHeight() - handle.GetHeight(), Mathf.Abs(startPosition.y) - handle.GetHeight() * 0.5f);
+                        SetValue(newValue);
+                    }
 
                     movedByHandle = true;
                     startValue = Value;
@@ -161,10 +184,15 @@ namespace GentlyUI.UIElements {
                 Vector2 anchorMin = Vector2.zero;
                 Vector2 anchorMax = Vector2.one;
 
-                float yAnchorPos = Mathf.Lerp(1f- size, 0f, value);
-
-                anchorMin[1] = yAnchorPos;
-                anchorMax[1] = yAnchorPos + size;
+                if (scrollAxisInt == 0) {
+                    float xAnchorPos = Mathf.Lerp(0f, 1f - size, value);
+                    anchorMin[0] = xAnchorPos;
+                    anchorMax[0] = xAnchorPos + size;
+                } else {
+                    float yAnchorPos = Mathf.Lerp(1f - size, 0f, value);
+                    anchorMin[1] = yAnchorPos;
+                    anchorMax[1] = yAnchorPos + size;
+                }
 
                 handle.anchorMin = anchorMin;
                 handle.anchorMax = anchorMax;
@@ -195,12 +223,19 @@ namespace GentlyUI.UIElements {
 
         void SetPivots() {
             if (container != null) {
-                container.pivot = new Vector2(container.pivot.x, 1);
-                handle.pivot = new Vector2(0.5f, 1);
+                if (scrollAxisInt == 0) {
+                    container.pivot = new Vector2(0, container.pivot.y);
+                    handle.pivot = new Vector2(0, 0.5f);
+                } else {
+                    container.pivot = new Vector2(container.pivot.x, 1);
+                    handle.pivot = new Vector2(0.5f, 1);
+                }
             }
         }
 
         void UpdateCache() {
+            scrollAxisInt = (int)scrollAxis;
+
             if (handle != null && handle.parent != null) {
                 container = handle.parent.GetComponent<RectTransform>();
             } else {
