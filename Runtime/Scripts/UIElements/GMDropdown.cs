@@ -36,19 +36,28 @@ namespace GentlyUI.UIElements {
             [SerializeField] private string label;
             public string Label => label;
 
-            public DropdownOptionData(string label, Sprite icon) {
+            private object data;
+            /// <summary>
+            /// Custom data that can be attached for easier use of dropdown selection.
+            /// </summary>
+            public object Data => data;
+
+            public DropdownOptionData(string label, Sprite icon, object data = null) {
                 this.label = label;
                 this.icon = icon;
+                this.data = data;
             }
 
-            public DropdownOptionData(string label) {
+            public DropdownOptionData(string label, object data = null) {
                 this.label = label;
                 this.icon = null;
+                this.data = data;
             }
 
-            public DropdownOptionData(Sprite icon) {
+            public DropdownOptionData(Sprite icon, object data = null) {
                 this.label = null;
                 this.icon = icon;
+                this.data = data;
             }
         }
 
