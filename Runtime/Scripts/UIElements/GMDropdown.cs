@@ -27,6 +27,7 @@ namespace GentlyUI.UIElements {
         private GMAnimatedContainer animatedContainer;
 
         [SerializeField] private List<DropdownOptionData> options = new List<DropdownOptionData>();
+        public List<DropdownOptionData> Options => options;
 
         [Serializable]
         public class DropdownOptionData {
