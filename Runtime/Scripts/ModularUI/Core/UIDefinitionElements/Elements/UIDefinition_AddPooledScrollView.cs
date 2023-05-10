@@ -3,17 +3,18 @@ using System;
 using System.Collections;
 using System.IO;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace GentlyUI.ModularUI {
     public abstract partial class UIDefinition {
         protected GMPooledScrollView AddPooledScrollView<T>(
             MonoBehaviour scrollViewItemPrefab,
             int initialCount,
-            Action<Behaviour, int> onUpdateItem,
+            Action<UIBehaviour, int> onUpdateItem,
             int columns = 1,
             int cellHeight = 50,
-            Action<Behaviour> onReturnItem = null
-        ) where T : Behaviour {
+            Action<UIBehaviour> onReturnItem = null
+        ) where T : UIBehaviour {
             string path = Path.Join(UIPaths.BasePath, UIPaths.ElementPath, UIManager.UISettings.DefaultPooledScrollView);
 
             GMPooledScrollView pooledScrollView = UISpawner<GMPooledScrollView>.SpawnUI(path, currentContainer);
@@ -37,11 +38,11 @@ namespace GentlyUI.ModularUI {
         protected GMPooledScrollView AddHorizontalPooledScrollView<T>(
             MonoBehaviour scrollViewItemPrefab,
             int initialCount,
-            Action<Behaviour, int> onUpdateItem,
+            Action<UIBehaviour, int> onUpdateItem,
             int rows = 1,
             int cellWidth = 50,
-            Action<Behaviour> onReturnItem = null
-        ) where T : Behaviour {
+            Action<UIBehaviour> onReturnItem = null
+        ) where T : UIBehaviour {
             string path = Path.Join(UIPaths.BasePath, UIPaths.ElementPath, UIManager.UISettings.DefaultHorizontalPooledScrollView);
 
             GMPooledScrollView pooledScrollView = UISpawner<GMPooledScrollView>.SpawnUI(path, currentContainer);

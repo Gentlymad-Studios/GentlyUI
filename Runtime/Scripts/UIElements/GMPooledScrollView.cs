@@ -119,9 +119,9 @@ namespace GentlyUI.UIElements {
         private Vector2 targetPosition;
         private float maxScrollPosition;
 
-        private UIObjectPool<Behaviour> currentPool;
+        private UIObjectPool<UIBehaviour> currentPool;
 
-        private Dictionary<GameObject, UIObjectPool<Behaviour>> poolCache = new Dictionary<GameObject, UIObjectPool<Behaviour>>();
+        private Dictionary<GameObject, UIObjectPool<UIBehaviour>> poolCache = new Dictionary<GameObject, UIObjectPool<UIBehaviour>>();
 
         private Coroutine waitForLayoutCompleteRoutine;
 
@@ -129,10 +129,10 @@ namespace GentlyUI.UIElements {
         public bool IsScrolling => isScrolling;
 
         void UpdateItemPool() {
-            UIObjectPool<Behaviour> newPool;
+            UIObjectPool<UIBehaviour> newPool;
 
             if (!poolCache.ContainsKey(itemPrefab.gameObject)) {
-                UIObjectPool<Behaviour> pool = new UIObjectPool<Behaviour>(() => CreateItem<Behaviour>(), OnGetItem, OnReturnItem);
+                UIObjectPool<UIBehaviour> pool = new UIObjectPool<UIBehaviour>(() => CreateItem<UIBehaviour>(), OnGetItem, OnReturnItem);
                 poolCache.Add(itemPrefab.gameObject, pool);
                 newPool = pool;
             } else {
@@ -167,11 +167,11 @@ namespace GentlyUI.UIElements {
         }
 
 
-        private List<Behaviour> currentItems = new List<Behaviour>();
+        private List<UIBehaviour> currentItems = new List<UIBehaviour>();
         private GMSelectable[] selectables;
 
-        private Action<Behaviour, int> onUpdateItem;
-        private Action<Behaviour> onReturnItem;
+        private Action<UIBehaviour, int> onUpdateItem;
+        private Action<UIBehaviour> onReturnItem;
 
         private int totalItemCount;
 
@@ -419,7 +419,7 @@ namespace GentlyUI.UIElements {
 
             if (wasScrolled || forceUpdate) {
                 for (int i = 0, count = currentItems.Count; i < count; ++i) {
-                    Behaviour item = currentItems[i];
+                    UIBehaviour item = currentItems[i];
                     //We use the sibling index instead of the index in the loop, because it might happen, that items were reordered.
                     //So sibling index is more reliable on which data to display in this item.
                     OnUpdateItem(item, currentDataStartIndex + item.transform.GetSiblingIndex(), wasScrolled);
@@ -485,6 +485,7 @@ namespace GentlyUI.UIElements {
 
         /****** Pooling Logic *******/
         private int currentDataStartIndex = 0;
+        private Type currentType;
 
         /// <summary>
         /// Initializes the pooled scroll view with a custom prefab.
@@ -492,18 +493,20 @@ namespace GentlyUI.UIElements {
         public void Initialize<T>(
             MonoBehaviour prefab,
             int defaultCount,
-            Action<Behaviour, int> onUpdateItem,
-            Action<Behaviour> onReturnItem = null
-        ) where T : Behaviour {
+            Action<UIBehaviour, int> onUpdateItem,
+            Action<UIBehaviour> onReturnItem = null
+        ) where T : UIBehaviour {
             SetPrefab(prefab);
             Initialize<T>(defaultCount, onUpdateItem, onReturnItem);
         }
 
         public void Initialize<T>(
             int defaultCount,
-            Action<Behaviour, int> onUpdateItem,
-            Action<Behaviour> onReturnItem = null
-        ) where T : Behaviour {
+            Action<UIBehaviour, int> onUpdateItem,
+            Action<UIBehaviour> onReturnItem = null
+        ) where T : UIBehaviour {
+            currentType = typeof(T);
+
             this.onUpdateItem = onUpdateItem;
             this.onReturnItem = onReturnItem;
 
@@ -605,25 +608,25 @@ namespace GentlyUI.UIElements {
             UpdateViewport(true);
         }
 
-        protected virtual T CreateItem<T>() where T : Behaviour {
+        protected virtual T CreateItem<T>() where T : UIBehaviour {
             GameObject itemGO = Instantiate(itemPrefab.gameObject, itemContainer.transform, false);
             T item = itemGO.GetComponent<T>();
             return item;
         }
 
-        protected virtual void OnGetItem<T>(T item) where T : Behaviour {
-            currentItems.Add(item);
+        protected virtual void OnGetItem<T>(T item) where T : UIBehaviour {
+            currentItems.Add(item.GetComponent(currentType) as UIBehaviour);
             item.transform.SetAsLastSibling();
         }
 
-        protected virtual void OnReturnItem<T>(T item) where T : Behaviour {
+        protected virtual void OnReturnItem<T>(T item) where T : UIBehaviour {
             if (onReturnItem != null) {
                 onReturnItem(item);
             }
             currentItems.Remove(item);
         }
 
-        void OnUpdateItem<T>(T item, int dataIndex, bool wasScrolled) where T : Behaviour {
+        void OnUpdateItem<T>(T item, int dataIndex, bool wasScrolled) where T : UIBehaviour {
             //Should the item be shown?
             bool showItem = dataIndex < totalItemCount;
             //Toggle visibility
@@ -693,13 +696,13 @@ namespace GentlyUI.UIElements {
             currentItems.Clear();
         }
 
-        public List<Behaviour> GetAllItems(bool excludeInvisible = false) {
+        public List<UIBehaviour> GetAllItems(bool excludeInvisible = false) {
             if (excludeInvisible) {
-                List<Behaviour> allItems = currentPool.GetAllUsedInstances();
-                List<Behaviour> visibleItems = new List<Behaviour>();
+                List<UIBehaviour> allItems = currentPool.GetAllUsedInstances();
+                List<UIBehaviour> visibleItems = new List<UIBehaviour>();
 
                 for (int i = 0, count = allItems.Count; i < count; ++i) {
-                    Behaviour item = allItems[i];
+                    UIBehaviour item = allItems[i];
                     if (item.gameObject.activeSelf) {
                         visibleItems.Add(item);
                     }

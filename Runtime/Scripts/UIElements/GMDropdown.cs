@@ -41,6 +41,7 @@ namespace GentlyUI.UIElements {
             /// <summary>
             /// Custom data that can be attached for easier use of dropdown selection.
             /// </summary>
+            [Tooltip("Custom data that can be attached for easier use of dropdown selection.")]
             public object Data => data;
 
             public DropdownOptionData(string label, Sprite icon, object data = null) {
