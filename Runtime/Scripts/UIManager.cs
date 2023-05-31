@@ -97,7 +97,11 @@ namespace GentlyUI {
         }
 
         public Canvas GetCanvas(string name) {
-            return canvasLUT[name];
+            if (canvasLUT.ContainsKey(name)) {
+                return canvasLUT[name];
+            } else {
+                return null;
+            }
         }
 
         private void LateUpdate() {
