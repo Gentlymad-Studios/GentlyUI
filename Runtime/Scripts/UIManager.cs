@@ -235,7 +235,7 @@ namespace GentlyUI {
         private GMDraggable currentHoveredDraggable;
         private bool leftMouseButtonPressed;
         private List<RaycastResult> hoveredElements;
-        private void ProcessPointerEventData() {
+        public void ProcessPointerEventData() {
             currentHoveredSelectable = null;
             currentHoveredDraggable = null;
 
