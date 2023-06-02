@@ -236,10 +236,10 @@ namespace GentlyUI {
         private bool leftMouseButtonPressed;
         private List<RaycastResult> hoveredElements;
         public void ProcessPointerEventData() {
-            currentHoveredSelectable = null;
-            currentHoveredDraggable = null;
-
             if (!wasPointerEventDataUpdatedThisFrame || pointerEventData == null) {
+                currentHoveredSelectable = null;
+                currentHoveredDraggable = null;
+
                 pointerEventData = new PointerEventData(EventSystem.current);
 
 #if ENABLE_INPUT_SYSTEM
