@@ -132,7 +132,7 @@ namespace GentlyUI {
 
             //Remove tickables
             for (int i = 0, count = uiTickablesToRemove.Count; i < count; ++i) {
-                UnregisterUITickable(uiTickablesToRemove[i]);
+                RemoveRegisteredUITickable(uiTickablesToRemove[i]);
             }
 
             uiTickablesToRemove.Clear();
