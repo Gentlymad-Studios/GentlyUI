@@ -33,6 +33,11 @@ namespace GentlyUI.ModularUI {
 
             rootContainer = container;
             SetCurrentContainer(rootContainer.RectTransform);
+
+            if (this is IUITickable tickable) {
+                UIManager.Instance.RegisterUITickable(tickable);
+            }
+
             //Call Pre Create UI
             PreCreateUI(data);
             //Create UI
@@ -62,6 +67,10 @@ namespace GentlyUI.ModularUI {
         public abstract void CreateUI(object data = null);
 
         public void DisposeUI() {
+            if (this is IUITickable tickable) {
+                UIManager.Instance.UnregisterUITickable(tickable);
+            }
+
             foreach (KeyValuePair<GameObject, Action> ui in uiObjects) {
                 ui.Value();
             }

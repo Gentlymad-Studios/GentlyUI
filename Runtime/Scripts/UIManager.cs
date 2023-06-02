@@ -31,6 +31,9 @@ namespace GentlyUI {
         private List<UIBase> uiBasesToAdd = new List<UIBase>();
         private List<UIBase> uiBasesToRemove = new List<UIBase>();
 
+        private List<IUITickable> uiTickablesToAdd = new List<IUITickable>();
+        private List<IUITickable> uiTickablesToRemove = new List<IUITickable>();
+
         private Dictionary<string, Canvas> canvasLUT = new Dictionary<string, Canvas>();
 
         PointerEventData pointerEventData;
@@ -120,12 +123,21 @@ namespace GentlyUI {
 
             wasPointerEventDataUpdatedThisFrame = false;
 
+            //Remove ui bases
             for (int i = 0, count = uiBasesToRemove.Count; i < count; ++i) {
                 RemoveRegisteredUI(uiBasesToRemove[i]);
             }
 
             uiBasesToRemove.Clear();
 
+            //Remove tickables
+            for (int i = 0, count = uiTickablesToRemove.Count; i < count; ++i) {
+                UnregisterUITickable(uiTickablesToRemove[i]);
+            }
+
+            uiTickablesToRemove.Clear();
+
+            //Add ui bases
             for (int i = 0, count = uiBasesToAdd.Count; i < count; ++i) {
                 UIBase uiBase = uiBasesToAdd[i];
                 AddUIToRegister(uiBase);
@@ -133,6 +145,13 @@ namespace GentlyUI {
             }
 
             uiBasesToAdd.Clear();
+
+            //Add tickables
+            for (int i = 0, count = uiTickablesToAdd.Count; i < count; ++i) {
+                AddUITickableToRegister(uiTickablesToAdd[i]);
+            }
+
+            uiTickablesToAdd.Clear();
 
             //Update timer dependencies
             updateTimer += Time.unscaledDeltaTime;
@@ -171,12 +190,28 @@ namespace GentlyUI {
             if (uiBasesToAdd.Contains(ui)) uiBasesToAdd.Remove(ui);
         }
 
+        public void RegisterUITickable(IUITickable uiTickable) {
+            if (!tickableUIs.Contains(uiTickable)) {
+                uiTickablesToAdd.Add(uiTickable);
+            }
+
+            if (uiTickablesToRemove.Contains(uiTickable)) uiTickablesToRemove.Remove(uiTickable);
+        }
+
+        public void UnregisterUITickable(IUITickable uiTickable) {
+            if (tickableUIs.Contains(uiTickable)) {
+                uiTickablesToRemove.Add(uiTickable);
+            }
+
+            if (uiTickablesToAdd.Contains(uiTickable)) uiTickablesToAdd.Remove(uiTickable);
+        }
+
         void AddUIToRegister(UIBase ui) {
             uiBases.Add(ui);
 
             IUITickable tickable = ui as IUITickable;
             if (tickable != null) {
-                tickableUIs.Add(tickable);
+                AddUITickableToRegister(tickable);
             }
         }
 
@@ -184,8 +219,16 @@ namespace GentlyUI {
             uiBases.Remove(ui);
 
             if (ui is IUITickable tickable) {
-                tickableUIs.Remove(tickable);
+                RemoveRegisteredUITickable(tickable);
             }
+        }
+
+        void AddUITickableToRegister(IUITickable uiTickable) {
+            tickableUIs.Add(uiTickable);
+        }
+
+        void RemoveRegisteredUITickable(IUITickable uiTickable) {
+            tickableUIs.Remove(uiTickable);
         }
 
         private GMSelectable currentHoveredSelectable;
