@@ -15,8 +15,13 @@ namespace GentlyUI.UIElements {
         private GMVisualElement iconVisualElement;
 
         public GMSelectableStyled() {
-            labelVisualElement = LabelOutput.GetComponent<GMVisualElement>();
-            iconVisualElement = IconOutput.GetComponent<GMVisualElement>();
+            if (HasLabelOutput()) {
+                labelVisualElement = LabelOutput.GetComponent<GMVisualElement>();
+            }
+
+            if (HasIconOutput()) {
+                iconVisualElement = IconOutput.GetComponent<GMVisualElement>();
+            }
         }
 
         public void SetIcon(Sprite icon) {
