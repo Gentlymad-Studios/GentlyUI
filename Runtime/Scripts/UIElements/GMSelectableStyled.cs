@@ -14,7 +14,9 @@ namespace GentlyUI.UIElements {
         private GMVisualElement labelVisualElement;
         private GMVisualElement iconVisualElement;
 
-        public GMSelectableStyled() {
+        public override void Initialize() {
+            base.Initialize();
+
             if (HasLabelOutput()) {
                 labelVisualElement = labelOutput.GetComponent<GMVisualElement>();
             }

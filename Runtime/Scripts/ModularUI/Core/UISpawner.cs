@@ -37,6 +37,11 @@ namespace GentlyUI.ModularUI {
                     () => {
                         GameObject ui = GameObject.Instantiate(prefab, container, false);
                         T component = ui.GetComponent<T>();
+
+                        if (component is IInitializeUIOnSpawn initializeOnSpawn) {
+                            initializeOnSpawn.Initialize();
+                        }
+
                         return component;
                     },
                     //Get

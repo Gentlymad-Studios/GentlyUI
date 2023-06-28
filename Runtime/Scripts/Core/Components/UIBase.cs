@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace GentlyUI.Core {
-    public class UIBase : UIBehaviour {
+    public class UIBase : UIBehaviour, IInitializeUIOnSpawn {
         private RectTransform rectTransform;
         protected RectTransform RectTransform {
             get {
@@ -67,5 +67,7 @@ namespace GentlyUI.Core {
                 Disable();
             }
         }
+
+        public virtual void Initialize() {}
     }
 }
