@@ -16,11 +16,11 @@ namespace GentlyUI.UIElements {
 
         public GMSelectableStyled() {
             if (HasLabelOutput()) {
-                labelVisualElement = LabelOutput.GetComponent<GMVisualElement>();
+                labelVisualElement = labelOutput.GetComponent<GMVisualElement>();
             }
 
             if (HasIconOutput()) {
-                iconVisualElement = IconOutput.GetComponent<GMVisualElement>();
+                iconVisualElement = iconOutput.GetComponent<GMVisualElement>();
             }
         }
 
@@ -48,7 +48,7 @@ namespace GentlyUI.UIElements {
             if (iconVisualElement != null) {
                 iconVisualElement.EnableVisualElement(enable);
             } else {
-                IconOutput.gameObject.SetActive(enable);
+                iconOutput.gameObject.SetActive(enable);
             }
         }
 
@@ -60,7 +60,7 @@ namespace GentlyUI.UIElements {
             if (labelVisualElement != null) {
                 labelVisualElement.EnableVisualElement(enable);
             } else {
-                LabelOutput.gameObject.SetActive(enable);
+                labelOutput.gameObject.SetActive(enable);
             }
         }
     }

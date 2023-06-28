@@ -66,13 +66,13 @@ namespace GentlyUI.UIElements {
         }
 
         public void EnableVisualElement(bool isActive) {
-            isEnabled = isActive;
-
             if (!isEnabled) {
                 gameObject.SetActive(false);
             } else {
                 SetState(currentState);
             }
+
+            isEnabled = isActive;
         }
 
         /// <summary>
