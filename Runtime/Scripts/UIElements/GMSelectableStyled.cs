@@ -11,6 +11,14 @@ namespace GentlyUI.UIElements {
         [SerializeField] private GMImageComponent iconOutput;
         protected GMImageComponent IconOutput => iconOutput;
 
+        private GMVisualElement labelVisualElement;
+        private GMVisualElement iconVisualElement;
+
+        public GMSelectableStyled() {
+            labelVisualElement = LabelOutput.GetComponent<GMVisualElement>();
+            iconVisualElement = IconOutput.GetComponent<GMVisualElement>();
+        }
+
         public void SetIcon(Sprite icon) {
             if (iconOutput != null) iconOutput.sprite = icon;
         }
@@ -25,6 +33,30 @@ namespace GentlyUI.UIElements {
 
         protected bool HasLabelOutput() {
             return labelOutput != null;
+        }
+
+        public void ToggleIconOutput(bool enable) {
+            if (!HasIconOutput()) {
+                return;
+            }
+
+            if (iconVisualElement != null) {
+                iconVisualElement.EnableVisualElement(enable);
+            } else {
+                iconVisualElement.gameObject.SetActive(enable);
+            }
+        }
+
+        public void ToggleLabelOutput(bool enable) {
+            if (!HasLabelOutput()) {
+                return;
+            }
+
+            if (labelVisualElement != null) {
+                labelVisualElement.EnableVisualElement(enable);
+            } else {
+                labelVisualElement.gameObject.SetActive(enable);
+            }
         }
     }
 }
