@@ -48,7 +48,7 @@ namespace GentlyUI.UIElements {
             if (iconVisualElement != null) {
                 iconVisualElement.EnableVisualElement(enable);
             } else {
-                iconVisualElement.gameObject.SetActive(enable);
+                IconOutput.gameObject.SetActive(enable);
             }
         }
 
@@ -60,7 +60,7 @@ namespace GentlyUI.UIElements {
             if (labelVisualElement != null) {
                 labelVisualElement.EnableVisualElement(enable);
             } else {
-                labelVisualElement.gameObject.SetActive(enable);
+                LabelOutput.gameObject.SetActive(enable);
             }
         }
     }
