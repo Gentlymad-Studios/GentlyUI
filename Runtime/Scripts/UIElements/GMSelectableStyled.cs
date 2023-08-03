@@ -12,7 +12,10 @@ namespace GentlyUI.UIElements {
         protected GMImageComponent IconOutput => iconOutput;
 
         private GMVisualElement labelVisualElement;
+        public GMVisualElement LabelVisualElement => labelVisualElement;
+
         private GMVisualElement iconVisualElement;
+        public GMVisualElement IconVisualElement => iconVisualElement;
 
         public override void Initialize() {
             base.Initialize();
