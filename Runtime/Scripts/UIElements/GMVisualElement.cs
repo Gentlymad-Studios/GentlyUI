@@ -333,8 +333,8 @@ namespace GentlyUI.UIElements {
             /// <summary>
             /// What color should this visual element have in this state?
             /// </summary>
-            [GlobalUIColorProperty]
             [SerializeField] bool useGlobalColor = true;
+            [GlobalUIColorProperty]
             [SerializeField] string globalColor;
             [SerializeField] Color color;
             /// <summary>
