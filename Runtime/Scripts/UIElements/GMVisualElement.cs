@@ -155,7 +155,7 @@ namespace GentlyUI.UIElements {
             //Color
             VisualElementAnimationAttributes colAnimAttributes = stateData.GetAnimationAttributes(AnimationProperty.Color);
             if (colAnimAttributes != null) {
-                Color color = RootSelectable.WarningActive ? UIManager.UISettings.GetColor(stateData.WarningGlobalColor) : UIManager.UISettings.GetColor(stateData.GlobalColor);
+                Color color = RootSelectable.WarningActive ? UIManager.UISettings.GetColor(stateData.WarningGlobalColor) : stateData.Color;
                 color.a = 1.0f;
                 graphic.color = color;
             }
@@ -168,6 +168,17 @@ namespace GentlyUI.UIElements {
 
             //Active state
             if (graphic.gameObject.activeSelf != stateData.ShowElement) graphic.gameObject.SetActive(stateData.ShowElement);
+        }
+
+        /// <summary>
+        /// Sets a new color for the default state. Will only be used if an animation attribute for color is assigned and useGlobalColor is set to false.
+        /// PressedState and hoveredState are automatically updated based on different shades of the color.
+        /// </summary>
+        /// <param name="color">The color to use for the default state.</param>
+        public void SetDefaultColor(Color color) {
+            defaultState.Color = color;
+            hoveredState.Color = color * 1.2f;
+            pressedState.Color = color * 0.8f;
         }
 
         public void DoTweenUpdate() {
@@ -215,7 +226,7 @@ namespace GentlyUI.UIElements {
             //Color
             VisualElementAnimationAttributes colAnimAttributes = stateData.GetAnimationAttributes(AnimationProperty.Color);
             if (colAnimAttributes != null) {
-                Color color = RootSelectable.WarningActive ? UIManager.UISettings.GetColor(stateData.WarningGlobalColor) : UIManager.UISettings.GetColor(stateData.GlobalColor);
+                Color color = RootSelectable.WarningActive ? UIManager.UISettings.GetColor(stateData.WarningGlobalColor) : stateData.Color;
                 tween = TweenC.Add(graphic.gameObject, colAnimAttributes.Duration, color);
                 SetupTween(tween, colAnimAttributes);
                 CacheLongestTween(tween, ref longestTween);
@@ -323,8 +334,25 @@ namespace GentlyUI.UIElements {
             /// What color should this visual element have in this state?
             /// </summary>
             [GlobalUIColorProperty]
+            [SerializeField] bool useGlobalColor = true;
             [SerializeField] string globalColor;
-            public string GlobalColor => globalColor;
+            [SerializeField] Color color;
+            /// <summary>
+            /// Gets either the global color if useGlobalColor is true or the color.
+            /// Sets only the color, NOT the globalColor.
+            /// </summary>
+            public Color Color {
+                get {
+                    if (useGlobalColor) {
+                        return UIManager.UISettings.GetColor(globalColor);
+                    } else {
+                        return color;
+                    }
+                }
+                set {
+                    color = value;
+                }
+            }
 
             /// <summary>
             /// The warning color this visual element has in this state.
