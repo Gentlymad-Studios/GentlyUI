@@ -179,6 +179,8 @@ namespace GentlyUI.UIElements {
             defaultState.Color = color;
             hoveredState.Color = color * 1.2f;
             pressedState.Color = color * 0.8f;
+
+            SetFinalVisualState();
         }
 
         public void DoTweenUpdate() {
