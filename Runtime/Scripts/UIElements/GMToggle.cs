@@ -174,6 +174,14 @@ namespace GentlyUI.UIElements {
             InternalToggle();
         }
 
+        protected override void SetDefaultState() {
+            if (IsOn) {
+                base.SetDefaultState();
+            } else {
+                currentVisualState = GMVisualElement.VisualState.Inactive;
+            }
+        }
+
         protected override void OnDestroy() {
             if (group != null) {
                 group.EnsureValidState();
