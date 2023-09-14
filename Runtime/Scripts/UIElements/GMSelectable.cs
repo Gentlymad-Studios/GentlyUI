@@ -179,7 +179,12 @@ namespace GentlyUI.UIElements {
         void UpdateVisualElementStates(bool setImmediately = false) {
             for (int i = 0, count = visualElements.Count; i < count; ++i) {
                 GMVisualElement e = visualElements[i];
-                e.SetState(currentVisualState, setImmediately);
+
+                if (e.IsInactive && currentVisualState == VisualState.Default) {
+                    e.SetState(VisualState.Inactive, setImmediately);
+                } else {
+                    e.SetState(currentVisualState);
+                }
             }
         }
 

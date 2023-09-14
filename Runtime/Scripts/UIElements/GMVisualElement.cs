@@ -15,6 +15,11 @@ namespace GentlyUI.UIElements {
         /// If not enabled, the visual element's gameObject will be disabled and it will no longer react to player input.
         /// </summary>
         private bool isEnabled = true;
+        /// <summary>
+        /// This is true if the state was set to Inactive. Becomes false when the state was set to Default again. Mostly relevant for toggles.
+        /// </summary>
+        private bool isInactive = false;
+        public bool IsInactive => isInactive;
 
         public enum VisualState {
             Default = 0,
@@ -96,6 +101,12 @@ namespace GentlyUI.UIElements {
                 return;
 
             currentState = state;
+
+            if (currentState == VisualState.Inactive) {
+                isInactive = true;
+            } else if (currentState == VisualState.Default) {
+                isInactive = false;
+            }
 
             if (setImmediately) {
                 SetFinalVisualState();
