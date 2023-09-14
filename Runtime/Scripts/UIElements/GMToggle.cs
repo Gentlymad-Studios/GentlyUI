@@ -174,11 +174,15 @@ namespace GentlyUI.UIElements {
             InternalToggle();
         }
 
-        protected override void SetDefaultState() {
-            if (IsOn) {
-                base.SetDefaultState();
+        protected override void UpdateVisualElement(GMVisualElement visualElement, bool setImmediately) {
+            if (visualElement == indicator) {
+                if (IsOn) {
+                    base.UpdateVisualElement(visualElement, setImmediately);
+                } else {
+                    visualElement.SetState(GMVisualElement.VisualState.Inactive, setImmediately);
+                }
             } else {
-                currentVisualState = GMVisualElement.VisualState.Inactive;
+                base.UpdateVisualElement(visualElement, setImmediately);
             }
         }
 

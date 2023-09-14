@@ -50,7 +50,8 @@ namespace GentlyUI.UIElements {
         protected bool isPointerInside;
         private bool isPointerDown;
 
-        protected VisualState currentVisualState;
+        private VisualState currentVisualState;
+        protected VisualState CurrentVisualState => currentVisualState;
 
         /// <summary>
         /// Defines whether warning color is used.
@@ -154,7 +155,7 @@ namespace GentlyUI.UIElements {
                 } else if (IsHovered()) {
                     currentVisualState = VisualState.Hovered;
                 } else {
-                    SetDefaultState();
+                    currentVisualState = VisualState.Default;
                 }
             } else {
                 currentVisualState = VisualState.Disabled;
@@ -163,8 +164,8 @@ namespace GentlyUI.UIElements {
             UpdateVisualElementStates(setImmediately);
         }
 
-        protected virtual void SetDefaultState() {
-            currentVisualState = VisualState.Default;
+        protected virtual void UpdateVisualElement(GMVisualElement visualElement, bool setImmediately) {
+            visualElement.SetState(currentVisualState, setImmediately);
         }
 
         private bool IsScrolling() {
@@ -184,7 +185,7 @@ namespace GentlyUI.UIElements {
         void UpdateVisualElementStates(bool setImmediately = false) {
             for (int i = 0, count = visualElements.Count; i < count; ++i) {
                 GMVisualElement e = visualElements[i];
-                e.SetState(currentVisualState, setImmediately);
+                UpdateVisualElement(e, setImmediately);
             }
         }
 
