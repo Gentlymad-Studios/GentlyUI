@@ -176,10 +176,10 @@ namespace GentlyUI.UIElements {
 
         protected override void UpdateVisualElement(GMVisualElement visualElement, bool setImmediately) {
             if (visualElement == indicator) {
-                if (IsOn) {
-                    base.UpdateVisualElement(visualElement, setImmediately);
-                } else {
+                if (!IsOn && CurrentVisualState == GMVisualElement.VisualState.Default) {
                     visualElement.SetState(GMVisualElement.VisualState.Inactive, setImmediately);
+                } else {
+                    base.UpdateVisualElement(visualElement, setImmediately);
                 }
             } else {
                 base.UpdateVisualElement(visualElement, setImmediately);
