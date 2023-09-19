@@ -248,7 +248,7 @@ namespace GentlyUI.UIElements {
             return isPointerInside;
         }
 
-        public void ToggleWarning(bool activateWarning) {
+        public virtual void ToggleWarning(bool activateWarning) {
             warningActive = activateWarning;
 
             if (gameObject.activeInHierarchy) {
