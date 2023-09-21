@@ -1,21 +1,17 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Uween
-{
+namespace Uween {
     /// <summary>
     /// A base class for Uween's tweens.
     /// </summary>
-    public abstract class Tween : MonoBehaviour
-    {
+    public abstract class Tween : MonoBehaviour {
         //Holds a reference to all running tweens
         public static List<Tween> allRunningTweens = new List<Tween>();
 
-        protected static T Get<T>(GameObject g, float duration) where T : Tween
-        {
+        protected static T Get<T>(GameObject g, float duration) where T : Tween {
             T tween = g.GetComponent<T>();
-            if (tween == null)
-            {
+            if (tween == null) {
                 tween = g.AddComponent<T>();
             }
 
@@ -48,8 +44,7 @@ namespace Uween
         /// Total duration of this tween (sec).
         /// </summary>
         /// <value>The duration.</value>
-        public float Duration
-        {
+        public float Duration {
             get { return Mathf.Max(0f, duration); }
         }
 
@@ -57,8 +52,7 @@ namespace Uween
         /// Current playing position (sec).
         /// </summary>
         /// <value>The position.</value>
-        public float Position
-        {
+        public float Position {
             get { return Mathf.Max(0f, elapsedTime - DelayTime); }
         }
 
@@ -66,8 +60,7 @@ namespace Uween
         /// Delay for starting tween (sec).
         /// </summary>
         /// <value>The delay time.</value>
-        public float DelayTime
-        {
+        public float DelayTime {
             get { return Mathf.Max(0f, delayTime); }
             set { delayTime = value; }
         }
@@ -76,8 +69,7 @@ namespace Uween
         /// Easing that be used for calculating tweening value.
         /// </summary>
         /// <value>The easing.</value>
-        public Easings Easing
-        {
+        public Easings Easing {
             get { return easing ?? Linear.EaseNone; }
             set { easing = value; }
         }
@@ -86,8 +78,7 @@ namespace Uween
         /// Whether tween has been completed or not.
         /// </summary>
         /// <value><c>true</c> if this tween is complete; otherwise, <c>false</c>.</value>
-        public bool IsComplete
-        {
+        public bool IsComplete {
             get { return Position >= Duration; }
         }
 
@@ -97,15 +88,13 @@ namespace Uween
         public event Callback OnComplete;
         private int playbackDirection = 1;
 
-        public void Skip()
-        {
+        public void Skip() {
             elapsedTime = DelayTime + Duration;
             repeatCount = 0;
             Update();
         }
 
-        protected virtual void Reset()
-        {
+        protected virtual void Reset() {
             duration = 0f;
             delayTime = 0f;
             elapsedTime = 0f;
@@ -118,8 +107,7 @@ namespace Uween
             OnComplete = null;
         }
 
-        public virtual void Update()
-        {
+        public virtual void Update() {
             if (!GentlyUI.UIManager.UISettings.UpdateTweensByManager) {
                 Update(elapsedTime + Time.deltaTime);
             }
@@ -129,34 +117,23 @@ namespace Uween
             Update(elapsedTime + deltaTime);
         }
 
-        public virtual void Update(float elapsed)
-        {
-            var delay = DelayTime;
-            var duration = Duration;
+        public virtual void Update(float elapsed) {
+            float delay = DelayTime;
+            float duration = Duration;
 
             elapsedTime = elapsed;
 
-            if (elapsedTime < delay)
-            {
+            if (elapsedTime < delay) {
                 return;
             }
 
-            var t = elapsedTime - delay;
+            float currentTime = elapsedTime - delay;
 
-            if (t >= duration)
-            {
-                if (duration == 0f)
-                {
-                    t = duration = 1f;
-                }
-                else
-                {
-                    t = duration;
-                }
-
+            if (currentTime >= duration) {
                 if (RepeatCount != 0) {
                     //Restart
-                    elapsedTime = 0;
+                    elapsedTime = (currentTime + delay) % duration;
+                    currentTime = currentTime % duration;
 
                     //Reduce repeat count if we are not endless looping (repeat count would be -1 then)
                     if (RepeatCount > 0) {
@@ -169,6 +146,12 @@ namespace Uween
                     //Reflection
                     if (Reflect) playbackDirection *= -1;
                 } else {
+                    if (duration == 0f) {
+                        currentTime = duration = 1f;
+                    } else {
+                        currentTime = duration;
+                    }
+
                     elapsedTime = delay + duration;
                     enabled = false;
                     allRunningTweens.Remove(this);
@@ -176,13 +159,12 @@ namespace Uween
             }
 
             if (playbackDirection > 0) {
-                UpdateValue(Easing, t, duration);
+                UpdateValue(Easing, currentTime, duration);
             } else {
-                UpdateValue(Easing, duration - t, duration);
+                UpdateValue(Easing, duration - currentTime, duration);
             }
 
-            if (!enabled)
-            {
+            if (!enabled) {
                 if (OnComplete != null) {
                     var callback = OnComplete;
                     OnComplete = null;
