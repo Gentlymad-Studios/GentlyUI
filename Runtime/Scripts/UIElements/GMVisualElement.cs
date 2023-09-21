@@ -127,9 +127,13 @@ namespace GentlyUI.UIElements {
         bool updateTweens = false;
         public bool UpdateTweens => updateTweens;
 
-        public void SetFinalVisualState() {
+        bool transitionRunning = false;
+        public bool TransitionRunning => transitionRunning;
+
+        void SetFinalVisualState() {
             graphic.gameObject.PauseTweens();
             updateTweens = false;
+            transitionRunning = false;
 
             //Position
             VisualElementAnimationAttributes posAnimAttributes = stateData.GetAnimationAttributes(AnimationProperty.PositionOffset);
@@ -185,6 +189,7 @@ namespace GentlyUI.UIElements {
 
         public void DoTweenUpdate() {
             updateTweens = false;
+            transitionRunning = true;
 
             //Check if the visual element should simply be disabled
             if (currentState != VisualState.Inactive) {
@@ -247,8 +252,11 @@ namespace GentlyUI.UIElements {
                 if (currentState == VisualState.Inactive && !stateData.ShowElement) {
                     longestTween.OnComplete += () => graphic.gameObject.SetActive(false);
                 }
+
+                longestTween.OnComplete += () => transitionRunning = false;
             } else if (currentState == VisualState.Inactive && !stateData.ShowElement) {
                 graphic.gameObject.SetActive(false);
+                transitionRunning = false;
             }
         }
 
