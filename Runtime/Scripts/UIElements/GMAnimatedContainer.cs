@@ -274,6 +274,10 @@ namespace GentlyUI.UIElements {
             } else if (animAttributes.Easing != EasingType.None) {
                 EasingHelper.ApplySimpleEasing(animAttributes.Easing, tween);
             }
+
+            if (animAttributes.Delay > 0) {
+                tween.Delay(animAttributes.Delay);
+            }
         }
 
         void CacheLongestTween(Tween tween, ref Tween longestTweenCache) {
