@@ -121,8 +121,11 @@ namespace GentlyUI.UIElements {
 
             //Only send callback if value changed at this point
             //don't allowSwitchOff could have prevent the value change.
-            if (isOn == value && sendCallback) {
-                onValueChanged.Invoke(isOn);
+            if (isOn == value) {
+                if (sendCallback) {
+                    onValueChanged.Invoke(isOn);
+                }
+
                 UpdateIndicator();
             }
         }
