@@ -27,9 +27,11 @@ namespace GentlyUI.UIElements {
         protected float MaxValue => maxValue;
         [Space]
         [SerializeField] private float value;
-        [Space]
+        [Header("Value Output")]
         [SerializeField] private GMTextComponent valueOutput;
         [SerializeField] private GameObject valueOutputContainer;
+        [Space]
+        [SerializeField] private bool showMaxInValueOutput = false;
         [SerializeField] private bool onlyShowValueOnHover = false;
 
         public float Value {
@@ -373,9 +375,13 @@ namespace GentlyUI.UIElements {
             }
         }
 
-        void OutputValue(float value) {
+        protected virtual void OutputValue(float value) {
             if (valueOutputContainer != null && valueOutput != null) {
-                valueOutput.SetText(GlobalTextFormatter.RoundWithDecimalsToString(value));
+                if (showMaxInValueOutput) {
+                    valueOutput.SetText(GlobalTextFormatter.RoundWithDecimalsToString(value) + "/" + GlobalTextFormatter.RoundWithDecimalsToString(maxValue));
+                } else {
+                    valueOutput.SetText(GlobalTextFormatter.RoundWithDecimalsToString(value));
+                }
             }
         }
     }

@@ -15,6 +15,7 @@ namespace GentlyUI.UIElements {
         SerializedProperty valueOutputProperty;
         SerializedProperty valueOutputContainerProperty;
         SerializedProperty onlyShowValueOnHoverProperty;
+        SerializedProperty showMaxInValueOutputProperty;
 
         GMSlider slider;
 
@@ -34,6 +35,7 @@ namespace GentlyUI.UIElements {
             valueOutputProperty = serializedObject.FindProperty("valueOutput");
             valueOutputContainerProperty = serializedObject.FindProperty("valueOutputContainer");
             onlyShowValueOnHoverProperty = serializedObject.FindProperty("onlyShowValueOnHover");
+            showMaxInValueOutputProperty = serializedObject.FindProperty("showMaxInValueOutput");
         }
 
         public override void OnInspectorGUI() {
@@ -72,6 +74,10 @@ namespace GentlyUI.UIElements {
 
             EditorGUILayout.PropertyField(valueOutputProperty);
             EditorGUILayout.PropertyField(valueOutputContainerProperty);
+
+            EditorGUILayout.Space();
+
+            EditorGUILayout.PropertyField(showMaxInValueOutputProperty);
             EditorGUILayout.PropertyField(onlyShowValueOnHoverProperty);
 
             slider.EDITOR_UpdateSlider();
