@@ -412,6 +412,16 @@ namespace GentlyUI.UIElements {
                     if (scrollbar.Value != 0f) scrollbar.SetValue(0f, false);
                 }
             }
+
+            //Buttons
+            for (int i = 0, count = scrollButtons.Length; i < count; ++i) {
+                GMHoldInteractionButton button = scrollButtons[i];
+                if (button.scrollDirection < 0) {
+                    button.SetInteractable(normalizedTargetPosition < 1f);
+                } else if (button.scrollDirection > 0) {
+                    button.SetInteractable(normalizedTargetPosition > 0f);
+                }
+            }
         }
 
         void UpdateViewport(bool forceUpdate = false) {
