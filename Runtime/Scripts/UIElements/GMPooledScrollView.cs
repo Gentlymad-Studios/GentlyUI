@@ -417,9 +417,9 @@ namespace GentlyUI.UIElements {
             for (int i = 0, count = scrollButtons.Length; i < count; ++i) {
                 GMHoldInteractionButton button = scrollButtons[i];
                 if (button.scrollDirection < 0) {
-                    button.SetInteractable(normalizedTargetPosition < 1f);
+                    button.SetInteractable(normalizedTargetPosition < 1f && IsScrollingAllowed());
                 } else if (button.scrollDirection > 0) {
-                    button.SetInteractable(normalizedTargetPosition > 0f);
+                    button.SetInteractable(normalizedTargetPosition > 0f && IsScrollingAllowed());
                 }
             }
         }
