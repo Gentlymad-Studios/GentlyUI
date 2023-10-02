@@ -8,13 +8,12 @@ using UnityEngine.UI;
 namespace GentlyUI.UIElements {
     [AddComponentMenu("GentlyUI/Scrollbar", 4)]
     public class GMScrollbar : GMSelectable, ICanvasElement {
-       [Serializable]
-       public class ScrollEvent : UnityEvent<float> { }
-
+        [Serializable]
+        public class ScrollEvent : UnityEvent<float> { }
 
         [SerializeField] private RectTransform handle;
         public RectTransform Handle => handle;
-        
+
         [Range(0f, 1f)]
         [SerializeField] private float value = 1f;
         /// <summary>
@@ -43,7 +42,7 @@ namespace GentlyUI.UIElements {
         [Tooltip("The direction in which the scrollbar is scrolled.")]
         [SerializeField] private GMPooledScrollView.ScrollAxis scrollAxis = GMPooledScrollView.ScrollAxis.Vertical;
 
-        [SerializeField]private ScrollEvent onValueChanged = new ScrollEvent();
+        [SerializeField] private ScrollEvent onValueChanged = new ScrollEvent();
         public ScrollEvent OnValueChanged => onValueChanged;
 
         private RectTransform container;
@@ -57,8 +56,8 @@ namespace GentlyUI.UIElements {
         private int scrollAxisInt;
 
         protected GMScrollbar() { }
-        public void GraphicUpdateComplete() {}
-        public void LayoutComplete() {}
+        public void GraphicUpdateComplete() { }
+        public void LayoutComplete() { }
 
         PointerEventData eventData;
 

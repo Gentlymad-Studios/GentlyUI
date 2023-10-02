@@ -28,7 +28,7 @@ namespace GentlyUI.UIElements {
             set { onRightClick = value; }
         }
 
-        private void Press(bool isRightClick = false) {
+        protected void Press(bool isRightClick = false) {
             if (!IsActive() || !Interactable)
                 return;
 

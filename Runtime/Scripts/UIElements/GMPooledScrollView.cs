@@ -15,6 +15,8 @@ namespace GentlyUI.UIElements {
         [SerializeField] private RectTransform content;
         [Header("Scroll Constraints")]
         [SerializeField] private ScrollAxis scrollAxis = ScrollAxis.Vertical;
+        [Header("Buttons")]
+        [SerializeField] private GMHoldInteractionButton[] scrollButtons;
 
         public enum ScrollAxis {
             Horizontal = 0,
@@ -204,6 +206,16 @@ namespace GentlyUI.UIElements {
 
             if (itemPrefab != null) {
                 SetPrefab(itemPrefab);
+            }
+
+            //Buttons
+            for (int i = 0, count = scrollButtons.Length; i < count; ++i) {
+                GMHoldInteractionButton button = scrollButtons[i];
+                button.OnClick.AddListener(() => {
+                    OnScroll(new PointerEventData(EventSystem.current) {
+                        scrollDelta = Vector2.up * button.scrollDirection
+                    });
+                });
             }
         }
 
