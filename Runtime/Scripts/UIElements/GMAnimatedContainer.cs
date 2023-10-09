@@ -60,7 +60,9 @@ namespace GentlyUI.UIElements {
             Initialize();
         }
 
-        public void Initialize() {
+        public override void Initialize() {
+            base.Initialize();
+
             if (animatedContainerInitialized) {
                 return;
             }
