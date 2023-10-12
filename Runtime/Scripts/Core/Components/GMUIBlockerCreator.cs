@@ -16,7 +16,7 @@ namespace GentlyUI.Core {
         /// <remarks>
         /// Override this method to implement a different way to obtain a blocker GameObject.
         /// </remarks>
-        public static void CreateBlocker(RectTransform target, Action onClickedOnBlocker) {
+        public static void CreateBlocker(RectTransform target, Action onClickedOnBlocker, Color? color) {
             DestroyBlocker();
 
             // Create blocker GameObject.
@@ -53,9 +53,9 @@ namespace GentlyUI.Core {
             }
 
 
-            // Add image since it's needed to block, but make it clear.
+            // Add image since it's needed to block, but make it clear or colorize it if a color was passed.
             GMImageComponent blockerImage = blocker.AddComponent<GMImageComponent>();
-            blockerImage.color = Color.clear;
+            blockerImage.color = color.HasValue ? color.Value : Color.clear;
 
             //Finally put the blocker component on top
             GMUIBlocker uiBlocker = blocker.GetOrAddComponent<GMUIBlocker>();
