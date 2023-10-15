@@ -21,11 +21,15 @@ namespace GentlyUI.UIElements {
             base.Initialize();
 
             if (HasLabelOutput()) {
-                labelVisualElement = labelOutput.GetComponent<GMVisualElement>();
+                if (labelOutput.TryGetComponent(out GMVisualElement labelVisualElement)) {
+                    labelVisualElement.Initialize(this);
+                }
             }
 
-            if (HasIconOutput()) {
-                iconVisualElement = iconOutput.GetComponent<GMVisualElement>();
+            if (HasIconOutput()) {       
+                if (iconOutput.TryGetComponent(out GMVisualElement iconVisualElement)) {
+                    iconVisualElement.Initialize();
+                }
             }
         }
 
