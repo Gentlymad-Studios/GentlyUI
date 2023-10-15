@@ -11,6 +11,8 @@ namespace GentlyUI.Core {
             }
         }
 
+        bool baseInitialized = false;
+
         protected override void Awake() {
             base.Awake();
             OnInitialize();
@@ -24,7 +26,11 @@ namespace GentlyUI.Core {
         /// <summary>
         /// Called immediately the first time this UIBase is ever active in a scene.
         /// </summary>
-        protected virtual void OnInitialize() { }
+        protected virtual void OnInitialize() { 
+            if (!baseInitialized) {
+                Initialize();
+            }
+        }
 
         /// <summary>
         /// Called the first time this UIBase is ever active in a scene but after other scripts have executed.
@@ -68,6 +74,8 @@ namespace GentlyUI.Core {
             }
         }
 
-        public virtual void Initialize() {}
+        public virtual void Initialize() {
+            baseInitialized = true;
+        }
     }
 }
