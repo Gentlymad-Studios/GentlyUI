@@ -28,7 +28,7 @@ namespace GentlyUI.UIElements {
 
             if (HasIconOutput()) {       
                 if (iconOutput.TryGetComponent(out GMVisualElement iconVisualElement)) {
-                    iconVisualElement.Initialize();
+                    iconVisualElement.Initialize(this);
                 }
             }
         }
