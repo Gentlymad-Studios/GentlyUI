@@ -59,10 +59,10 @@ namespace GentlyUI.UIElements {
         private bool initialized = false;
         private VisualStateData stateData;
 
-        protected override void OnInitialize() {
+        public override void Initialize() {
             graphic = GetComponent<Graphic>();
 
-            base.OnInitialize();
+            base.Initialize();
         }
 
         public void EnableVisualElement(bool isActive) {
