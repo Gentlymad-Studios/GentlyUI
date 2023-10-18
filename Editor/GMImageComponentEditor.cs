@@ -45,12 +45,12 @@ public class GMImageComponentEditor : ImageEditor {
             uiColorField.style.display = useGlobalUIColor ? DisplayStyle.Flex : DisplayStyle.None;
             
             if (useGlobalUIColor) {
-                defaultColorField.value = UIProjectSettings.Instance.uiSettings.GetColor(globalUIColor.stringValue);
+                defaultColorField.value = UIProjectSettings.instance.uiSettings.GetColor(globalUIColor.stringValue);
             }
         }
 
         void UpdateColor() {
-            defaultColorField.value = UIProjectSettings.Instance.uiSettings.GetColor(globalUIColor.stringValue);
+            defaultColorField.value = UIProjectSettings.instance.uiSettings.GetColor(globalUIColor.stringValue);
         }
     }
     

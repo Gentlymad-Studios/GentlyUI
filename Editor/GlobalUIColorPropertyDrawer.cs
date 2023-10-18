@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 [CustomPropertyDrawer(typeof(GlobalUIColorPropertyAttribute))]
 public class GlobalUIColorPropertyDrawer : PropertyDrawer {
     public override VisualElement CreatePropertyGUI(SerializedProperty property) {
-        List<string> identifiers = UIProjectSettings.Instance.uiSettings.ColorIdentifiers;
+        List<string> identifiers = UIProjectSettings.instance.uiSettings.ColorIdentifiers;
 
         if (string.IsNullOrEmpty(property.stringValue)) {
             property.stringValue = identifiers[0];
