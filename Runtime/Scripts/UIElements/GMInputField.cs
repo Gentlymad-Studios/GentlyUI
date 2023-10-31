@@ -7,14 +7,13 @@ using static TMPro.TMP_InputField;
 
 namespace GentlyUI.UIElements {
     [AddComponentMenu("GentlyUI/Input Field", 8)]
-    public class GMInputField : GMSelectable, IPointerClickHandler, 
-        IUpdateSelectedHandler, 
+    public class GMInputField : GMSelectable, IPointerClickHandler,
+        IUpdateSelectedHandler,
         ISubmitHandler,
         ISelectHandler,
         IDeselectHandler,
         IBeginDragHandler,
-        IDragHandler
-    {
+        IDragHandler {
 
         /// <summary>
         /// The current text of the input field.
@@ -87,6 +86,11 @@ namespace GentlyUI.UIElements {
         [SerializeField] private char asteriskChar = '*';
 
         /// <summary>
+        /// Defines whether the new text is submitted on deselect or reset.
+        /// </summary>
+        [SerializeField] private bool submitOnDeselect;
+
+        /// <summary>
         /// Event delegates triggered when the input field changes its data.
         /// </summary>
         [Tooltip("Event delegates triggered when the input field changes its data.")]
@@ -112,6 +116,7 @@ namespace GentlyUI.UIElements {
         private int selectionStartPosition;
         private int selectionEndPosition;
         private float blinkTimer;
+        private string initialText;
 
         static private readonly char[] kSeparators = { ' ', '.', ',', '\t', '\r', '\n' };
         const string kEmailSpecialCharacters = "!#$%&'*+-/=?^_`{|}~"; // Doesn't include dot and @ on purpose!
@@ -121,7 +126,7 @@ namespace GentlyUI.UIElements {
             set { SetText(value); }
         }
 
-        private bool HasSelection () {
+        private bool HasSelection() {
             return selectionStartPosition != selectionEndPosition;
         }
 
@@ -184,14 +189,14 @@ namespace GentlyUI.UIElements {
 
         protected void KeyPressed(Event evt) {
             EventModifiers currentEventModifiers = evt.modifiers;
-            bool ctrl = SystemInfo.operatingSystemFamily == OperatingSystemFamily.MacOSX 
-                        ? (currentEventModifiers & EventModifiers.Command) != 0 
+            bool ctrl = SystemInfo.operatingSystemFamily == OperatingSystemFamily.MacOSX
+                        ? (currentEventModifiers & EventModifiers.Command) != 0
                         : (currentEventModifiers & EventModifiers.Control) != 0;
             bool shift = (currentEventModifiers & EventModifiers.Shift) != 0;
             bool alt = (currentEventModifiers & EventModifiers.Alt) != 0;
             bool ctrlOnly = ctrl && !alt && !shift;
 
-            switch(evt.keyCode) {
+            switch (evt.keyCode) {
                 case KeyCode.Backspace:
                     //Delete from back
                     Backspace();
@@ -257,14 +262,23 @@ namespace GentlyUI.UIElements {
                     break;
 
                 case KeyCode.Escape:
+                    Escape();
                     return;
-                
             }
 
             char c = evt.character;
 
             if (IsValidChar(c)) {
                 Append(c);
+            }
+        }
+
+        private void Escape() {
+            if (isFocused) {
+                ResetText();
+                isFocused = false;
+                UpdateCaretAndSelection();
+                UIManager.Instance.SelectUI(null);
             }
         }
 
@@ -315,6 +329,10 @@ namespace GentlyUI.UIElements {
             }
         }
 
+        void ResetText() {
+            Text = initialText;
+        }
+
         void SetCaretPosition(int position) {
             SetSelectionStartPosition(position);
             SetSelectionEndPosition(position);
@@ -341,7 +359,7 @@ namespace GentlyUI.UIElements {
         public override void Tick(float unscaledDeltaTime) {
             base.Tick(unscaledDeltaTime);
 
-            if (!isFocused) 
+            if (!isFocused)
                 return;
 
             //Do text updates
@@ -487,7 +505,7 @@ namespace GentlyUI.UIElements {
         }
 
         protected virtual void Append(string input) {
-            if (readOnly) 
+            if (readOnly)
                 return;
 
             for (int i = 0, length = input.Length; i < length; ++i) {
@@ -500,7 +518,7 @@ namespace GentlyUI.UIElements {
         }
 
         protected virtual void Append(char input) {
-            if (readOnly) 
+            if (readOnly)
                 return;
 
             if (onValidateInput != null) {
@@ -652,10 +670,17 @@ namespace GentlyUI.UIElements {
         }
 
         void OnFocused() {
+            initialText = text;
             isFocused = true;
         }
 
         void OnFocusLost() {
+            if (!submitOnDeselect) {
+                ResetText();
+            } else {
+                OnSubmit(null);
+            }
+
             isFocused = false;
             UpdateCaretAndSelection();
         }
