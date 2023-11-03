@@ -127,7 +127,7 @@ namespace GentlyUI.UIElements {
             if (this.value == value)
                 return;
 
-            SetValueInternal(value);
+            SetValueInternal(value, notifyChange);
         }
 
         public void SetDefaultValue(int value) {
