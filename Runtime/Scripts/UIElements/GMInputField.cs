@@ -536,7 +536,7 @@ namespace GentlyUI.UIElements {
         }
 
         bool IsInsertingAllowed() {
-            return characterLimit > 0 && Text.Length < characterLimit;
+            return (characterLimit > 0 && Text.Length < characterLimit) || HasSelection();
         }
 
         private void Insert(char c) {
