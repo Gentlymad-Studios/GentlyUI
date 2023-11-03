@@ -61,6 +61,18 @@ namespace GentlyUI.UIElements {
                 this.icon = icon;
                 this.data = data;
             }
+
+            public void SetLabel(string label) {
+                this.label = label;
+            }
+
+            public void SetIcon(Sprite icon) {
+                this.icon = icon;
+            }
+
+            public void SetData(object data) {
+                this.data = data;
+            }
         }
 
         public void SetOptions(List<DropdownOptionData> options) {
