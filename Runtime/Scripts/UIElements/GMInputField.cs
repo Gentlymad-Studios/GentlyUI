@@ -88,6 +88,7 @@ namespace GentlyUI.UIElements {
         /// <summary>
         /// Defines whether the new text is submitted on deselect or reset.
         /// </summary>
+        [Tooltip("Defines whether the new text is submitted on deselect or reset.")]
         [SerializeField] private bool submitOnDeselect;
 
         /// <summary>

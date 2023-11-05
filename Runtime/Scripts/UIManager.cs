@@ -224,7 +224,11 @@ namespace GentlyUI {
         }
 
         void AddUITickableToRegister(IUITickable uiTickable) {
-            tickableUIs.Add(uiTickable);
+            if (uiTickable is IUITickablePriority prioritizedTickable) {
+                tickableUIs.Insert(prioritizedTickable.TickQueueIndex, prioritizedTickable);
+            } else {
+                tickableUIs.Add(uiTickable);
+            }
         }
 
         void RemoveRegisteredUITickable(IUITickable uiTickable) {
@@ -314,5 +318,11 @@ namespace GentlyUI {
 
     public interface IUITickable {
         void Tick(float unscaledDeltaTime);
+    }
+
+    public interface IUITickablePriority : IUITickable {
+        int TickQueueIndex {
+            get;
+        }
     }
 }
