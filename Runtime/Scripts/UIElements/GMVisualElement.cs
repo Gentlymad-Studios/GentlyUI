@@ -175,16 +175,22 @@ namespace GentlyUI.UIElements {
         }
 
         /// <summary>
-        /// Sets a new color for the default state. Will only be used if an animation attribute for color is assigned and useGlobalColor is set to false.
+        /// Sets a new color for the default state.
         /// PressedState and hoveredState are automatically updated based on different shades of the color.
         /// </summary>
         /// <param name="color">The color to use for the default state.</param>
         public void SetDefaultColor(Color color) {
-            defaultState.Color = color;
-            hoveredState.Color = color * 1.2f;
-            pressedState.Color = color * 0.8f;
+            defaultState.SetOverrideColor(color);
+            hoveredState.SetOverrideColor(color * 1.2f);
+            pressedState.SetOverrideColor(color * 0.8f);
 
             SetFinalVisualState();
+        }
+
+        public void ResetOverrideColors() {
+            defaultState.SetOverrideColor(null);
+            hoveredState.SetOverrideColor(null);
+            pressedState.SetOverrideColor(null);
         }
 
         public void DoTweenUpdate() {
@@ -353,7 +359,9 @@ namespace GentlyUI.UIElements {
             /// </summary>
             public Color Color {
                 get {
-                    if (useGlobalColor) {
+                    if (overrideColor.HasValue) {
+                        return overrideColor.Value;
+                    } else if (useGlobalColor) {
                         return UIManager.UISettings.GetColor(globalColor);
                     } else {
                         return color;
@@ -363,6 +371,8 @@ namespace GentlyUI.UIElements {
                     color = value;
                 }
             }
+
+            public Color? overrideColor;
 
             /// <summary>
             /// The warning color this visual element has in this state.
@@ -377,6 +387,15 @@ namespace GentlyUI.UIElements {
             /// </summary>
             [SerializeField] float alpha = 1f;
             public float Alpha => alpha;
+
+            /// <summary>
+            /// Sets an override color. Will be automatically reset when parent is returned.
+            /// Set to null to clear override color.
+            /// </summary>
+            /// <param name="color">The override color.</param>
+            public void SetOverrideColor(Color? color) {
+                overrideColor = color;
+            }
         }
     }
 }

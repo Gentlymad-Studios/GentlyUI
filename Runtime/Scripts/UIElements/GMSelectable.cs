@@ -282,6 +282,10 @@ namespace GentlyUI.UIElements {
             ToggleWarning(false);
             SetInteractable(true);
 
+            for (int i = 0, count = visualElements.Count; i < count; ++i) {
+                visualElements[i].ResetOverrideColors();
+            }
+
             //Remove dynamically added components on return
             if (addedComponents != null) {
                 for (int i = 0, count = addedComponents.Count; i < count; ++i) {
