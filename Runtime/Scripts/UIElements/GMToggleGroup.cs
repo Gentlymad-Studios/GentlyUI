@@ -35,6 +35,10 @@ namespace GentlyUI.UIElements {
             base.Awake();
 
             //Buttons
+            if (buttons == null) {
+                return;
+            }
+
             for (int i = 0, count = buttons.Length; i < count; ++i) {
                 GMHoldInteractionButton button = buttons[i];
                 button.OnClick.AddListener(() => {
