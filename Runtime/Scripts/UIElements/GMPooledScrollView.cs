@@ -17,6 +17,7 @@ namespace GentlyUI.UIElements {
         [SerializeField] private ScrollAxis scrollAxis = ScrollAxis.Vertical;
         [Header("Buttons")]
         [SerializeField] private GMHoldInteractionButton[] scrollButtons;
+        [SerializeField] private bool setScrollbarUninteractable = false;
 
         public enum ScrollAxis {
             Horizontal = 0,
@@ -407,9 +408,17 @@ namespace GentlyUI.UIElements {
                 if (IsScrollingAllowed()) {
                     scrollbar.SetHandleSize(Mathf.InverseLerp(0, (maxScrollPosition + viewportHeight), viewportHeight));
                     if (scrollbar.Value != normalizedTargetPosition) scrollbar.SetValue(normalizedTargetPosition, false);
+
+                    if (setScrollbarUninteractable) {
+                        scrollbar.SetInteractable(true);
+                    }
                 } else {
                     scrollbar.SetHandleSize(1f);
                     if (scrollbar.Value != 0f) scrollbar.SetValue(0f, false);
+
+                    if (setScrollbarUninteractable) {
+                        scrollbar.SetInteractable(false);
+                    }
                 }
             }
 
