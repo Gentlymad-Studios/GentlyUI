@@ -14,6 +14,10 @@ namespace GentlyUI.UIElements {
 
         private List<GMToggle> toggles = new List<GMToggle>();
         private GMToggle activeToggle;
+        /// <summary>
+        /// Optional buttons that can be used to toggle through the tabs.
+        /// </summary>
+        [SerializeField] private GMHoldInteractionButton[] buttons;
 
         [Serializable]
         public class ToggleGroupEvent : UnityEvent<GMToggle> { }
@@ -27,6 +31,18 @@ namespace GentlyUI.UIElements {
 
         protected GMToggleGroup() { }
 
+        protected override void Awake() {
+            base.Awake();
+
+            //Buttons
+            for (int i = 0, count = buttons.Length; i < count; ++i) {
+                GMHoldInteractionButton button = buttons[i];
+                button.OnClick.AddListener(() => {
+                    SwitchActiveToggle(button.scrollDirection);
+                });
+            }
+        }
+
         protected override void Start() {
             EnsureValidState();
             base.Start();
@@ -35,6 +51,24 @@ namespace GentlyUI.UIElements {
         protected override void OnEnable() {
             EnsureValidState();
             base.OnEnable();
+        }
+
+        void SwitchActiveToggle(int direction) {
+            if (toggles == null || toggles.Count < 2 || activeToggle == null) {
+                return;
+            }
+
+            int currentIndex = toggles.IndexOf(activeToggle);
+            currentIndex += direction;
+
+            if (currentIndex >= toggles.Count) {
+                currentIndex = 0;
+            } else if (currentIndex < 0) {
+                currentIndex = toggles.Count - 1;
+            }
+
+            GMToggle newToggle = toggles[currentIndex];
+            newToggle.IsOn = true;
         }
 
         public void RegisterToggle(GMToggle toggle) {

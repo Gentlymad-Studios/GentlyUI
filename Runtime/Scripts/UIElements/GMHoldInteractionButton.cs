@@ -14,9 +14,9 @@ namespace GentlyUI.UIElements {
         [Tooltip("The overall trigger delay. After initial delay this is the delay that defines in which intervals the button will trigger.")]
         public float triggerDelay;
         /// <summary>
-        /// The scroll direction. 1 = down, -1 = up.
+        /// The scroll direction. 1 = down/right, -1 = up/left.
         /// </summary>
-        [Tooltip("The scroll direction. 1 = down, -1 = up.")]
+        [Tooltip("The scroll direction. 1 = down/right, -1 = up/left.")]
         public int scrollDirection = 1;
 
         float heldTimer;
