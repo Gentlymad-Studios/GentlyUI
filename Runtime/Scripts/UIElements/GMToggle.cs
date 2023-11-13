@@ -76,11 +76,6 @@ namespace GentlyUI.UIElements {
         }
 
         void SetToggleGroup(GMToggleGroup newGroup, bool updateGroupInternal) {
-            if (newGroup == group) {
-                //Already on same group
-                return;
-            }
-
             GMToggleGroup oldGroup = group;
 
             //Remove from old group
