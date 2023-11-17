@@ -235,10 +235,12 @@ namespace GentlyUI {
             tickableUIs.Remove(uiTickable);
         }
 
-        private GMSelectable currentHoveredSelectable;
-        private GMDraggable currentHoveredDraggable;
-        private bool leftMouseButtonPressed;
-        private List<RaycastResult> hoveredElements;
+        GMSelectable selectable, currentHoveredSelectable;
+        GMDraggable draggable, currentHoveredDraggable;
+        bool leftMouseButtonPressed;
+        List<RaycastResult> hoveredElements;
+        RaycastResult hoveredElement;
+
         public void ProcessPointerEventData() {
             if (!wasPointerEventDataUpdatedThisFrame || pointerEventData == null) {
                 currentHoveredSelectable = null;
@@ -276,8 +278,10 @@ namespace GentlyUI {
                 EventSystem.current.RaycastAll(pointerEventData, hoveredElements);
 
                 for (int i = 0, count = hoveredElements.Count; i < count; ++i) {
-                    GMSelectable selectable = hoveredElements[i].gameObject.GetComponent<GMSelectable>();
-                    GMDraggable draggable = hoveredElements[i].gameObject.GetComponent<GMDraggable>();
+                    hoveredElement = hoveredElements[i];
+
+                    selectable = hoveredElement.gameObject.GetComponentInParent<GMSelectable>();
+                    draggable = hoveredElement.gameObject.GetComponentInParent<GMDraggable>();
 
                     if (currentHoveredSelectable == null && selectable != null) {
                         currentHoveredSelectable = selectable;
