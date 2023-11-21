@@ -17,6 +17,7 @@ namespace GentlyUI.UIElements {
         /// <summary>
         /// Optional buttons that can be used to toggle through the tabs.
         /// </summary>
+        [Tooltip("Optional buttons that can be used to toggle through the tabs.")]
         [SerializeField] private GMHoldInteractionButton[] buttons;
 
         [Serializable]

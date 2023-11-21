@@ -176,9 +176,15 @@ namespace GentlyUI.UIElements {
             }
 
             //Layout Min Height
-            VisualElementAnimationAttributes layoutAnimAttributes = state.GetAnimationAttributes(AnimationProperty.LayoutMinHeight);
-            if (layoutAnimAttributes != null) {
+            VisualElementAnimationAttributes layoutAnimAttributes_Height = state.GetAnimationAttributes(AnimationProperty.LayoutMinHeight);
+            if (layoutAnimAttributes_Height != null) {
                 LayoutElement.minHeight = state.LayoutMinHeight;
+            }
+
+            //Layout Min Width
+            VisualElementAnimationAttributes layoutAnimAttributes_Width = state.GetAnimationAttributes(AnimationProperty.LayoutMinWidth);
+            if (layoutAnimAttributes_Width != null) {
+                LayoutElement.minWidth = state.LayoutMinWidth;
             }
 
             //Active state
@@ -224,10 +230,18 @@ namespace GentlyUI.UIElements {
             }
 
             //Layout Min Height
-            VisualElementAnimationAttributes layoutAnimAttributes = state.GetAnimationAttributes(AnimationProperty.LayoutMinHeight);
-            if (layoutAnimAttributes != null) {
-                tween = TweenLayoutElementMinHeight.Add(gameObject, layoutAnimAttributes.Duration, state.LayoutMinHeight);
-                SetupTween(tween, layoutAnimAttributes);
+            VisualElementAnimationAttributes layoutAnimAttributes_Height = state.GetAnimationAttributes(AnimationProperty.LayoutMinHeight);
+            if (layoutAnimAttributes_Height != null) {
+                tween = TweenLayoutElementMinHeight.Add(gameObject, layoutAnimAttributes_Height.Duration, state.LayoutMinHeight);
+                SetupTween(tween, layoutAnimAttributes_Height);
+                CacheLongestTween(tween, ref longestTween);
+            }
+
+            //Layout Min Width
+            VisualElementAnimationAttributes layoutAnimAttributes_Width = state.GetAnimationAttributes(AnimationProperty.LayoutMinWidth);
+            if (layoutAnimAttributes_Width != null) {
+                tween = TweenLayoutElementMinHeight.Add(gameObject, layoutAnimAttributes_Width.Duration, state.LayoutMinWidth);
+                SetupTween(tween, layoutAnimAttributes_Width);
                 CacheLongestTween(tween, ref longestTween);
             }
 
@@ -352,5 +366,12 @@ namespace GentlyUI.UIElements {
         [Tooltip("The min height of the layout element of the container for this state.")]
         [SerializeField] private float layoutMinHeight = 0f;
         public float LayoutMinHeight => layoutMinHeight;
+
+        /// <summary>
+        /// The min width of the layout element of the container for this state.
+        /// </summary>
+        [Tooltip("The min width of the layout element of the container for this state.")]
+        [SerializeField] private float layoutMinWidth = 0f;
+        public float LayoutMinWidth => layoutMinWidth;
     }
 }
