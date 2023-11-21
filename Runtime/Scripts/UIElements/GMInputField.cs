@@ -794,10 +794,19 @@ namespace GentlyUI.UIElements {
             base.ResetPooledUI();
 
             textOutput.alignment = defaultAlignment;
+
+            if (placeholder is TextMeshProUGUI _textOutput) {
+                _textOutput.alignment = defaultAlignment;
+            }
         }
 
         public void SetTextAlignment(TextAlignmentOptions alignment) {
             textOutput.alignment = alignment;
+
+            if (placeholder is TextMeshProUGUI _textOutput) {
+                _textOutput.alignment = alignment;
+            }
+
             UpdateCaretAndSelection();
         }
 
