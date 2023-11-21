@@ -11,9 +11,10 @@ namespace GentlyUI.ModularUI {
             UnityAction<string> onSubmit,
             GMInputField.InputType inputType = GMInputField.InputType.Standard,
             TMP_InputField.CharacterValidation validation = TMP_InputField.CharacterValidation.None,
-            string placeholderText = ""
+            string placeholderText = "",
+            TextAlignmentOptions textAlignment = TextAlignmentOptions.Left
         ) {
-            return AddInputField(UIManager.UISettings.DefaultInputField, defaultValue, onSubmit, inputType, validation, placeholderText);
+            return AddInputField(UIManager.UISettings.DefaultInputField, defaultValue, onSubmit, inputType, validation, placeholderText, textAlignment);
         }
 
         protected GMInputField AddInputField(
@@ -22,7 +23,8 @@ namespace GentlyUI.ModularUI {
             UnityAction<string> onSubmit,
             GMInputField.InputType inputType = GMInputField.InputType.Standard,
             TMP_InputField.CharacterValidation validation = TMP_InputField.CharacterValidation.None,
-            string placeholderText = ""
+            string placeholderText = "",
+            TextAlignmentOptions textAlignment = TextAlignmentOptions.Left
         ) {
             string path = Path.Join(UIPaths.BasePath, UIPaths.ElementPath, inputFieldType);
 
@@ -31,6 +33,7 @@ namespace GentlyUI.ModularUI {
             //Set properties
             inputField.SetCharacterValidation(validation);
             inputField.SetInputType(inputType);
+            inputField.SetTextAlignment(textAlignment);
             //Set placeholder text
             if (!string.IsNullOrWhiteSpace(placeholderText)) inputField.SetPlaceholderText(placeholderText);
             //Set default text

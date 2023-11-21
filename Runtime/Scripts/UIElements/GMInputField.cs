@@ -782,6 +782,25 @@ namespace GentlyUI.UIElements {
             return (char)0;
         }
 
+        TextAlignmentOptions defaultAlignment;
+
+        public override void CreatePooledUICache() {
+            base.CreatePooledUICache();
+
+            defaultAlignment = textOutput.alignment;
+        }
+
+        public override void ResetPooledUI() {
+            base.ResetPooledUI();
+
+            textOutput.alignment = defaultAlignment;
+        }
+
+        public void SetTextAlignment(TextAlignmentOptions alignment) {
+            textOutput.alignment = alignment;
+            UpdateCaretAndSelection();
+        }
+
         public enum InputType {
             Standard,
             Password
