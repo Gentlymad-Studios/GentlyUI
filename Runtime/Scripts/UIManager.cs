@@ -96,6 +96,9 @@ namespace GentlyUI {
         void OnCanvasSpawned(Canvas canvas, string identifier) {
             canvas.renderMode = RenderMode.ScreenSpaceCamera;
             canvas.worldCamera = uiCamera;
+            //Sort in hierarchy
+            canvas.transform.SetSiblingIndex(canvas.sortingOrder);
+            //Add to LUT
             canvasLUT.Add(identifier, canvas);
         }
 
@@ -235,16 +238,18 @@ namespace GentlyUI {
             tickableUIs.Remove(uiTickable);
         }
 
+        GameObject firstHoveredElement;
         GMSelectable selectable, currentHoveredSelectable;
         GMDraggable draggable, currentHoveredDraggable;
         bool leftMouseButtonPressed;
-        List<RaycastResult> hoveredElements;
+        public static List<RaycastResult> hoveredElements;
         RaycastResult hoveredElement;
 
         public void ProcessPointerEventData() {
             if (!wasPointerEventDataUpdatedThisFrame || pointerEventData == null) {
                 currentHoveredSelectable = null;
                 currentHoveredDraggable = null;
+                firstHoveredElement = null;
 
                 pointerEventData = new PointerEventData(EventSystem.current);
 
@@ -280,6 +285,12 @@ namespace GentlyUI {
                 for (int i = 0, count = hoveredElements.Count; i < count; ++i) {
                     hoveredElement = hoveredElements[i];
 
+                    //If this is not the first hovered element and the first hovered element is not a child of the current hovered element
+                    //We can break the loop as all other hovered elements are blocked by the first element and its parents.
+                    if (firstHoveredElement != null && !firstHoveredElement.transform.IsChildOf(hoveredElement.gameObject.transform)) {
+                        break;
+                    }
+
                     selectable = hoveredElement.gameObject.GetComponentInParent<GMSelectable>();
                     draggable = hoveredElement.gameObject.GetComponentInParent<GMDraggable>();
 
@@ -293,6 +304,10 @@ namespace GentlyUI {
 
                     if (currentHoveredDraggable == null && draggable != null) {
                         currentHoveredDraggable = draggable;
+                    }
+
+                    if (i == 0) {
+                        firstHoveredElement = hoveredElement.gameObject;
                     }
                 }
 

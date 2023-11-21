@@ -405,7 +405,7 @@ namespace GentlyUI.UIElements {
             float offset = 0f;
 
             if (Text.Length > 0) {
-                if (selectionStartPosition == Text.Length) {
+                if (selectionStartPosition >= Text.Length) {
                     tmpInfo = textOutput.textInfo.characterInfo[Text.Length - 1];
                     offset = tmpInfo.bottomRight.x - tmpInfo.bottomLeft.x;
                 } else {
@@ -414,7 +414,7 @@ namespace GentlyUI.UIElements {
 
                 startPos = new Vector2(tmpInfo.origin + offset, caret.rectTransform.localPosition.y);
 
-                if (selectionEndPosition == Text.Length) {
+                if (selectionEndPosition >= Text.Length) {
                     tmpInfo = textOutput.textInfo.characterInfo[Text.Length - 1];
                     offset = tmpInfo.bottomRight.x - tmpInfo.bottomLeft.x;
                 } else {
