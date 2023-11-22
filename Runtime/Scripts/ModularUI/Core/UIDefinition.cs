@@ -104,7 +104,7 @@ namespace GentlyUI.ModularUI {
         protected void LeaveCurrentContainer() {
             currentToggleGroup = null;
 
-            if (currentContainer != rootContainer) {
+            if (currentContainer != rootContainer.RectTransform) {
                 SetCurrentContainer(currentContainer.transform.parent as RectTransform);
             }
         }
