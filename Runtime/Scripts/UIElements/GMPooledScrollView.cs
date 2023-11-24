@@ -433,15 +433,17 @@ namespace GentlyUI.UIElements {
 			}
 		}
 
+		int dataIndexOffset, currentColumnIndex, currentRowIndex;
+
 		void UpdateViewport(bool forceUpdate = false) {
 			int _lastStartIndex = currentDataStartIndex;
 
 			if (scrollAxisInt == 0) {
-				int currentColumnIndex = Mathf.FloorToInt(Mathf.Abs(internalPosition.x) / columnWidth);
+				currentColumnIndex = Mathf.FloorToInt(Mathf.Abs(internalPosition.x) / columnWidth);
 				currentColumnIndex = Mathf.Max(currentColumnIndex, 0);
 				currentDataStartIndex = currentColumnIndex * itemContainer.rows;
 			} else {
-				int currentRowIndex = Mathf.FloorToInt(internalPosition.y / rowHeight);
+				currentRowIndex = Mathf.FloorToInt(internalPosition.y / rowHeight);
 				currentRowIndex = Mathf.Max(currentRowIndex, 0);
 				currentDataStartIndex = currentRowIndex * itemContainer.columns;
 			}
@@ -453,12 +455,13 @@ namespace GentlyUI.UIElements {
 					UIBehaviour item = currentItems[i];
 					//We use the sibling index instead of the index in the loop, because it might happen, that items were reordered.
 					//So sibling index is more reliable on which data to display in this item.
-					OnUpdateItem(item, currentDataStartIndex + item.transform.GetSiblingIndex(), wasScrolled);
+					dataIndexOffset = item.transform.GetSiblingIndex();
+					OnUpdateItem(item, currentDataStartIndex + dataIndexOffset, wasScrolled);
 				}
-			}
 
-			if (onViewportUpdate != null) {
-				onViewportUpdate.Invoke();
+				if (onViewportUpdate != null) {
+					onViewportUpdate.Invoke();
+				}
 			}
 		}
 
@@ -578,6 +581,22 @@ namespace GentlyUI.UIElements {
 				//Vertical scrolling
 				LayoutElement.preferredWidth = itemContainer.columns * columnWidth - itemContainer.spacing.x + itemContainer.padding.left + itemContainer.padding.right + viewport.offsetMin.x + viewport.offsetMax.x * -1;
 			}
+		}
+
+		public void SetRows(int rows) {
+			ItemContainer.rows = rows;
+			UpdateAll();
+		}
+
+		public void SetColumns(int columns) {
+			ItemContainer.columns = columns;
+			UpdateAll();
+		}
+
+		public void SetRowsAndColumns(int rows, int columns) {
+			ItemContainer.rows = rows;
+			ItemContainer.columns = columns;
+			UpdateAll();
 		}
 
 		public void SetSize(float width, float height) {

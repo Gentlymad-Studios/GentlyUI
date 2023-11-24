@@ -26,11 +26,7 @@ namespace GentlyUI.UIElements {
         [SerializeField] protected Axis startAxis = Axis.Horizontal;
         public Axis StartAxis {
             get {
-                if (layoutConstraints == LayoutConstraints.Uniform) {
-                    return startAxis;
-                } else {
-                    return Axis.Horizontal;
-                }
+                return startAxis;
             }
             set { SetProperty(ref startAxis, value); }
         }
@@ -118,11 +114,21 @@ namespace GentlyUI.UIElements {
 
             for (int i = 0; i < childCount; ++i) {
                 if (StartAxis == Axis.Horizontal) {
-                    rowCount = Mathf.FloorToInt(i / (float)columns);
-                    columnCount = i % columns;
+                    if (layoutConstraints == LayoutConstraints.FixedRows) {
+                        rowCount = Mathf.FloorToInt(i / (float)columns);
+                        columnCount = i % columns;
+                    } else {
+                        rowCount = Mathf.FloorToInt(i / (float)columns);
+                        columnCount = i % columns;
+                    }
                 } else {
-                    rowCount = i % columns;
-                    columnCount = Mathf.FloorToInt(i / (float)columns);
+                    if (layoutConstraints == LayoutConstraints.FixedRows) {
+                        rowCount = i % rows;
+                        columnCount = Mathf.FloorToInt(i / (float)rows);
+                    } else {
+                        rowCount = i % rows;
+                        columnCount = Mathf.FloorToInt(i / (float)rows);
+                    }
                 }
 
                 RectTransform item = rectChildren[i];
