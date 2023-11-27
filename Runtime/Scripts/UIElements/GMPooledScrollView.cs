@@ -722,7 +722,13 @@ namespace GentlyUI.UIElements {
 
 		protected virtual T CreateItem<T>() where T : UIBehaviour {
 			GameObject itemGO = Instantiate(itemPrefab.gameObject, itemContainer.transform, false);
+
 			T item = itemGO.GetComponent<T>();
+
+			if (item is IInitializeUIOnSpawn initializeOnSpawn) {
+				initializeOnSpawn.Initialize();
+			}
+
 			return item;
 		}
 
