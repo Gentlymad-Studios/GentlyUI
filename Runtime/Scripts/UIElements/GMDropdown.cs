@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace GentlyUI.UIElements {
-    public class GMDropdown : UIBase, IUITickable {
+    public class GMDropdown : UIBase, IUITickable, IPooledUIResetter {
         [SerializeField] private GMToggle toggle;
         [SerializeField] private GMPooledScrollView scrollView;
         [SerializeField] private MonoBehaviour scrollViewItemPrefab;
@@ -17,6 +17,8 @@ namespace GentlyUI.UIElements {
         public int Value => value;
 
         public bool IsFocused => toggle.IsOn;
+
+        public bool IsInteractable => toggle.Interactable;
 
         [Serializable]
         public class DropdownEvent : UnityEvent<int> {}
@@ -156,6 +158,15 @@ namespace GentlyUI.UIElements {
             GMUIBlockerCreator.CreateBlocker(scrollView.transform as RectTransform, () => { toggle.IsOn = false; });
         }
 
+        /// <summary>
+        /// Sets the toggle of the dropdown interactable/not interactable.
+        /// </summary>
+        /// <param name="interactable">The target value.</param>
+        /// <param name="forceUpdate">Use force update to update the toggle's visuals immediately (without transitions).</param>
+        public void SetInteractable(bool interactable, bool forceUpdate = false) {
+            toggle.SetInteractable(interactable, forceUpdate);
+        }
+
 
         void Hide(bool updateImmediately) {
             if (animatedContainer != null) {
@@ -201,6 +212,12 @@ namespace GentlyUI.UIElements {
                     toggle.IsOn = false;
                 }
             }
+        }
+
+        public void CreatePooledUICache() {}
+
+        public void ResetPooledUI() {
+            SetInteractable(true);
         }
     }
 }
