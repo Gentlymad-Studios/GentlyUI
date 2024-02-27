@@ -118,6 +118,10 @@ namespace Uween {
         }
 
         public virtual void Update(float elapsed) {
+            if (!enabled) {
+                return;
+            }
+
             float delay = DelayTime;
             float duration = Duration;
 
