@@ -571,6 +571,10 @@ namespace GentlyUI.UIElements {
 			UpdateSizes();
 			UpdateScrollbar();
 			UpdateAllDisplayedItems();
+
+			if (targetPosition.y > maxScrollPosition) {
+				SetTargetPosition(Vector3.up * maxScrollPosition, true);
+			}
 		}
 
 		public void AutoAdjustToScrollviewSettings() {
