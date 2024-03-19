@@ -16,6 +16,8 @@ namespace GentlyUI.UIElements {
 
         [SerializeField] bool isOn = false;
 
+        [SerializeField] bool allowInactiveStateForVisualsElements = false;
+
         /// <summary>
         /// Defines whether the toggle is on or off.
         /// </summary>
@@ -126,6 +128,9 @@ namespace GentlyUI.UIElements {
                     onValueChanged.Invoke(isOn);
                 }
 
+                if (allowInactiveStateForVisualsElements) {
+                    UpdateVisualState();
+                }
                 UpdateIndicator();
             }
         }
@@ -185,7 +190,11 @@ namespace GentlyUI.UIElements {
                     base.UpdateVisualElement(visualElement, setImmediately);
                 }
             } else {
-                base.UpdateVisualElement(visualElement, setImmediately);
+                if (allowInactiveStateForVisualsElements && CurrentVisualState == GMVisualElement.VisualState.Default && !IsOn) {
+                    visualElement.SetState(GMVisualElement.VisualState.Inactive, setImmediately);
+                } else {
+                    base.UpdateVisualElement(visualElement, setImmediately);
+                }
             }
         }
 
