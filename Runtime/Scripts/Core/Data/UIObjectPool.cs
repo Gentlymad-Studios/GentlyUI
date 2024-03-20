@@ -46,7 +46,7 @@ namespace GentlyUI.Core {
             } else {
                 _instance = create();
 
-                if (_instance is IPooledUIResetter resetter) {
+                foreach(IPooledUIResetter resetter in _instance.GetComponents<IPooledUIResetter>()) {
                     resetter.CreatePooledUICache();
                 }
 
@@ -90,7 +90,7 @@ namespace GentlyUI.Core {
                 instance.transform.SetParent(null, true);
                 instance.gameObject.SetActive(false);
 
-                if (instance is IPooledUIResetter resetter) {
+                foreach (IPooledUIResetter resetter in instance.GetComponents<IPooledUIResetter>()) {
                     resetter.ResetPooledUI();
                 }
             }
