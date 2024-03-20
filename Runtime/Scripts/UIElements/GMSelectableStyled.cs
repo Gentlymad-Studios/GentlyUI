@@ -72,5 +72,12 @@ namespace GentlyUI.UIElements {
                 labelOutput.gameObject.SetActive(enable);
             }
         }
+
+        public override void ResetPooledUI() {
+            base.ResetPooledUI();
+
+            iconVisualElement?.ResetOverrideColors();
+            labelVisualElement?.ResetOverrideColors();
+        }
     }
 }
