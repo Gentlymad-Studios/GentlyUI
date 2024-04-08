@@ -124,7 +124,7 @@ namespace GentlyUI.UIElements {
 
 		private UIObjectPool<UIBehaviour> currentPool;
 
-		private static Dictionary<GameObject, UIObjectPool<UIBehaviour>> poolCache = new Dictionary<GameObject, UIObjectPool<UIBehaviour>>();
+		private Dictionary<GameObject, UIObjectPool<UIBehaviour>> poolCache = new Dictionary<GameObject, UIObjectPool<UIBehaviour>>();
 
 		private Coroutine waitForLayoutCompleteRoutine;
 
