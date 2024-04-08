@@ -46,7 +46,7 @@ namespace GentlyUI.Core {
             } else {
                 _instance = create();
 
-                foreach(IPooledUIResetter resetter in _instance.GetComponents<IPooledUIResetter>()) {
+                foreach (IPooledUIResetter resetter in _instance.GetComponents<IPooledUIResetter>()) {
                     resetter.CreatePooledUICache();
                 }
 
@@ -81,18 +81,16 @@ namespace GentlyUI.Core {
         /// </summary>
         /// <param name="instance"></param>
         public void Return(T instance) {
-            if (usedInstances.Contains(instance)) {
-                usedInstances.Remove(instance);
-                freeInstances.Add(instance);
-                activeCount -= 1;
+            usedInstances.Remove(instance);
+            freeInstances.Add(instance);
+            activeCount -= 1;
 
-                onReturn?.Invoke(instance);
-                instance.transform.SetParent(null, true);
-                instance.gameObject.SetActive(false);
+            onReturn?.Invoke(instance);
+            instance.transform.SetParent(null, true);
+            instance.gameObject.SetActive(false);
 
-                foreach (IPooledUIResetter resetter in instance.GetComponents<IPooledUIResetter>()) {
-                    resetter.ResetPooledUI();
-                }
+            foreach (IPooledUIResetter resetter in instance.GetComponents<IPooledUIResetter>()) {
+                resetter.ResetPooledUI();
             }
         }
 
@@ -103,6 +101,9 @@ namespace GentlyUI.Core {
             while (usedInstances.Count > 0) {
                 Return(usedInstances[0]);
             }
+
+            usedInstances.Clear();
+            activeCount = 0;
         }
 
         /// <summary>
