@@ -103,6 +103,9 @@ namespace GentlyUI.Core {
             while (usedInstances.Count > 0) {
                 Return(usedInstances[0]);
             }
+
+            usedInstances.Clear();
+            activeCount = 0;
         }
 
         /// <summary>

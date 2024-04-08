@@ -124,7 +124,7 @@ namespace GentlyUI.UIElements {
 
 		private UIObjectPool<UIBehaviour> currentPool;
 
-		private Dictionary<GameObject, UIObjectPool<UIBehaviour>> poolCache = new Dictionary<GameObject, UIObjectPool<UIBehaviour>>();
+		private static Dictionary<GameObject, UIObjectPool<UIBehaviour>> poolCache = new Dictionary<GameObject, UIObjectPool<UIBehaviour>>();
 
 		private Coroutine waitForLayoutCompleteRoutine;
 
@@ -817,8 +817,7 @@ namespace GentlyUI.UIElements {
 
 		void ClearPool() {
 			for (int i = 0, count = currentItems.Count; i < count; ++i) {
-				UIBehaviour item = currentItems[0];
-				currentPool.Return(item);
+				currentPool.Return(currentItems[i]);
 			}
 
 			currentItems.Clear();
