@@ -816,8 +816,9 @@ namespace GentlyUI.UIElements {
 		}
 
 		void ClearPool() {
-			while (currentItems.Count > 0) {
-				currentPool.Return(currentItems[0]);
+			for (int i = 0, count = currentItems.Count; i < count; ++i) {
+				UIBehaviour item = currentItems[0];
+				currentPool.Return(item);
 			}
 
 			currentItems.Clear();
