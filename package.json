@@ -1,6 +1,6 @@
 { 
 	"name": "com.gentlymadstudios.gentlyui", 
-	"version": "0.8.19", 
+	"version": "0.8.20", 
 	"displayName": "GentlyUI", 
 	"description": "Custom Unity UI solution by Gentlymad Studios.", 
 	"unity": "2022.1",
