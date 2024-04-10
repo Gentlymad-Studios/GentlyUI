@@ -124,7 +124,7 @@ namespace GentlyUI.UIElements {
 
 		private UIObjectPool<UIBehaviour> currentPool;
 
-		private static Dictionary<GameObject, UIObjectPool<UIBehaviour>> poolCache = new Dictionary<GameObject, UIObjectPool<UIBehaviour>>();
+		private Dictionary<GameObject, UIObjectPool<UIBehaviour>> poolCache = new Dictionary<GameObject, UIObjectPool<UIBehaviour>>();
 
 		private Coroutine waitForLayoutCompleteRoutine;
 
@@ -824,11 +824,10 @@ namespace GentlyUI.UIElements {
 
 		public List<UIBehaviour> GetAllItems(bool excludeInvisible = false) {
 			if (excludeInvisible) {
-				List<UIBehaviour> allItems = currentPool.GetAllUsedInstances();
 				List<UIBehaviour> visibleItems = new List<UIBehaviour>();
 
-				for (int i = 0, count = allItems.Count; i < count; ++i) {
-					UIBehaviour item = allItems[i];
+				for (int i = 0, count = currentItems.Count; i < count; ++i) {
+					UIBehaviour item = currentItems[i];
 					if (item.gameObject.activeSelf) {
 						visibleItems.Add(item);
 					}
@@ -836,7 +835,7 @@ namespace GentlyUI.UIElements {
 
 				return visibleItems;
 			} else {
-				return currentPool.GetAllUsedInstances();
+				return currentItems;
 			}
 		}
 

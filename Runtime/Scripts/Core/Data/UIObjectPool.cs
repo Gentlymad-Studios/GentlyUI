@@ -5,8 +5,7 @@ using UnityEngine;
 
 namespace GentlyUI.Core {
     public class UIObjectPool<T> where T : Behaviour {
-        List<T> freeInstances = new List<T>();
-        List<T> usedInstances = new List<T>();
+        Stack<T> pooledObjects = new Stack<T>();
 
         Func<T> create = null;
         Action<T> onReturn = null;
@@ -40,21 +39,16 @@ namespace GentlyUI.Core {
         public T Get(Transform parent, bool setActive = true) {
             T _instance;
 
-            if (FreeCount > 0) {
-                _instance = freeInstances[FreeCount - 1];
-                freeInstances.RemoveAt(FreeCount - 1);
+            if (pooledObjects.Count > 0) {
+                _instance = pooledObjects.Pop();
+
             } else {
                 _instance = create();
 
                 foreach (IPooledUIResetter resetter in _instance.GetComponents<IPooledUIResetter>()) {
                     resetter.CreatePooledUICache();
                 }
-
-                allCount += 1;
             }
-
-            usedInstances.Add(_instance);
-            activeCount += 1;
 
             //Reparent if not in correct parent yet
             if (_instance.transform.parent != parent) {
@@ -81,9 +75,7 @@ namespace GentlyUI.Core {
         /// </summary>
         /// <param name="instance"></param>
         public void Return(T instance) {
-            usedInstances.Remove(instance);
-            freeInstances.Add(instance);
-            activeCount -= 1;
+            pooledObjects.Push(instance);
 
             onReturn?.Invoke(instance);
             instance.transform.SetParent(null, true);
@@ -92,45 +84,6 @@ namespace GentlyUI.Core {
             foreach (IPooledUIResetter resetter in instance.GetComponents<IPooledUIResetter>()) {
                 resetter.ResetPooledUI();
             }
-        }
-
-        /// <summary>
-        /// Returns all instances
-        /// </summary>
-        public void ReturnAll() {
-            while (usedInstances.Count > 0) {
-                Return(usedInstances[0]);
-            }
-
-            usedInstances.Clear();
-            activeCount = 0;
-        }
-
-        /// <summary>
-        /// Disposes the pool. All instances will be destroyed.
-        /// </summary>
-        public void Dispose() {
-            for (int i = 0; i < activeCount; ++i) {
-                GameObject.Destroy(usedInstances[i].gameObject);
-            }
-
-            for (int i = 0; i < FreeCount - activeCount; ++i) {
-                GameObject.Destroy(freeInstances[i].gameObject);
-            }
-
-            freeInstances.Clear();
-            usedInstances.Clear();
-
-            activeCount = 0;
-            allCount = 0;
-        }
-
-        /// <summary>
-        /// Returns all instances that are currently in use. Note: Do not change this list!
-        /// </summary>
-        /// <returns></returns>
-        public List<T> GetAllUsedInstances() {
-            return usedInstances;
         }
     }
 }
