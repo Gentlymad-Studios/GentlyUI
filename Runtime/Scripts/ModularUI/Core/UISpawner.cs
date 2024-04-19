@@ -60,5 +60,17 @@ namespace GentlyUI.ModularUI {
             //Return
             return ui;
         }
+
+        public static void ReturnCollection(ref List<T> elements, bool setNull = false) {
+            for (int i = 0, count = elements.Count; i < count; ++i) {
+                ReturnUI(elements[i]);
+            }
+
+            elements.Clear();
+
+            if (setNull) {
+                elements = null;
+            }
+        }
     }
 }
