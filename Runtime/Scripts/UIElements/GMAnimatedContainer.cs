@@ -240,7 +240,7 @@ namespace GentlyUI.UIElements {
             //Layout Min Width
             VisualElementAnimationAttributes layoutAnimAttributes_Width = state.GetAnimationAttributes(AnimationProperty.LayoutMinWidth);
             if (layoutAnimAttributes_Width != null) {
-                tween = TweenLayoutElementMinHeight.Add(gameObject, layoutAnimAttributes_Width.Duration, state.LayoutMinWidth);
+                tween = TweenLayoutElementMinWidth.Add(gameObject, layoutAnimAttributes_Width.Duration, state.LayoutMinWidth);
                 SetupTween(tween, layoutAnimAttributes_Width);
                 CacheLongestTween(tween, ref longestTween);
             }
