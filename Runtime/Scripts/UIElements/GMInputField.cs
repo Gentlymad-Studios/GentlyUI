@@ -810,6 +810,13 @@ namespace GentlyUI.UIElements {
             UpdateCaretAndSelection();
         }
 
+        /// <summary>
+        /// Removes the focus from the input field.
+        /// </summary>
+        public void UnfocusInputField() {
+            OnFocusLost();
+        }
+
         public enum InputType {
             Standard,
             Password
