@@ -72,8 +72,11 @@ namespace GentlyUI.UIElements {
             if (currentDragObject != null && currentDragObject.CurrentDragState == GMDraggedObject.DragState.Dragging) {
                 //Set state to returning
                 currentDragObject.SetDragState(GMDraggedObject.DragState.Returning);
+                OnDragEnded();
             }
         }
+
+        protected virtual void OnDragEnded() { }
 
         public virtual void Tick(float unscaledDeltaTime) {
             //CanvasGroup.blocksRaycasts = currentDraggedElement == null;
