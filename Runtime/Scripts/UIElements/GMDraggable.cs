@@ -60,14 +60,19 @@ namespace GentlyUI.UIElements {
         }
 
         public virtual void OnBeginDrag(PointerEventData eventData) {
+            if (eventData.button != PointerEventData.InputButton.Left)
+                return;
+
             OnDragStarted();
         }
 
         public void OnDrag(PointerEventData eventData) { }
 
         public virtual void OnEndDrag(PointerEventData eventData) {
-            //Set state to returning
-            currentDragObject.SetDragState(GMDraggedObject.DragState.Returning);
+            if (currentDragObject != null && currentDragObject.CurrentDragState == GMDraggedObject.DragState.Dragging) {
+                //Set state to returning
+                currentDragObject.SetDragState(GMDraggedObject.DragState.Returning);
+            }
         }
 
         public virtual void Tick(float unscaledDeltaTime) {
@@ -108,7 +113,7 @@ namespace GentlyUI.UIElements {
             }
         }
 
-        void OnDragStarted() {
+        protected virtual void OnDragStarted() {
             currentDraggedElement = this;
 
             CreateDragObject();
