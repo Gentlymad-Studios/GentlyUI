@@ -195,6 +195,8 @@ namespace GentlyUI.UIElements {
         }
 
         void UpdateTweens() {
+            gameObject.PauseTweens();
+
             //Get State
             GMAnimatedContainerState state = GetCurrentState();
 
