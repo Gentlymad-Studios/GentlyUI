@@ -21,7 +21,7 @@ namespace GentlyUI.UIElements {
         public bool IsInteractable => toggle.Interactable;
 
         [Serializable]
-        public class DropdownEvent : UnityEvent<int> {}
+        public class DropdownEvent : UnityEvent<int> { }
 
         private DropdownEvent onValueChanged = new DropdownEvent();
         public DropdownEvent OnValueChanged => onValueChanged;
@@ -184,6 +184,12 @@ namespace GentlyUI.UIElements {
 
         void OnUpdateItem(Behaviour item, int dataIndex) {
             GMDropdownItem dItem = (GMDropdownItem)item;
+
+            if (dataIndex >= options.Count) {
+                item.gameObject.SetActive(false);
+                return;
+            }
+
             DropdownOptionData data = options[dataIndex];
             dItem.SetIcon(data.Icon);
             dItem.SetLabel(data.Label);
@@ -207,14 +213,13 @@ namespace GentlyUI.UIElements {
                 (inputState.button == PointerEventData.InputButton.Left || inputState.button == PointerEventData.InputButton.Right)) {
                 bool isPointerInsideScrollView = RectTransformUtility.RectangleContainsScreenPoint(scrollView.transform as RectTransform, inputState.position, UIManager.UICamera);
 
-                if (!isPointerInsideScrollView)
-                {
+                if (!isPointerInsideScrollView) {
                     toggle.IsOn = false;
                 }
             }
         }
 
-        public void CreatePooledUICache() {}
+        public void CreatePooledUICache() { }
 
         public void ResetPooledUI() {
             SetInteractable(true);
