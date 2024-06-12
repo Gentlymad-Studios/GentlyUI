@@ -145,8 +145,8 @@ namespace GentlyUI.UIElements {
             //Scale
             VisualElementAnimationAttributes scaleAnimAttributes = stateData.GetAnimationAttributes(AnimationProperty.Scale);
             if (scaleAnimAttributes != null) {
-                Vector3 scale = stateData.Scale;
-                scale.z = 1;
+                //We use Scale.x for z scaling as we need to have the scale cohesive for TMPro
+                Vector3 scale = new Vector3(stateData.Scale.x, stateData.Scale.y, stateData.Scale.x);
                 graphic.transform.localScale = scale;
             }
 
@@ -223,7 +223,8 @@ namespace GentlyUI.UIElements {
             //Scale
             VisualElementAnimationAttributes scaleAnimAttributes = stateData.GetAnimationAttributes(AnimationProperty.Scale);
             if (scaleAnimAttributes != null) {
-                tween = TweenSXY.Add(graphic.gameObject, scaleAnimAttributes.Duration, stateData.Scale);
+                //We use Scale.x for z scaling as we need to have the scale cohesive for TMPro
+                tween = TweenSXYZ.Add(graphic.gameObject, scaleAnimAttributes.Duration, new Vector3(stateData.Scale.x, stateData.Scale.y, stateData.Scale.x));
                 SetupTween(tween, scaleAnimAttributes);
                 CacheLongestTween(tween, ref longestTween);
             }
