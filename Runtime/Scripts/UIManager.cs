@@ -5,7 +5,6 @@ using GentlyUI.ModularUI;
 using UnityEngine.EventSystems;
 using Uween;
 using GentlyUI.UIElements;
-using System.Collections;
 
 namespace GentlyUI {
     /// <summary>
@@ -71,37 +70,6 @@ namespace GentlyUI {
                     SpawnCanvas(cd.Key);
                 }
             }
-
-            StartProcessPointerEventDataRoutine();
-        }
-
-        private void OnEnable() {
-            StartProcessPointerEventDataRoutine();
-        }
-
-        private void OnDisable() {
-            StopProcessPointerEventDataRoutine();
-        }
-
-        void StartProcessPointerEventDataRoutine() {
-            if (processPointerEventDataRoutine == null) {
-                processPointerEventDataRoutine = StartCoroutine(ProcessPointerEventDataRoutine());
-            }
-        }
-
-        void StopProcessPointerEventDataRoutine() {
-            if (processPointerEventDataRoutine != null) {
-                StopCoroutine(ProcessPointerEventDataRoutine());
-                processPointerEventDataRoutine = null;
-            }
-        }
-
-        IEnumerator ProcessPointerEventDataRoutine() {
-            yield return new WaitForEndOfFrame();
-            ProcessPointerEventData();
-            processPointerEventDataRoutine = null;
-
-            StartProcessPointerEventDataRoutine();
         }
 
         public void SpawnCanvas(string identifier) {
@@ -152,6 +120,8 @@ namespace GentlyUI {
         }
 
         public void Tick() {
+            ProcessPointerEventData();
+
             //Tick tickables (not bound to ui update rate)
             for (int i = 0, count = tickableUIs.Count; i < count; ++i) {
                 tickableUIs[i].Tick(Time.unscaledDeltaTime);
@@ -278,7 +248,7 @@ namespace GentlyUI {
         public static List<RaycastResult> hoveredElements;
         RaycastResult hoveredElement;
 
-        void ProcessPointerEventData() {
+        public void ProcessPointerEventData() {
             if (!wasPointerEventDataUpdatedThisFrame || pointerEventData == null) {
                 currentHoveredSelectable = null;
                 currentHoveredDraggable = null;
