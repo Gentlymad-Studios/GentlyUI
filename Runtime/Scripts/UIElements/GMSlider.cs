@@ -22,9 +22,22 @@ namespace GentlyUI.UIElements {
         [SerializeField] private bool wholeNumbers;
         [Space]
         [SerializeField] private float minValue = 0;
-        protected float MinValue => minValue;
+        protected virtual float MinValue {
+            get {
+                return minValue;
+            }
+            set {
+                minValue = value;
+            }
+        }
         [SerializeField] private float maxValue = 1;
-        protected float MaxValue => maxValue;
+        protected virtual float MaxValue {
+            get {
+                return maxValue;
+            } set {
+                maxValue = value;
+            }
+        }
         [Space]
         [SerializeField] private float value;
         [Header("Value Output")]
@@ -185,14 +198,15 @@ namespace GentlyUI.UIElements {
                 }
             }
         }
-        public void SetInitialValue(float value) {
+        public  virtual void SetInitialValue(float value) {
             SetValue(value, false);
             OutputValue(value);
         }
 
-        public void SetInitialValue(float value, float minValue, float maxValue, bool wholeNumbers = false) {
-            this.minValue = minValue;
-            this.maxValue = maxValue;
+        public virtual void SetInitialValue(float value, float minValue, float maxValue, bool wholeNumbers = false) {
+            MinValue = minValue;
+            MaxValue = maxValue;
+
             this.wholeNumbers = wholeNumbers;
 
             SetInitialValue(value);
