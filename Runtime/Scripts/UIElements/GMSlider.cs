@@ -21,7 +21,7 @@ namespace GentlyUI.UIElements {
         [Space]
         [SerializeField] private bool wholeNumbers;
         [Space]
-        [SerializeField] private float minValue = 0;
+        [SerializeField] protected float minValue = 0;
         protected virtual float MinValue {
             get {
                 return minValue;
@@ -30,7 +30,7 @@ namespace GentlyUI.UIElements {
                 minValue = value;
             }
         }
-        [SerializeField] private float maxValue = 1;
+        [SerializeField] protected float maxValue = 1;
         protected virtual float MaxValue {
             get {
                 return maxValue;
