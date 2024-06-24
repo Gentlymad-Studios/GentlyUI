@@ -200,7 +200,7 @@ namespace GentlyUI.UIElements {
         }
         public  virtual void SetInitialValue(float value) {
             SetValue(value, false);
-            OutputValue(value);
+            OutputValue(this.value);
         }
 
         public virtual void SetInitialValue(float value, float minValue, float maxValue, bool wholeNumbers = false) {
@@ -212,7 +212,6 @@ namespace GentlyUI.UIElements {
             SetInitialValue(value);
 
             UpdateVisuals();
-            OutputValue(value);
         }
 
         protected virtual void UpdateVisuals() {
