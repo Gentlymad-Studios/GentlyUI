@@ -17,6 +17,12 @@ namespace GentlyUI.UIElements {
             }
 #endif
 
+            SetGlobalUIColor(globalUIColor);
+        }
+
+        public void SetGlobalUIColor(string globalUIColor) {
+            this.globalUIColor = globalUIColor;
+
             if (useGlobalUIColor) {
                 color = UIManager.UISettings.GetColor(globalUIColor);
             }
