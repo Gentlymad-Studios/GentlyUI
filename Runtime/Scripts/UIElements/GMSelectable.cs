@@ -5,8 +5,6 @@ using UnityEngine.EventSystems;
 using static GentlyUI.UIElements.GMVisualElement;
 using System;
 using GentlyUI.Core;
-using Uween;
-using static GentlyUI.UIElements.GMAnimatable;
 
 namespace GentlyUI.UIElements {
     [AddComponentMenu("GentlyUI/Selectable", 0)]
@@ -79,17 +77,32 @@ namespace GentlyUI.UIElements {
             allSelectables.Add(this);
             //Check if this selectbale is part of a pooled scroll view
             parentScrollView = GetComponentInParent<GMPooledScrollView>();
-            //Update visual state
-            UpdateVisualState(true);
+            //Reconstruct visual state
+            ReconstructCurrentState();
+
         }
 
         protected override void OnDisable() {
             //Remove from global list of selectables
             allSelectables.Remove(this);
 
-            OnPointerExit(UIManager.Instance.GetCurrentPointerEventData());
-
             base.OnDisable();
+        }
+
+        void ReconstructCurrentState() {
+            PointerEventData pointerEventData = UIManager.Instance.GetCurrentPointerEventData();
+
+            if (pointerEventData != null) {
+                if (RectTransformUtility.RectangleContainsScreenPoint(RectTransform, pointerEventData.position, UIManager.UICamera)) {
+                    isPointerInside = true;
+                    isPointerDown = pointerEventData.pointerPress == gameObject;
+                }
+            } else {
+                isPointerInside = false;
+                isPointerDown = false;
+            }
+
+            UpdateVisualState(true);
         }
 
         public void SetInteractable(bool isInteractable, bool forceUpdate = false) {
