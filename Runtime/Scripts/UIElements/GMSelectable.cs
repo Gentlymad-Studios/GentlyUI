@@ -92,11 +92,9 @@ namespace GentlyUI.UIElements {
         void ReconstructCurrentState() {
             PointerEventData pointerEventData = UIManager.Instance.GetCurrentPointerEventData();
 
-            if (pointerEventData != null) {
-                if (RectTransformUtility.RectangleContainsScreenPoint(RectTransform, pointerEventData.position, UIManager.UICamera)) {
-                    isPointerInside = true;
-                    isPointerDown = pointerEventData.pointerPress == gameObject;
-                }
+            if (pointerEventData != null && UIManager.Instance.GetCurrentHoveredSelectable() == this) {
+                isPointerInside = true;
+                isPointerDown = UIManager.Instance.GetCurrentPointerEventData().pointerPress == this.gameObject;
             } else {
                 isPointerInside = false;
                 isPointerDown = false;
@@ -115,7 +113,7 @@ namespace GentlyUI.UIElements {
         }
 
         public virtual void Tick(float unscaledDeltaTime) {
-            if (visualElements == null)
+            if (visualElements == null || !gameObject.activeSelf)
                 return;
 
             for (int i = 0, count = visualElements.Count; i < count; ++i) {
@@ -196,6 +194,10 @@ namespace GentlyUI.UIElements {
         }
 
         void UpdateVisualElementStates(bool setImmediately = false) {
+            if (!gameObject.activeSelf) {
+                return;
+            }
+
             for (int i = 0, count = visualElements.Count; i < count; ++i) {
                 GMVisualElement e = visualElements[i];
                 UpdateVisualElement(e, setImmediately);
