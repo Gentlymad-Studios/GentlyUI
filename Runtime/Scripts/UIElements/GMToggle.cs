@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
+using static GentlyUI.UIElements.GMButton;
 
 namespace GentlyUI.UIElements {
     /// <summary>
@@ -44,6 +45,13 @@ namespace GentlyUI.UIElements {
         public ToggleEvent OnValueChanged {
             get { return onValueChanged; }
             set { onValueChanged = value; }
+        }
+
+        [SerializeField] private ButtonClickedEvent onRightClick = new ButtonClickedEvent();
+
+        public ButtonClickedEvent OnRightClick {
+            get { return onRightClick; }
+            set { onRightClick = value; }
         }
 
         protected GMToggle() { }
@@ -165,21 +173,26 @@ namespace GentlyUI.UIElements {
             if (indicator.UpdateTweens) indicator.DoTweenUpdate();
         }
 
-        void InternalToggle() {
+        void InternalToggle(bool isRightClick) {
             if (IsActive() && Interactable) {
-                IsOn = !IsOn;
+                if (isRightClick) {
+                    onRightClick.Invoke();
+                } else {
+                    IsOn = !IsOn;
+                }
             }
         }
 
         public virtual void OnPointerClick(PointerEventData eventData) {
-            if (eventData.button != PointerEventData.InputButton.Left)
-                return;
-
-            InternalToggle();
+            if (eventData.button == PointerEventData.InputButton.Left) {
+                InternalToggle(false);
+            } else if (eventData.button == PointerEventData.InputButton.Right) {
+                InternalToggle(true);
+            }
         }
 
         public void OnSubmit(BaseEventData eventData) {
-            InternalToggle();
+            InternalToggle(false);
         }
 
         protected override void UpdateVisualElement(GMVisualElement visualElement, bool setImmediately) {
