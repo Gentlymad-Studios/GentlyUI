@@ -150,6 +150,8 @@ namespace GentlyUI.UIElements {
             //Get State
             GMAnimatedContainerState state = GetCurrentState();
 
+            ClearLongestTween();
+
             gameObject.PauseTweens();
 
             if (state == null) return;
@@ -197,12 +199,16 @@ namespace GentlyUI.UIElements {
         //Cache tween with longest duration to disable the element when animation finished if the state is VisualState.Inactive
         Tween longestTween = null;
 
-        void UpdateTweens() {
+        void ClearLongestTween() {
             //Clear longest tween
             if (longestTween != null) {
-                longestTween.OnComplete -= Disable;
+                longestTween.OnComplete -= TriggerEndOfStateCallback;
                 longestTween = null;
             }
+        }
+
+        void UpdateTweens() {
+            ClearLongestTween();
 
             gameObject.PauseTweens();
 
@@ -261,10 +267,6 @@ namespace GentlyUI.UIElements {
             if (longestTween != null) {
                 //Add the end of state callback first so that it is triggered before the object is deactivated
                 longestTween.OnComplete += TriggerEndOfStateCallback;
-
-                if (!state.ShowContainer) {
-                    longestTween.OnComplete += Disable;
-                }
             } else {
                 //End of state callback
                 TriggerEndOfStateCallback();
@@ -281,6 +283,11 @@ namespace GentlyUI.UIElements {
             } else if (state == ContainerState.Hide && OnHide != null) {
                 OnHide();
                 OnHide = null;
+            }
+
+            //Disable if state wants us to
+            if (!GetCurrentState().ShowContainer) {
+                Disable();
             }
 
             transitionRunning = false;

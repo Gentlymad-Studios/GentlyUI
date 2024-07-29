@@ -132,6 +132,7 @@ namespace GentlyUI.UIElements {
 
         void SetFinalVisualState() {
             graphic.gameObject.PauseTweens();
+            ClearLongestTween();
             updateTweens = false;
             transitionRunning = false;
 
@@ -193,13 +194,26 @@ namespace GentlyUI.UIElements {
             pressedState.SetOverrideColor(null);
         }
 
+        //Cache tween with longest duration to disable the element when animation finished if the state is VisualState.Inactive
+        Tween longestTween = null;
+
+        void ClearLongestTween() {
+            //Clear longest tween
+            if (longestTween != null) {
+                longestTween.OnComplete -= TriggerEndOfStateCallback;
+                longestTween = null;
+            }
+        }
+
         public void DoTweenUpdate() {
+            ClearLongestTween();
+
             updateTweens = false;
             transitionRunning = true;
 
             //Check if the visual element should simply be disabled
             if (currentState != VisualState.Inactive) {
-                graphic.gameObject.SetActive(stateData.ShowElement);
+                ToggleUI(stateData.ShowElement);
 
                 //We don't need to do anything else if the visual element is disabled
                 if (!graphic.gameObject.activeSelf) {
@@ -209,8 +223,6 @@ namespace GentlyUI.UIElements {
 
             //Start Tweens
             Tween tween;
-            //Cache tween with longest duration to disable the element when animation finished if the state is VisualState.Inactive
-            Tween longestTween = null;
 
             //Position
             VisualElementAnimationAttributes posAnimAttributes = stateData.GetAnimationAttributes(AnimationProperty.PositionOffset);
@@ -256,15 +268,20 @@ namespace GentlyUI.UIElements {
 
             //Longest tween callback
             if (longestTween != null) {
-                if (currentState == VisualState.Inactive && !stateData.ShowElement) {
-                    longestTween.OnComplete += () => graphic.gameObject.SetActive(false);
-                }
+                longestTween.OnComplete += TriggerEndOfStateCallback;
+            } else {
+                TriggerEndOfStateCallback();
 
-                longestTween.OnComplete += () => transitionRunning = false;
-            } else if (currentState == VisualState.Inactive && !stateData.ShowElement) {
-                graphic.gameObject.SetActive(false);
-                transitionRunning = false;
             }
+        }
+
+        void TriggerEndOfStateCallback() {
+            //Disable if state wants us to
+            if (currentState == VisualState.Inactive && !stateData.ShowElement) {
+                Disable();
+            }
+
+            transitionRunning = false;
         }
 
         void CacheLongestTween(Tween tween, ref Tween longestTweenCache) {
