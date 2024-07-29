@@ -147,8 +147,6 @@ namespace GentlyUI.UIElements {
         }
 
         void SetFinalVisualState() {
-            UIManager.Instance.StopCoroutine(DeactivateDelayed());
-
             //Get State
             GMAnimatedContainerState state = GetCurrentState();
 
@@ -196,18 +194,27 @@ namespace GentlyUI.UIElements {
             TriggerEndOfStateCallback();
         }
 
+        //Cache tween with longest duration to disable the element when animation finished if the state is VisualState.Inactive
+        Tween longestTween = null;
+
         void UpdateTweens() {
+            //Clear longest tween
+            if (longestTween != null) {
+                longestTween.OnComplete -= Disable;
+                longestTween = null;
+            }
+
             gameObject.PauseTweens();
 
             //Get State
             GMAnimatedContainerState state = GetCurrentState();
 
-            if (state.ShowContainer) Enable();
+            if (state.ShowContainer) {
+                Enable();
+            }
 
             //Start Tweens
             Tween tween;
-            //Cache tween with longest duration to disable the element when animation finished if the state is VisualState.Inactive
-            Tween longestTween = null;
 
             //Position
             VisualElementAnimationAttributes posAnimAttributes = state.GetAnimationAttributes(AnimationProperty.PositionOffset);
@@ -256,7 +263,7 @@ namespace GentlyUI.UIElements {
                 longestTween.OnComplete += TriggerEndOfStateCallback;
 
                 if (!state.ShowContainer) {
-                    longestTween.OnComplete += () => UIManager.Instance.StartCoroutine(DeactivateDelayed());
+                    longestTween.OnComplete += Disable;
                 }
             } else {
                 //End of state callback
@@ -265,11 +272,6 @@ namespace GentlyUI.UIElements {
 
             transitionRunning = true;
             runningTransitions.Add(this);
-        }
-
-        IEnumerator DeactivateDelayed() {
-            yield return new WaitForEndOfFrame();
-            Disable();
         }
 
         void TriggerEndOfStateCallback() {
