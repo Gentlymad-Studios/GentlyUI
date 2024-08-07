@@ -60,6 +60,8 @@ namespace GentlyUI.Core {
             //Finally put the blocker component on top
             GMUIBlocker uiBlocker = blocker.GetOrAddComponent<GMUIBlocker>();
             uiBlocker.Setup(target, onClickedOnBlocker);
+
+            blockers.Add(target, uiBlocker);
         }
 
         public static void DestroyBlocker(RectTransform target) {
