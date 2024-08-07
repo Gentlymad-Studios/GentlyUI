@@ -12,6 +12,7 @@ namespace GentlyUI.UIElements {
         [SerializeField] private GMPooledScrollView scrollView;
         [SerializeField] private MonoBehaviour scrollViewItemPrefab;
         [SerializeField] private GMToggleGroup toggleGroup;
+        [SerializeField] private int maxElementsToDisplay = 5;
 
         [SerializeField] private int value;
         public int Value => value;
@@ -178,6 +179,12 @@ namespace GentlyUI.UIElements {
         }
 
         void UpdateOptions() {
+            int displayCount = Mathf.Min(maxElementsToDisplay, options.Count);
+            FlexibleGridLayout grid = toggleGroup.GetComponent<FlexibleGridLayout>();
+
+            RectTransform scrollViewRect = (RectTransform)scrollView.transform;
+            scrollViewRect.SetHeight(displayCount * grid.cellHeight + grid.padding.top + grid.padding.bottom + grid.spacing.y * maxElementsToDisplay);
+
             scrollView.Initialize<GMDropdownItem>(scrollViewItemPrefab, options.Count, OnUpdateItem);
             scrollView.SnapToElement(Value);
         }
