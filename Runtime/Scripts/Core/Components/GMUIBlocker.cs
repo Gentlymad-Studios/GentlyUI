@@ -31,7 +31,7 @@ namespace GentlyUI.Core {
 
         void OnClickedOnBlocker() {
             onClickedOnBlocker.Invoke();
-            GMUIBlockerCreator.DestroyBlocker();
+            GMUIBlockerCreator.DestroyBlocker(target);
         }
     }
 }

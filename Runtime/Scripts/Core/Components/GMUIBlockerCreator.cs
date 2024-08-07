@@ -8,7 +8,7 @@ using UnityEngine.UI;
 namespace GentlyUI.Core {
     public static class GMUIBlockerCreator {
 
-        private static GameObject blocker;
+        private static Dictionary<RectTransform, GMUIBlocker> blockers = new Dictionary<RectTransform, GMUIBlocker>();
 
         /// <summary>
         /// Create a blocker that blocks clicks to other controls while the dropdown list is open.
@@ -17,10 +17,10 @@ namespace GentlyUI.Core {
         /// Override this method to implement a different way to obtain a blocker GameObject.
         /// </remarks>
         public static void CreateBlocker(RectTransform target, Action onClickedOnBlocker, Color? color = null) {
-            DestroyBlocker();
+            DestroyBlocker(target);
 
             // Create blocker GameObject.
-            blocker = new GameObject("Blocker");
+            GameObject blocker = new GameObject("Blocker");
             blocker.layer = LayerMask.NameToLayer("UI");
 
             // Setup blocker RectTransform to cover entire root canvas area.
@@ -62,11 +62,11 @@ namespace GentlyUI.Core {
             uiBlocker.Setup(target, onClickedOnBlocker);
         }
 
-        public static void DestroyBlocker() {
-            if (blocker != null) {
-                GameObject.Destroy(blocker);
+        public static void DestroyBlocker(RectTransform target) {
+            if (blockers.TryGetValue(target, out GMUIBlocker blocker)) {
+                GameObject.Destroy(blocker.gameObject);
+                blockers.Remove(target);
             }
-            blocker = null;
         }
     }
 }

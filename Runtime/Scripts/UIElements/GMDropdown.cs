@@ -175,7 +175,7 @@ namespace GentlyUI.UIElements {
             } else {
                 scrollView.gameObject.SetActive(false);
             }
-            GMUIBlockerCreator.DestroyBlocker();
+            GMUIBlockerCreator.DestroyBlocker(scrollView.transform as RectTransform);
         }
 
         void UpdateOptions() {
