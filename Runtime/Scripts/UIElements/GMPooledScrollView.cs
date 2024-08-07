@@ -668,6 +668,8 @@ namespace GentlyUI.UIElements {
 				}
 			}
 
+			LayoutRebuilder.ForceRebuildLayoutImmediate(RectTransform);
+
 			viewportHeight = viewport.GetHeight();
 			viewportWidth = viewport.GetWidth();
 

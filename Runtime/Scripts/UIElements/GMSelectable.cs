@@ -194,9 +194,9 @@ namespace GentlyUI.UIElements {
         }
 
         void UpdateVisualElementStates(bool setImmediately = false) {
-            if (!gameObject.activeSelf) {
+            /*if (!gameObject.activeSelf) {
                 return;
-            }
+            }*/
 
             for (int i = 0, count = visualElements.Count; i < count; ++i) {
                 GMVisualElement e = visualElements[i];
@@ -295,7 +295,7 @@ namespace GentlyUI.UIElements {
 
         public virtual void ResetPooledUI() {
             ToggleWarning(false);
-            SetInteractable(true);
+            SetInteractable(true, true);
 
             for (int i = 0, count = visualElements.Count; i < count; ++i) {
                 visualElements[i].ResetOverrideColors();
