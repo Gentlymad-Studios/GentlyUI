@@ -126,13 +126,13 @@ namespace GentlyUI.UIElements {
 
 		private Dictionary<GameObject, UIObjectPool<UIBehaviour>> poolCache = new Dictionary<GameObject, UIObjectPool<UIBehaviour>>();
 
-		private Coroutine waitForLayoutCompleteRoutine;
-
 		private bool isScrolling;
 		public bool IsScrolling => isScrolling;
 
 		private float defaultPreferredHeight = 200;
 		private float defaultPreferredWidth = 200;
+
+		private bool hasWillRenderCanvasListener = false;
 
 		void UpdateItemPool() {
 			UIObjectPool<UIBehaviour> newPool;
@@ -485,15 +485,21 @@ namespace GentlyUI.UIElements {
 			if (isQuitting)
 				return;
 
-			if (gameObject.activeInHierarchy && waitForLayoutCompleteRoutine == null) {
-				waitForLayoutCompleteRoutine = StartCoroutine(WaitForLayoutComplete());
+			AddWillRenderCanvasCallback();
+		}
+
+		void AddWillRenderCanvasCallback() {
+			if (!hasWillRenderCanvasListener && !isQuitting) {
+				Canvas.willRenderCanvases += OnWillRenderCanvases;
+				hasWillRenderCanvasListener = true;
 			}
 		}
 
-		IEnumerator WaitForLayoutComplete() {
-			yield return new WaitForLayoutComplete();
-			Setup();
-			waitForLayoutCompleteRoutine = null;
+		void RemoveWillRenderCanvasCallback() {
+			if (hasWillRenderCanvasListener) {
+				Canvas.willRenderCanvases -= OnWillRenderCanvases;
+				hasWillRenderCanvasListener = false;
+			}
 		}
 
 		void SetPrefab(MonoBehaviour prefab) {
@@ -661,14 +667,12 @@ namespace GentlyUI.UIElements {
 			if (settings.ScrollInSteps) {
 				if (scrollAxisInt == 0) {
 					float newPreferredWidth = columnWidth * Mathf.CeilToInt(defaultPreferredWidth / columnWidth) + itemContainer.padding.left;
-					LayoutElement.preferredWidth = newPreferredWidth;
+					LayoutElement.preferredWidth = LayoutElement.minWidth = newPreferredWidth;
 				} else {
 					float newPreferredHeight = rowHeight * Mathf.CeilToInt(defaultPreferredHeight / rowHeight) + itemContainer.padding.top;
-					LayoutElement.preferredHeight = newPreferredHeight;
+					LayoutElement.preferredHeight = LayoutElement.minHeight = newPreferredHeight;
 				}
 			}
-
-			LayoutRebuilder.ForceRebuildLayoutImmediate(RectTransform);
 
 			viewportHeight = viewport.GetHeight();
 			viewportWidth = viewport.GetWidth();
@@ -764,6 +768,7 @@ namespace GentlyUI.UIElements {
 
 		protected override void OnEnable() {
 			Application.quitting += OnIsQuitting;
+			AddWillRenderCanvasCallback();
 
 			base.OnEnable();
 
@@ -773,14 +778,17 @@ namespace GentlyUI.UIElements {
 
 		protected override void OnDisable() {
 			Application.quitting -= OnIsQuitting;
+			RemoveWillRenderCanvasCallback();
 
 			if (scrollbar != null) scrollbar.OnValueChanged.RemoveListener((float value) => SetNormalizedScrollPosition(value, false, false));
-			if (waitForLayoutCompleteRoutine != null) {
-				StopCoroutine(waitForLayoutCompleteRoutine);
-				waitForLayoutCompleteRoutine = null;
-			}
 
 			base.OnDisable();
+		}
+
+		void OnWillRenderCanvases() {
+			//Remove callback as we only want to do this once after OnEnable() and OnRectTransformDimensionsChanged()
+			RemoveWillRenderCanvasCallback();
+			Setup();
 		}
 
 
@@ -815,6 +823,7 @@ namespace GentlyUI.UIElements {
 
 		void OnIsQuitting() {
 			isQuitting = true;
+			RemoveWillRenderCanvasCallback();
 		}
 
 		void ClearPool() {
