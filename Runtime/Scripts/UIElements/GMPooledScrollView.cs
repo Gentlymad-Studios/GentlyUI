@@ -667,10 +667,10 @@ namespace GentlyUI.UIElements {
 			if (settings.ScrollInSteps) {
 				if (scrollAxisInt == 0) {
 					float newPreferredWidth = columnWidth * Mathf.CeilToInt(defaultPreferredWidth / columnWidth) + itemContainer.padding.left;
-					LayoutElement.preferredWidth = LayoutElement.minWidth = newPreferredWidth;
+					LayoutElement.preferredWidth = newPreferredWidth;
 				} else {
 					float newPreferredHeight = rowHeight * Mathf.CeilToInt(defaultPreferredHeight / rowHeight) + itemContainer.padding.top;
-					LayoutElement.preferredHeight = LayoutElement.minHeight = newPreferredHeight;
+					LayoutElement.preferredHeight = newPreferredHeight;
 				}
 			}
 
