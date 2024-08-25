@@ -78,8 +78,8 @@ namespace GentlyUI.Core {
             pooledObjects.Push(instance);
 
             onReturn?.Invoke(instance);
-            instance.transform.SetParent(null, true);
             instance.gameObject.SetActive(false);
+            instance.transform.SetParent(null, true);
 
             foreach (IPooledUIResetter resetter in instance.GetComponents<IPooledUIResetter>()) {
                 resetter.ResetPooledUI();

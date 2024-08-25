@@ -273,10 +273,6 @@ namespace GentlyUI.UIElements {
 				return;
 			}
 
-			SetContentAnchoredPosition(Vector2.MoveTowards(internalPosition,
-															targetPosition,
-															unscaledDeltaTime * movementSpeed));
-
 			///If we are close as half a pixel to the correct position we can snap to the actual position
 			if (scrollAxisInt == 0) {
 				if (Mathf.Abs(internalPosition.x - targetPosition.x) <= 0.5f) {
@@ -288,6 +284,11 @@ namespace GentlyUI.UIElements {
 					SetContentAnchoredPosition(targetPosition, true);
 					OnScrollEnded();
 				}
+			}
+
+			if (isScrolling) {
+				//If we are still scrolling here we didn't snap to end position so we have to interpolate
+				SetContentAnchoredPosition(Vector2.MoveTowards(internalPosition, targetPosition, unscaledDeltaTime * movementSpeed));
 			}
 		}
 
@@ -358,7 +359,9 @@ namespace GentlyUI.UIElements {
 
 		protected virtual void SetContentAnchoredPosition(Vector2 position, bool forceUpdate = false) {
 			if (position != internalPosition) {
+				//Set new internal position
 				internalPosition = position;
+
 				//Update anchored position of content
 				float pos;
 
@@ -369,17 +372,16 @@ namespace GentlyUI.UIElements {
 					pos = internalPosition.y % rowHeight;
 				}
 
-				//Only update viewport if we are between items
-				if (pos != 0f || forceUpdate) {
-					if (scrollAxisInt == 0) {
-						Content.anchoredPosition = new Vector2(pos, Content.anchoredPosition.y);
-					} else {
-						Content.anchoredPosition = new Vector2(Content.anchoredPosition.x, pos);
-					}
-
-					UpdateViewport();
+				if (scrollAxisInt == 0) {
+					Content.anchoredPosition = new Vector2(pos, Content.anchoredPosition.y);
+				} else {
+					Content.anchoredPosition = new Vector2(Content.anchoredPosition.x, pos);
 				}
 
+				//Update viewport
+				UpdateViewport();
+
+				//Update scrollbar
 				UpdateScrollbar();
 			}
 		}
@@ -482,7 +484,7 @@ namespace GentlyUI.UIElements {
 		protected override void OnRectTransformDimensionsChange() {
 			base.OnRectTransformDimensionsChange();
 
-			if (isQuitting)
+			if (isQuitting || !gameObject.activeInHierarchy)
 				return;
 
 			AddWillRenderCanvasCallback();
@@ -785,13 +787,13 @@ namespace GentlyUI.UIElements {
 			base.OnDisable();
 		}
 
-        protected override void OnDestroy() {
+		protected override void OnDestroy() {
 			RemoveWillRenderCanvasCallback();
 
 			base.OnDestroy();
-        }
+		}
 
-        void OnWillRenderCanvases() {
+		void OnWillRenderCanvases() {
 			//Remove callback as we only want to do this once after OnEnable() and OnRectTransformDimensionsChanged()
 			RemoveWillRenderCanvasCallback();
 			Setup();
