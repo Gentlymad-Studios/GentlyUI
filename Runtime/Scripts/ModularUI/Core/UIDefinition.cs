@@ -83,8 +83,11 @@ namespace GentlyUI.ModularUI {
 
             dynamicLayouts.Clear();
             ListPool<GameObject>.Release(dynamicLayouts);
+            dynamicLayouts = null;
+
             uiObjects.Clear();
             DictionaryPool<GameObject, Action>.Release(uiObjects);
+            uiObjects = null;
 
             OnDispose();
         }
