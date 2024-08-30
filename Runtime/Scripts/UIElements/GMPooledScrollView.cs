@@ -300,8 +300,8 @@ namespace GentlyUI.UIElements {
 			}
 		}
 
-		void SetNormalizedScrollPosition(float normalizedPosition, bool setImmediately = false, bool considerScrollInSteps = true) {
-			if (!IsScrollingAllowed())
+		void SetNormalizedScrollPosition(float normalizedPosition, bool setImmediately = false, bool considerScrollInSteps = true, bool forceUpdate = false) {
+			if (!IsScrollingAllowed() && !forceUpdate)
 				return;
 
 			normalizedPosition = Mathf.Clamp01(normalizedPosition);
@@ -394,13 +394,17 @@ namespace GentlyUI.UIElements {
 		public void SnapToElement(int index, bool immediately = true) {
 			float normalizedPosition;
 
-			if (scrollAxisInt == 0) {
-				normalizedPosition = columnWidth * Mathf.FloorToInt(index / (float)itemContainer.rows) / maxScrollPosition;
+			if (maxScrollPosition > 0) {
+				if (scrollAxisInt == 0) {
+					normalizedPosition = columnWidth * Mathf.FloorToInt(index / (float)itemContainer.rows) / maxScrollPosition;
+				} else {
+					normalizedPosition = rowHeight * Mathf.FloorToInt(index / (float)itemContainer.columns) / maxScrollPosition;
+				}
 			} else {
-				normalizedPosition = rowHeight * Mathf.FloorToInt(index / (float)itemContainer.columns) / maxScrollPosition;
+				normalizedPosition = 0;
 			}
 
-			SetNormalizedScrollPosition(normalizedPosition, true);
+			SetNormalizedScrollPosition(normalizedPosition, true, forceUpdate: true);
 			UpdateViewport();
 		}
 
