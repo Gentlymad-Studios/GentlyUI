@@ -822,6 +822,8 @@ namespace GentlyUI.UIElements {
 		}
 
 		public void ResetPooledUI() {
+			RemoveWillRenderCanvasCallback();
+
 			ItemContainer.columns = defaultColumns;
 			ItemContainer.rows = defaultRows;
 			ItemContainer.cellWidth = defaultCellWidth;
