@@ -122,13 +122,6 @@ namespace GentlyUI {
         public void Tick() {
             ProcessPointerEventData();
 
-            //Tick tickables (not bound to ui update rate)
-            for (int i = 0, count = tickableUIs.Count; i < count; ++i) {
-                tickableUIs[i].Tick(Time.unscaledDeltaTime);
-            }
-
-            wasPointerEventDataUpdatedThisFrame = false;
-
             //Remove ui bases
             for (int i = 0, count = uiBasesToRemove.Count; i < count; ++i) {
                 RemoveRegisteredUI(uiBasesToRemove[i]);
@@ -158,6 +151,14 @@ namespace GentlyUI {
             }
 
             uiTickablesToAdd.Clear();
+
+            //Tick tickables (not bound to ui update rate)
+            //Thous should happen after we added and removed new/old tickables
+            for (int i = 0, count = tickableUIs.Count; i < count; ++i) {
+                tickableUIs[i].Tick(Time.unscaledDeltaTime);
+            }
+
+            wasPointerEventDataUpdatedThisFrame = false;
 
             //Update timer dependencies
             updateTimer += Time.unscaledDeltaTime;
