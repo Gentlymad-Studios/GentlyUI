@@ -413,7 +413,8 @@ namespace GentlyUI.UIElements {
 			if (!isFocused) {
 				caret.gameObject.SetActive(false);
 				selection.gameObject.SetActive(false);
-
+				//Reset anchored position
+				textOutput.rectTransform.anchoredPosition = Vector2.zero;
 				return;
 			}
 
@@ -497,6 +498,8 @@ namespace GentlyUI.UIElements {
 				if (leftOffset < 0f) {
 					textOutput.rectTransform.anchoredPosition += new Vector2(-leftOffset, 0);
 				}
+			} else {
+				textOutput.rectTransform.anchoredPosition = Vector2.zero;
 			}
 		}
 
