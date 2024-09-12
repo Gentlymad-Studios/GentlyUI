@@ -694,10 +694,10 @@ namespace GentlyUI.UIElements {
 			//We need one more row to allow scrolling!
 			if (scrollAxisInt == 0) {
 				int maxColumnsToShow = Mathf.CeilToInt(viewportWidth / columnWidth);
-				return maxColumnsToShow * itemContainer.rows + itemContainer.rows;
+				return Mathf.Max(0, maxColumnsToShow * itemContainer.rows + itemContainer.rows);
 			} else {
 				int maxRowsToShow = Mathf.CeilToInt(viewportHeight / rowHeight);
-				return maxRowsToShow * itemContainer.columns + itemContainer.columns;
+				return Mathf.Max(0, maxRowsToShow * itemContainer.columns + itemContainer.columns);
 			}
 		}
 
