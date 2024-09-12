@@ -323,13 +323,17 @@ namespace GentlyUI.UIElements {
 
 			if (selectionEndPosition - selectionStartPosition >= Text.Length) {
 				//Delete all
-				Text = "";
-				SetCaretPosition(0);
+				ClearInputField();
 			} else {
 				Text = Text.Remove(selectionStartPosition, selectionEndPosition - selectionStartPosition);
 				SetCaretPosition(selectionStartPosition);
 			}
 		}
+
+		public void ClearInputField() {
+			Text = "";
+			SetCaretPosition(0);
+        }
 
 		void EndButton(bool shift) {
 			if (shift) {
