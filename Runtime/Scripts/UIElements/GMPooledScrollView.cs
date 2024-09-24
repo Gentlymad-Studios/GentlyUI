@@ -832,6 +832,8 @@ namespace GentlyUI.UIElements {
 
 			defaultPreferredWidth = _defaultPrefferedWidth;
 			defaultPreferredHeight = _defaultPreferredHeight;
+
+			totalItemCount = 0;
 		}
 		#endregion
 
