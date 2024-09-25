@@ -4,6 +4,7 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using TMPro;
+using static UnityEngine.EventSystems.PointerEventData;
 
 namespace GentlyUI.UIElements {
     [AddComponentMenu("GentlyUI/Button", 1)]
@@ -28,13 +29,13 @@ namespace GentlyUI.UIElements {
             set { onRightClick = value; }
         }
 
-        protected void Press(bool isRightClick = false) {
+        protected void Press(InputButton buttonType) {
             if (!IsActive() || !Interactable)
                 return;
 
-            if (isRightClick) {
+            if (buttonType == InputButton.Right) {
                 onRightClick.Invoke();
-            } else {
+            } else if (buttonType == InputButton.Left) {
                 onClick.Invoke();
             }
         }
@@ -50,16 +51,16 @@ namespace GentlyUI.UIElements {
             if (!isClickAllowed)
                 return;
 
-            Press(eventData.button == PointerEventData.InputButton.Right);
+            Press(eventData.button);
         }
 
         public override void OnPointerDown(PointerEventData eventData) {
             base.OnPointerDown(eventData);
-            isClickAllowed = Interactable;
+            isClickAllowed = Interactable && eventData.button != InputButton.Middle;
         }
 
         public virtual void OnSubmit(BaseEventData eventData) {
-            Press();
+            Press(InputButton.Left);
 
             // if we get set disabled during the press
             // don't run the coroutine.

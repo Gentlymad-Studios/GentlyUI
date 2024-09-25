@@ -37,9 +37,9 @@ namespace GentlyUI.UIElements {
 
             if (IsPressed()) {
                 if (heldTimer == 0f) {
-                    Press();
+                    Press(PointerEventData.InputButton.Left);
                 } else if (heldTimer > initialDelay) {
-                    Press();
+                    Press(PointerEventData.InputButton.Left);
                     heldTimer -= triggerDelay;
                 }
 
