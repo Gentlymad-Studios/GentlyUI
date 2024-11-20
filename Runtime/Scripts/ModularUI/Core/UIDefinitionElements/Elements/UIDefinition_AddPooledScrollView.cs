@@ -43,7 +43,27 @@ namespace GentlyUI.ModularUI {
             int cellWidth = 50,
             Action<UIBehaviour> onReturnItem = null
         ) where T : UIBehaviour {
-            string path = Path.Join(UIPaths.BasePath, UIPaths.ElementPath, UIManager.UISettings.DefaultHorizontalPooledScrollView);
+            return AddHorizontalPooledScrollView<T>(
+                UIManager.UISettings.DefaultHorizontalPooledScrollView,
+                scrollViewItemPrefab,
+                initialCount,
+                onUpdateItem,
+                rows,
+                cellWidth,
+                onReturnItem
+            );
+        }
+
+       protected GMPooledScrollView AddHorizontalPooledScrollView<T>(
+            string scrollViewType,
+            MonoBehaviour scrollViewItemPrefab,
+            int initialCount,
+            Action<UIBehaviour, int> onUpdateItem,
+            int rows = 1,
+            int cellWidth = 50,
+            Action<UIBehaviour> onReturnItem = null
+        ) where T : UIBehaviour {
+            string path = Path.Join(UIPaths.BasePath, UIPaths.ElementPath, scrollViewType);
 
             GMPooledScrollView pooledScrollView = UISpawner<GMPooledScrollView>.SpawnUI(path, currentContainer);
             //Cache object
