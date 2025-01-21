@@ -97,6 +97,7 @@ namespace GentlyUI.UIElements {
 		[Tooltip("Event delegates triggered when the input field changes its data.")]
 		[SerializeField] private OnChangeEvent onValueChanged = new OnChangeEvent();
 
+		public OnChangeEvent OnValueChanged => onValueChanged;
 		public SubmitEvent onSubmit = new SubmitEvent();
 		public OnValidateInput onValidateInput;
 
