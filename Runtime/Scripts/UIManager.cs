@@ -97,8 +97,10 @@ namespace GentlyUI {
         }
 
         void OnCanvasSpawned(Canvas canvas, string identifier) {
-            canvas.renderMode = RenderMode.ScreenSpaceCamera;
-            canvas.worldCamera = uiCamera;
+            if (uiCamera != null) {
+                canvas.renderMode = RenderMode.ScreenSpaceCamera;
+                canvas.worldCamera = uiCamera;
+            }
             //Sort in hierarchy
             canvas.transform.SetSiblingIndex(canvas.sortingOrder);
             //Add to LUT
