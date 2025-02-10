@@ -185,7 +185,7 @@ namespace GentlyUI.UIElements {
             hoveredState.SetOverrideColor(color * 1.2f);
             pressedState.SetOverrideColor(color * 0.8f);
 
-            SetFinalVisualState();
+            SetState(currentState, true);
         }
 
         public void ResetOverrideColors() {
@@ -193,7 +193,7 @@ namespace GentlyUI.UIElements {
             hoveredState.SetOverrideColor(null);
             pressedState.SetOverrideColor(null);
 
-            SetFinalVisualState();
+            SetState(currentState, true);
         }
 
         //Cache tween with longest duration to disable the element when animation finished if the state is VisualState.Inactive
