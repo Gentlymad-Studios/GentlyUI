@@ -18,6 +18,14 @@ namespace GentlyUI.UIElements {
 #endif
 
             SetGlobalUIColor(globalUIColor);
+
+            if (HasNoMaterial() && UIManager.Instance != null && UIManager.UISettings.defaultUIMaterial != null) {
+                material = UIManager.UISettings.defaultUIMaterial;
+            }
+        }
+
+        bool HasNoMaterial() {
+            return material == null || material == Graphic.defaultGraphicMaterial;
         }
 
         public void SetGlobalUIColor(string globalUIColor) {

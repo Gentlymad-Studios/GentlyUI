@@ -219,6 +219,9 @@ public class UISettings : ScriptableObject, ISerializationCallbackReceiver {
 
     [SerializeField] private string defaultToggle = "toggle";
     public string DefaultToggle => defaultToggle;
+
+    [Header("Default UI Materials")]
+    public Material defaultUIMaterial;
 }
 
 [System.Serializable]
