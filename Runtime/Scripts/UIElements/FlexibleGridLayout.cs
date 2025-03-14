@@ -182,5 +182,11 @@ namespace GentlyUI.UIElements {
 
             CalculateLayoutInputHorizontal();
         }
+
+        protected override void OnEnable() {
+            base.OnEnable();
+
+            CalculateLayoutInputHorizontal();
+        }
     }
 }
