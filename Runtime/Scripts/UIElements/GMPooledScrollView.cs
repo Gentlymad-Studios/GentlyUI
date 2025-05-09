@@ -1,4 +1,5 @@
 using GentlyUI.Core;
+using GentlyUI.ModularUI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -392,7 +393,17 @@ namespace GentlyUI.UIElements {
 		/// <param name="index">The index of the element in the data list.</param>
 		/// <param name="immediately">Should we jump immediately or animate there?</param>
 		public void SnapToElement(int index, bool immediately = true) {
-			float normalizedPosition;
+            UIDefinitionContainer defContainer = GetComponentInParent<UIDefinitionContainer>(true);
+
+            if (defContainer != null) {
+                LayoutRebuilder.ForceRebuildLayoutImmediate(defContainer.RectTransform);
+            } else {
+                LayoutRebuilder.ForceRebuildLayoutImmediate(transform.root as RectTransform);
+            }
+
+            UpdateAll();
+
+            float normalizedPosition;
 
 			if (maxScrollPosition > 0) {
 				if (scrollAxisInt == 0) {
