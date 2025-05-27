@@ -85,6 +85,16 @@ namespace GentlyUI.UIElements {
             base.OnDisable();
         }
 
+        public override bool Interactable { 
+            get {
+                return base.Interactable;
+            }
+            set {
+                base.Interactable = value;
+                UpdateIndicator(false);
+            }
+        }
+
         void SetToggleGroup(GMToggleGroup newGroup, bool updateGroupInternal) {
             GMToggleGroup oldGroup = group;
 
@@ -161,7 +171,7 @@ namespace GentlyUI.UIElements {
 
         void UpdateIndicator(bool setImmediately = false) {
             if (isOn) {
-                indicator.SetState(GMVisualElement.VisualState.Default, setImmediately);
+                indicator.SetState(Interactable ? GMVisualElement.VisualState.Default : GMVisualElement.VisualState.Disabled, setImmediately);
             } else {
                 indicator.SetState(GMVisualElement.VisualState.Inactive, setImmediately);
             }
