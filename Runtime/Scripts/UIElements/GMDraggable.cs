@@ -146,7 +146,7 @@ namespace GentlyUI.UIElements {
                 }
             }
 
-            if (currentDragObject.gameObject != gameObject) {
+            if (currentDragObject != null && currentDragObject.gameObject != gameObject) {
                 //Destroy drag object
                 Destroy(currentDragObject.gameObject);
             } else {
@@ -215,5 +215,11 @@ namespace GentlyUI.UIElements {
         /// Right click callback.
         /// </summary>
         public virtual void OnRightClick() { }
+
+        protected override void OnDestroy() {
+            base.OnDestroy();
+
+            ResetDragObject();
+        }
     }
 }
