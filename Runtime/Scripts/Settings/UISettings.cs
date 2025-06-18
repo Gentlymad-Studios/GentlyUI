@@ -43,7 +43,7 @@ public class UISettings : ScriptableObject, ISerializationCallbackReceiver {
     /// How fast the dragged object should snap to the origin (either new dropzone or old dropzone).
     /// </summary>
     [Tooltip("How fast the dragged object should snap to the origin (either new dropzone or old dropzone).")]
-    [SerializeField] private float dragReturnSpeed = 500;
+    [SerializeField] private float dragReturnSpeed = 5;
     public float DragReturnSpeed => dragReturnSpeed;
     /// <summary>
     /// The scale of the element while being dragged.

@@ -37,7 +37,7 @@ namespace GentlyUI.UIElements {
 
         public void SetOrigin(RectTransform origin) {
             this.origin = origin;
-            returnPosition = Origin.TransformPoint(Origin.rect.center);
+            returnPosition = UIManager.UICamera.WorldToViewportPoint(Origin.TransformPoint(Origin.rect.center));
         }
 
         public void SetDragState(DragState state) {
@@ -52,6 +52,9 @@ namespace GentlyUI.UIElements {
                     for (int i = 0, count = GMDropzone.activeDropzones.Count; i < count; ++i) {
                         GMDropzone.activeDropzones[i].OnDragEnded();
                     }
+                    //Set anchored position
+                    RectTransform.anchorMin = RectTransform.anchorMax = UIManager.UICamera.WorldToViewportPoint(RectTransform.position);
+                    RectTransform.anchoredPosition = Vector2.zero;
 
                     break;
                 case DragState.Dragging:
@@ -69,10 +72,11 @@ namespace GentlyUI.UIElements {
 
             if (dragState == DragState.Returning) {
                 //If we are close enough to our return position we have arrived.
-                if (Vector3.Distance(transform.position, returnPosition) <= 0.1f) {
+                if (Vector2.Distance(RectTransform.anchorMin, returnPosition) <= 0.01f) {
                     SetDragState(DragState.Idle);
                 } else {
-                    transform.position = Vector3.MoveTowards(transform.position, returnPosition, unscaledDeltaTime * UIManager.UISettings.DragReturnSpeed);
+                    RectTransform.anchorMin = RectTransform.anchorMax = Vector2.MoveTowards(RectTransform.anchorMin, returnPosition, unscaledDeltaTime * UIManager.UISettings.DragReturnSpeed);
+                    RectTransform.anchoredPosition = Vector2.zero;
                 }
             } else if (dragState == DragState.Dragging) {
                 UpdateDragPosition();
